@@ -12,7 +12,6 @@ import {
   Card,
   FlatList
 } from 'react-native'
-
 import React, { useState, useEffect } from 'react'
 import uploadimge from '../../../assets/2.png'
 import uploadimge2 from '../../../assets/UpLoadImage.png'
@@ -20,6 +19,7 @@ import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
 import { Buffer } from 'buffer'
 import base64 from 'base-64';
+import Ionicons from 'react-native-vector-icons/Ionicons'
 const CreateCategory = ({ navigation }) => {
   const [fdata, setFdata] = useState({
     name: '',
@@ -30,10 +30,9 @@ const CreateCategory = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [errormgs, setErrormgs] = useState(null)
 
-
   //test data 
   const fetchData = () => {
-    fetch(shareVarible.URLink + '/category/', {
+    fetch(shareVarible.URLink + '/category/ ', {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -45,7 +44,6 @@ const CreateCategory = ({ navigation }) => {
       )
       .catch(error => console.log(error));
   };
-
   useEffect(() => {
     fetchData();
   }, []);
@@ -124,7 +122,7 @@ const CreateCategory = ({ navigation }) => {
           }
         }
       )
-      
+
   }
 
 
@@ -256,24 +254,29 @@ const CreateCategory = ({ navigation }) => {
             {errormgs}</Text> : null
         }
 
-        <Text style={{
-          position: 'absolute',
-          marginTop: 310,
-          marginLeft: 90,
-          backgroundColor: 'black',
-          color: 'white',
-          height: 50,
-          width: 250,
-          borderRadius: 30,
-          textAlign: 'center',
-          fontSize: 28,
-          fontWeight: '900',
-          paddingTop: 7
-        }}
-          onPress={SendtoBackend}
-        >
-          CREATE
-        </Text>
+
+        <TouchableOpacity onPress={SendtoBackend}>
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 280,
+              borderWidth: 1,
+              borderRadius: 30,
+              width: 150,
+              backgroundColor: '#fff',
+              height: 55,
+              marginLeft: 144,
+              backgroundColor: '#6AF597',
+              justifyContent: 'center',
+              alignItems: 'center',
+              position : 'absolute'
+            }}
+          >
+            <Ionicons name='md-checkmark-sharp' size={31}
+            />
+          </View>
+        </TouchableOpacity>
+
       </View>
 
       {/* View List catefory food */}
@@ -298,7 +301,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   V11: {
-    height: '55%',
+    height: '60%',
     width: '100%',
     backgroundColor: '#EDF6D8'
   },
@@ -312,8 +315,8 @@ const styles = StyleSheet.create({
     height: 40,
     width: 190,
     backgroundColor: 'white',
-    marginTop: 40,
-    marginLeft: 30,
+    marginTop: 80,
+    marginLeft: 10,
     borderRadius: 10,
     paddingLeft: 10
   },
@@ -322,8 +325,8 @@ const styles = StyleSheet.create({
     height: 100,
     width: 190,
     backgroundColor: 'white',
-    marginTop: 100,
-    marginLeft: 30,
+    marginTop: 140,
+    marginLeft: 10,
     borderRadius: 10,
     paddingLeft: 10,
     paddingBottom: 50
@@ -338,6 +341,4 @@ const styles = StyleSheet.create({
     borderColor: 'black',
     borderWidth: 1
   }
-
-
 })

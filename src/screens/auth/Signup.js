@@ -13,6 +13,8 @@ import { buttonsignup } from '../../comon/button'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import shareVarible from './../../AppContext'
+import { Dropdown } from 'react-native-element-dropdown';
+import AntDesign from '@expo/vector-icons/AntDesign';
 const Signup = ({ navigation }) => {
 
   //take data
@@ -22,7 +24,17 @@ const Signup = ({ navigation }) => {
     phone: '',
     password: '',
     keycode: '',
+    role :''
   })
+
+  //
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
+  const datadropdown = [
+    { label: 'Manager', value: '0' },
+    { label: 'Waitress', value: '1' },
+    { label: 'Chef', value: '3' },
+  ];
   //call API
   const SendtoBackend = () => {
     // onChangeText={(text) => setFdata({ ...fdata, email: text })
@@ -67,12 +79,16 @@ const Signup = ({ navigation }) => {
       setErrormsg('NOTE : Password must have at least one Digit. !!!');
       return;
     }
+    if(!fdata.role){
+      setErrormsg('NOTE : Role is not null!!!')
+    }
     else {
       if (fdata.password != fdata.confirmpassword) {
         setErrormsg('Password confirm Password must be same');
         return;
       }
       else {
+        console.log(fdata);
         fetch(shareVarible.URLink + '/signup', {
           method: 'POST',
           headers: {
@@ -148,15 +164,48 @@ const Signup = ({ navigation }) => {
       <Image style={styles.picturemain} source={mainpicture} />
       <Text style={styles.textSignup}>Create New</Text>
       <Text style={styles.textSignup1}>Account</Text>
+      <View style={styles.stylesdropdown}>
+              {/* {renderLabel()} */}
+              <Dropdown
+                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+                placeholderStyle={styles.placeholderStyle}
+                selectedTextStyle={styles.selectedTextStyle}
+                inputSearchStyle={styles.inputSearchStyle}
+                iconStyle={styles.iconStyle}
+                data={datadropdown}
+                search
+                maxHeight={300}
+                labelField="label"
+                valueField="value"
+                placeholder={!isFocus ? 'Select role' : '...'}
+                searchPlaceholder="Search..."
+                value={value}
+                onFocus={() => setIsFocus(true)}
+                onBlur={() => setIsFocus(false)}
+                onChange={item => {
+                  setValue(item.value);
+                  setFdata({ ...fdata, role: item.value })
+                  setIsFocus(false);
+                }}
+                renderLeftIcon={() => (
+                  <AntDesign
+                    style={styles.icon}
+                    color={isFocus ? 'blue' : 'black'}
+                    name="Safety"
+                    size={20}
+                  />
+                )} />
+            </View>
       <Text style={styles.nodetextusername}>Please enter your name</Text>
       <TextInput
+        
         style={styles.inputname}
-        placeholder="Your name"
+        placeholder="name"
         onPressIn={() => setErrormsg(null)}
         onChangeText={(text) => setFdata({ ...fdata, name: text })}
       ></TextInput>
       <Text style={styles.nodetextemail}>Please enter your email</Text>
-      <TextInput placeholder='youremail@gmail.com' style={styles.inputemail}
+      <TextInput placeholder='email@gmail.com' style={styles.inputemail}
         onPressIn={() => setErrormsg(null)}
         onChangeText={(text) => setFdata({ ...fdata, email: text })}></TextInput>
       <Text style={styles.nodetextphone}>Please enter your phone</Text>
@@ -361,4 +410,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 20,
   },
+  stylesdropdown:{
+    width : '100%',
+    height : 20,
+    marginLeft : 180
+  },
+  dropdown :{
+    width : '50%'
+  }
 })

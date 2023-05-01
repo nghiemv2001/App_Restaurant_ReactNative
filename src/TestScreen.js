@@ -1,37 +1,102 @@
-import { View, Text,Image } from 'react-native'
+import { View, Text, Image } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import shareVarible from './AppContext'
-const TestScreen = (props) => {
-    const [data, setData] = useState([]);
-    useEffect(() => {
-        fetch(shareVarible.URLink + '/category/', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type':'application/json'
-            }
-        })
-        .then(response => response.json())
-      .then(data => setData(data))
-      .catch(error => console.log(error));
-    }, []);
+import { StyleSheet } from 'react-native';
+import { Dropdown } from 'react-native-element-dropdown';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
+const TestScreen = () => {
 
-    const [imageData, setImageData] = useState(null);
-    const getBase64ImageData = () => {
-      console.log(data._id)
-      if (data.image) {
-        const buffer = Buffer.Buffer.from(imageData, 'binary');
-        return `data:image/jpeg;base64,${buffer.toString('base64')}`;
-      }
-      return null;
-    };
-    return (
-      <View>
-        <Text>Hello</Text>
-      <Image source ={{ uri: getBase64ImageData() }} style={{ width: 200, height: 200 }} />
-    </View>
-    );
+  const data = [
+    { label: 'Còn trống', value: '0' },
+    { label: 'Đã đặt', value: '1' },
+  ];
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
+  const renderLabel = () => {
+    if (value || isFocus) {
+      return (
+        <Text style={[styles.label, isFocus && { color: 'blue' }]}>
+          Dropdown label
+        </Text>
+      );
+    }
+    return null;
+  };
+  return (
+    <View style={styles.container}>
+    {renderLabel()}
+    <Dropdown
+      style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+      placeholderStyle={styles.placeholderStyle}
+      selectedTextStyle={styles.selectedTextStyle}
+      inputSearchStyle={styles.inputSearchStyle}
+      iconStyle={styles.iconStyle}
+      data={data}
+      search
+      maxHeight={300}
+      labelField="label"
+      valueField="value"
+      placeholder={!isFocus ? 'Select item' : '...'}
+      searchPlaceholder="Search..."
+      value={value}
+      onFocus={() => setIsFocus(true)}
+      onBlur={() => setIsFocus(false)}
+      onChange={item => {
+        setValue(item.value);
+        console.log(item.value)
+        setIsFocus(false);
+      }}
+      renderLeftIcon={() => (
+        <AntDesign
+          style={styles.icon}
+          color={isFocus ? 'blue' : 'black'}
+          name="Safety"
+          size={20}
+        />
+      )}
+    />
+  </View>
+);
 };
 
 export default TestScreen
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: 'white',
+    padding: 16,
+  },
+  dropdown: {
+    height: 50,
+    borderColor: 'gray',
+    borderWidth: 0.5,
+    borderRadius: 8,
+    paddingHorizontal: 8,
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+});

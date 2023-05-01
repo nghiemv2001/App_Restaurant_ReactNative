@@ -1,12 +1,89 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Pressable } from 'react-native'
-import React, { useState } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import mainpicture from '../../../assets/mainpicture.png'
 import { buttonlogin } from '../../comon/button'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import shareVarible from './../../AppContext'
-
+import { Dropdown } from 'react-native-element-dropdown';
+import AntDesign from '@expo/vector-icons/AntDesign';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 const Signin = ({ navigation }) => {
+  //xu li data token 
+  const initialState = {
+    data: [],
+    isLoading: false,
+    error: null
+  };
+  function dataReducer(state = initialState, action) {
+    switch (action.type) {
+      case 'FETCH_DATA_REQUEST':
+        return {
+          ...state,
+          isLoading: true,
+          error: null
+        };
+      case 'FETCH_DATA_SUCCESS':
+        return {
+          ...state,
+          isLoading: false,
+          data: action.payload
+        };
+      case 'FETCH_DATA_FAILURE':
+        return {
+          ...state,
+          isLoading: false,
+          error: action.payload
+        };
+      default:
+        return state;
+    }
+  }
+  const storeData = async (key, value) => {
+    try {
+      await AsyncStorage.setItem(key, value);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  const [state, dispatch] = useReducer(dataReducer, initialState);
+  const [dataAPI, setDataAPI] = useState([]);
+  const fetchData = async () => {
+    dispatch({ type: 'FETCH_DATA_REQUEST' });
+    const token = await AsyncStorage.getItem('token');  
+    const requestOptions = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    fetch(shareVarible.URLink + '/user/' + `${fdata.email}`)
+      .then(response => response.json())
+      .then(data => {
+        dispatch({ type: 'FETCH_DATA_SUCCESS', payload: data },setDataAPI(data),console.log("test", dataAPI));
+      })
+      .catch(error => {
+        dispatch({ type: 'FETCH_DATA_FAILURE', payload: error });
+      });
+  }
+
+
+  // const fetchData = async () => {
+  //   const token = await AsyncStorage.getItem('token');
+  //   const requestOptions = {
+  //     method: 'GET',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   };
+  //   fetch(shareVarible.URLink + '/user/' + `${fdata.email}`, requestOptions)
+  //     .then(response => response.json())
+  //     .then(data => setDataAPI(data))
+  //     .catch(error => console.log(error));
+
+  // };
   // take data 
   const [fdata, setFdata] = useState({
     email: '',
@@ -14,12 +91,14 @@ const Signin = ({ navigation }) => {
   })
   ///set Error 
   const [errormgs, setErrormsg] = useState(null);
+  //
+  const [data, setData] = useState({});
   /// Call API
   const SendtoBackend = () => {
     if (fdata.email == '' || fdata.password == '') {
-      setErrormsg('All filed are required');
+      setErrormsg('Email and password not null!!');
       return;
-    }
+    } 
     else {
       fetch(shareVarible.URLink + '/signin',
         {
@@ -36,14 +115,14 @@ const Signin = ({ navigation }) => {
             }
             else {
               alert('Login successfully');
-              navigation.navigate('CreateCategory');
+              navigation.navigate('Profile',{ data: fdata.email });
             }
           }
         )
     }
   }
 
-  
+
   //Hide or see  password
   const useTogglePasswordVisibility = () => {
     const [passwordVisibility1, setPasswordVisibility] = useState(true);
@@ -217,8 +296,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   errmessage: {
-    marginTop: 530,
-    marginLeft: 140,
+    marginTop: 520,
+    marginLeft: 120,
     color: 'red',
     position: 'absolute'
   },
@@ -237,5 +316,5 @@ const styles = StyleSheet.create({
     width: 340,
     justifyContent: 'space-between',
     paddingRight: 20,
-  },
+  }
 })
