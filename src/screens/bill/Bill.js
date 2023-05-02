@@ -1,5 +1,6 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
+import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
@@ -8,6 +9,24 @@ const Bill = ({ navigation, route }) => {
   const [dataipa, SetDataApi] = useState([]);
   const [data, setData] = useState(null);
   const idtable = route.params.data.item._id
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [])
+  );
+  var total = 0;
+  
+  if (dataipa.length !== 0) {
+    console.log("chay vo roi")
+    console.log(dataipa)
+    // total = dataipa.danh_sach_mon_an.reduce((acc, danh_sach_mon_an) => {
+    //   return acc + danh_sach_mon_an.gia;
+    // }, 0);
+  }
+
+
+
+
   //get data 1 bill 
   const fetchData = () => {
     fetch(shareVarible.URLink + '/bill/' + `${idtable}`, {
@@ -22,11 +41,6 @@ const Bill = ({ navigation, route }) => {
       )
       .catch(error => console.log(error));
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // console.log('data send route ', dataipa)
   //Render Faglist
   const renderlist = ((item) => {
     return (
@@ -49,29 +63,29 @@ const Bill = ({ navigation, route }) => {
           /><View
             style={{
               flexDirection: 'column',
-              marginLeft : 10,
+              marginLeft: 10,
               borderWidth: 1,
-              borderRadius : 10
+              borderRadius: 10
             }}
           >
             <Text style={{
               width: '45%',
-              height : 50,
-              paddingLeft : 10,
+              height: 50,
+              paddingLeft: 10,
               fontSize: 23,
               textAlignVertical: 'center',
-              
+
             }}>{item.ten_mon}</Text>
             <View style={{
               flexDirection: 'row'
             }}>
-              
+
               <Text
                 style={{
                   width: '25%',
                   fontSize: 18,
                   textAlignVertical: 'center',
-                  marginLeft : 10
+                  marginLeft: 10
                 }}
               >{item.gia} $</Text>
               <Text
@@ -79,7 +93,7 @@ const Bill = ({ navigation, route }) => {
                   width: '20%',
                   fontSize: 18,
                   textAlignVertical: 'center',
-              
+
                 }}
               >x {item.so_luong}</Text>
               <Text
@@ -87,9 +101,9 @@ const Bill = ({ navigation, route }) => {
                   width: '50%',
                   fontSize: 18,
                   textAlignVertical: 'center',
-                
+
                 }}
-              >=   {item.gia*item.so_luong} $</Text>
+              >=   {item.gia * item.so_luong} $</Text>
             </View>
           </View>
         </View>
@@ -103,27 +117,27 @@ const Bill = ({ navigation, route }) => {
       backgroundColor: '#EDF6D8'
     }}>
       <View
-      style ={{
-        flexDirection : 'row',
-        justifyContent : 'space-between',
-        paddingHorizontal : 10,
-        marginBottom : 10
-      }}
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 10,
+          marginBottom: 10
+        }}
       >
-         <TouchableOpacity
-        style={{ marginLeft: 10, }}
-        onPress={() => navigation.navigate('HomeWaitress')}
-      >
-        <Ionicons name='arrow-back-sharp' size={35} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{ marginLeft: 10, }}
-        onPress={() => navigation.navigate('ListCategory',{ route })}
-      >
-        <Ionicons name='add' size={40} />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={{ marginLeft: 10, }}
+          onPress={() => navigation.navigate('HomeWaitress')}
+        >
+          <Ionicons name='arrow-back-sharp' size={35} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ marginLeft: 10, }}
+          onPress={() => navigation.navigate('ListCategory', { route })}
+        >
+          <Ionicons name='add' size={40} />
+        </TouchableOpacity>
       </View>
-     
+
       {
         (dataipa !== null && typeof dataipa === 'object') ?
           <SwipeListView
@@ -142,12 +156,12 @@ const Bill = ({ navigation, route }) => {
                 backgroundColor: '#808080',
                 margin: 5
               }}>
-                <TouchableOpacity 
+                <TouchableOpacity
                 >
                   <Ionicons style={{
-                    marginBottom : 40, 
-                    marginLeft : 100,
-                    
+                    marginBottom: 40,
+                    marginLeft: 100,
+
                   }} name='trash-bin' size={45} />
                 </TouchableOpacity>
               </View>
@@ -160,35 +174,42 @@ const Bill = ({ navigation, route }) => {
           <Text style={{
           }}>Chưa có bất kì món ăn nào</Text>
       }
-
-      {/* <SwipeListView
-            data={dataipa.danh_sach_mon_an}
-            renderItem={({ item }) => {
-              return renderlist(item)
+      <View style={{
+        height: 150,
+        width: "100%",
+        borderWidth: 1,
+        padding: 5,
+        marginLeft: 15,
+        marginTop: 5,
+        borderTopLeftRadius: 100,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        backgroundColor:'white'
+      }}>
+        <Text
+          style={{
+            fontSize: 32,
+            fontWeight: 'bold'
+          }}
+        >{total}.00$</Text>
+        <View
+          style={{
+            flexDirection: 'row',
+            marginTop : 10
+          }}
+        >
+          <Ionicons name='card' size={50} />
+          <Text
+            style={{
+              fontSize: 40,
+              fontWeight: 'bold',
+              marginLeft: 100
             }}
-            renderHiddenItem={(dataipa, rowMap) => (
-              <View style={{
-                flexDirection: 'row',
-                height: 135,
-                width: 200,
-                marginLeft: 211,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: '#808080',
-              }}>
-                <View style={{
-                  borderRightWidth: 3,
-                  height: '100%',
-                  justifyContent: 'center',
-                  alignContent: 'center'
-                }}>
-                </View>
-              </View>
-            )}
-            leftOpenValue={0}
-            rightOpenValue={-200}
-            keyExtractor={item => item._id}
-          /> */}
+          >$</Text>
+        </View>
+      </View>
     </SafeAreaView>
   )
 }

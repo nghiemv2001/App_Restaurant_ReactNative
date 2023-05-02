@@ -41,6 +41,9 @@ export default function App() {
       <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
           headerShown: false
         }} />
+        <Stack.Screen name ="CreateProduct" component={CreateProduct} options={{
+        headerShown : false
+        }}/>
         <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
           headerShown: false
         }} />       
@@ -66,9 +69,6 @@ export default function App() {
         <Stack.Screen name ="EditProduct" component={EditProduct} options={{
         headerShown : false
         }}/>
-        <Stack.Screen name ="CreateProduct" component={CreateProduct} options={{
-        headerShown : false
-        }}/>
         <Stack.Screen name="Signin" component={Signin} options={{
           headerShown: false
         }} />
@@ -89,10 +89,7 @@ export default function App() {
         }} />
         <Stack.Screen name="ReceiverPassword" component={ReceiverPassword} options={{
           headerShown: false
-        }} />
-        <Stack.Screen name="CreateCategory" component={CreateCategory} options={{
-          headerShown: false
-        }} />  
+        }} /> 
         <Stack.Screen name="CreateTable" component={CreateTable} options={{
           headerShown: false
         }} />

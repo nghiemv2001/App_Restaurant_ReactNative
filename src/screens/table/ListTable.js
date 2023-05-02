@@ -35,7 +35,24 @@ const ListTable = ({ fdata, navigation, props }) => {
       )
       .catch(error => console.log(error));
   },[])
+const [checknull, setCheckNull] = useState(null);
+  const CheckNullTable=(data)=>{
+    // console.log(shareVarible.URLink + '/bill/hoadon/'+data.item._id)
+    fetch(shareVarible.URLink + '/bill/hoadon/'+data.item._id, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => setCheckNull(data),
+      )
+      .catch(error => console.log(error));
+  }
+  console.log(checknull)
   const [data, setData] = useState(null);
+  
   const renderlist = ((item) => {
     return (
       <View style={{
@@ -105,7 +122,9 @@ const ListTable = ({ fdata, navigation, props }) => {
                   alignContent: 'center'
                 }}>
                   <TouchableOpacity
-                    onPress={() => navigation.navigate('Bill', {data})}>
+                  onPress={()=> CheckNullTable(data)}
+                    // onPress={() => navigation.navigate('Bill', {data})}
+                    >
                     <Image
                       style={{
                         height: 50,

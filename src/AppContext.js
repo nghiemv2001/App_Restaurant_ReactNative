@@ -1,5 +1,5 @@
 const sharedData = {
-    URLink : "http://192.168.1.135:3000"
+    URLink : "http://192.168.1.4:3000"
   };
 
 export default sharedData;

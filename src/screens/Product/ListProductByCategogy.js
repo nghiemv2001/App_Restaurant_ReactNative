@@ -8,7 +8,7 @@ import { FlatGrid } from 'react-native-super-grid';
 const ListProductByCategogy = ({ route, navigation }) => {
   const [dataipa, setDataIPA] = useState([{}]);
   const idCategory = route.params.item._id;
-  const dataroute = route.params.route.params.route
+  const dataroute = route.params.route.params.route.params.data
   const idtable = route.params.route.params.route.params.data.item._id
   const [fdata, setFdata] = useState({
     ten_mon: "",
@@ -34,8 +34,15 @@ const ListProductByCategogy = ({ route, navigation }) => {
   }, []);
 
   const sentoBackEnd = (item) => {
-    setFdata({ ...fdata, ten_mon: item.name, hinh_mon: item.image, gia: item.price, so_luong: 1 })
-    fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
+    fdata.ten_mon = item.name;
+    fdata.hinh_mon = item.image;
+    fdata.so_luong = 1;
+    fdata.gia = item.price
+    console.log(fdata)
+    if(fdata.ten_mon == '' || fdata.so_luong ==""){
+      alert ("Data not null")
+    }else{
+      fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
       {
         method: 'POST',
         headers: {
@@ -50,10 +57,13 @@ const ListProductByCategogy = ({ route, navigation }) => {
             alert(data.error);
           }
           else {
-            alert('Create food successfully');
+            const data = dataroute;
+            navigation.navigate('Bill', {data})
           }
         }
       )
+    }
+    
   }
 
   return (
@@ -78,7 +88,8 @@ const ListProductByCategogy = ({ route, navigation }) => {
         >
           <Ionicons name='arrow-back-sharp' size={35} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('CreateProduct')}
+        <TouchableOpacity 
+        onPress={() => navigation.navigate('CreateProduct')}
         >
           <Image
             style={{
