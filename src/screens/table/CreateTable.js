@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Image } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Image,TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import mainpicture from '../../../assets/mainpicture.png'
@@ -9,16 +9,17 @@ import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
-const CreateTable = ({ navigation , route}) => {
+import Ionicons from 'react-native-vector-icons/Ionicons'
+const CreateTable = ({ navigation, route }) => {
   const [fdata, setFdata] = useState({
-    name : "",
-    peoples :"",
-    status :"", 
-    image : ""
+    name: "",
+    peoples: "",
+    status: "",
+    image: ""
   })
   const datadropdown = [
-    { label: 'Còn trống', value: '0' },
-    { label: 'Đã đặt', value: '1' },
+    { label: 'emptytable', value: '0' },
+    { label: 'booking', value: '2' },
   ];
   const [data, setData] = useState({});
   const [imagesrc, setImage] = useState(null);
@@ -66,7 +67,7 @@ const CreateTable = ({ navigation , route}) => {
           }
           else {
             alert('Create Table successfully');
-            navigation.navigate('ListTable');
+            navigation.navigate('HomeAdmin');
             console.log(data)
           }
         }
@@ -138,9 +139,23 @@ const CreateTable = ({ navigation , route}) => {
   return (
     <View
       style={styles.View1}>
-      <Image
-        style={styles.stylepicturemain}
-        source={mainpicture} />
+      <View style={{ flexDirection: 'row' }}>
+
+        <View style={{ width: "80%" }}>
+          <Image
+            style={styles.stylepicturemain}
+            source={mainpicture} />
+        </View >
+        <TouchableOpacity
+          onPress={() => navigation.navigate('ListTableAdmin')}
+          >
+         
+            <Ionicons name='md-list-outline' size={50} />
+   
+        </TouchableOpacity>
+      </View>
+
+
       <KeyboardAwareScrollView >
         <View
           style={{
@@ -290,7 +305,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     left: 22,
     top: 8,
-    zIndex: 999,
     paddingHorizontal: 8,
     fontSize: 14,
   },
@@ -313,13 +327,13 @@ const styles = StyleSheet.create({
     width: 200,
     borderWidth: 10,
     marginTop: -60,
-    marginLeft: 100
+    marginLeft: 130
   },
   View1: {
     height: '100%',
     width: '100%',
     justifyContent: 'center',
-    alignItems: 'flex-start',
+
     backgroundColor: '#EDF6D8',
     marginTop: 10,
   },
@@ -367,11 +381,11 @@ const styles = StyleSheet.create({
 
   },
   PTtable: {
-    height: 220,
-    width: '70%',
+    height: 170,
+    width: '50%',
     borderRadius: 50,
     marginTop: 10,
-    marginLeft: 65,
+    marginLeft: 90,
     borderWidth: 1,
     borderColor: 'black'
   },

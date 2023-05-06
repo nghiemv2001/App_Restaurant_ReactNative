@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Image, TouchableOpacity,Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
@@ -8,25 +8,20 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 const Bill = ({ navigation, route }) => {
   const [dataipa, SetDataApi] = useState([]);
   const [data, setData] = useState(null);
-  const idtable = route.params.data.item._id
+  const [dataproductchef, SetDataProductChef] = useState(null)
+  const [dataproduct, SetDataProduct] = useState(null)
+  const idtable = route.params.data._id
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
     }, [])
   );
   var total = 0;
-  
   if (dataipa.length !== 0) {
-    console.log("chay vo roi")
-    console.log(dataipa)
-    // total = dataipa.danh_sach_mon_an.reduce((acc, danh_sach_mon_an) => {
-    //   return acc + danh_sach_mon_an.gia;
-    // }, 0);
+    total = dataipa.danh_sach_mon_an.reduce((acc, danh_sach_mon_an) => {
+      return acc + danh_sach_mon_an.gia;
+    }, 0);
   }
-
-
-
-
   //get data 1 bill 
   const fetchData = () => {
     fetch(shareVarible.URLink + '/bill/' + `${idtable}`, {
@@ -40,7 +35,47 @@ const Bill = ({ navigation, route }) => {
       .then(data => SetDataApi(data),
       )
       .catch(error => console.log(error));
+
+      //get list product chef
+      fetch(shareVarible.URLink + '/productchef/', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => SetDataProductChef(data),
+        )
+        .catch(error => console.log(error));
   };
+  //delete item
+  const DeleteItem= (item)=>{
+    const dataproductchef1 = dataproductchef.find(p => p.id_product === item.id_product);
+    console.log(dataproductchef1.status)
+    if(dataproductchef1.status !== 0){
+      alert("Bep da che bien kh the xoa ");
+    }
+    else{
+      fetch(shareVarible.URLink + '/monan/delete/'+`${item._id}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      alert("Success!")
+      fetchData()
+    })
+    .catch(error => {
+      console.error('Error', error);
+    }
+    )
+    }
+    
+  } 
   //Render Faglist
   const renderlist = ((item) => {
     return (
@@ -52,7 +87,7 @@ const Bill = ({ navigation, route }) => {
           marginLeft: 10,
           flexDirection: 'row',
           height: 105,
-          width: '100%',
+          width: '75%',
           padding: 5
         }}>
           <Image style={{
@@ -76,6 +111,8 @@ const Bill = ({ navigation, route }) => {
               textAlignVertical: 'center',
 
             }}>{item.ten_mon}</Text>
+            
+            
             <View style={{
               flexDirection: 'row'
             }}>
@@ -103,10 +140,20 @@ const Bill = ({ navigation, route }) => {
                   textAlignVertical: 'center',
 
                 }}
-              >=   {item.gia * item.so_luong} $</Text>
+              >=   {item.gia * item.so_luong} $</Text>   
             </View>
+            
           </View>
+          
         </View>
+        <TouchableOpacity 
+        onPress={() => DeleteItem(item)}
+        >
+          <Ionicons 
+        style={{marginTop : 28 , marginLeft : 20}}
+        name='trash-bin' size={45} />
+        </TouchableOpacity>
+        
       </View>
     )
   })
@@ -156,19 +203,8 @@ const Bill = ({ navigation, route }) => {
                 backgroundColor: '#808080',
                 margin: 5
               }}>
-                <TouchableOpacity
-                >
-                  <Ionicons style={{
-                    marginBottom: 40,
-                    marginLeft: 100,
-
-                  }} name='trash-bin' size={45} />
-                </TouchableOpacity>
               </View>
             )}
-            leftOpenValue={0}
-            rightOpenValue={-100}
-            keyExtractor={item => item._id}
           />
           :
           <Text style={{
@@ -200,14 +236,6 @@ const Bill = ({ navigation, route }) => {
             marginTop : 10
           }}
         >
-          <Ionicons name='card' size={50} />
-          <Text
-            style={{
-              fontSize: 40,
-              fontWeight: 'bold',
-              marginLeft: 100
-            }}
-          >$</Text>
         </View>
       </View>
     </SafeAreaView>

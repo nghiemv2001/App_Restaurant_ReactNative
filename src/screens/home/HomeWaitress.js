@@ -8,6 +8,7 @@ import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawe
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import CustomDrawerWaitress from '../../component/CustomDrawerWaitress';
 import ListTable from '../table/ListTable'
+import ListProductWaitress from '../Chef/ListProductWaitress';
 const Drawer = createDrawerNavigator();
 const HomeWaitress = () => {
     return (
@@ -28,6 +29,13 @@ const HomeWaitress = () => {
                 ),
             }}
           name="Tables" component={ListTable} />    
+          <Drawer.Screen 
+            options={{
+                drawerIcon: ({color})=>(
+                    <Ionicons name='fast-food' size={22}/>
+                ),
+            }}
+          name="List Food" component={ListProductWaitress} />    
         </Drawer.Navigator> 
           
       );

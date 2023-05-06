@@ -1,24 +1,8 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Image,
-  TouchableOpacity,
-  Button,
-  PermissionsAndroid,
-  Alert,
-  ImagePickerIOS,
-  Card,
-  FlatList
-} from 'react-native'
+import {View,Text,StyleSheet,TextInput,Image,TouchableOpacity,FlatList, Alert} from 'react-native'
 import React, { useState, useEffect } from 'react'
 import uploadimge from '../../../assets/2.png'
-import uploadimge2 from '../../../assets/UpLoadImage.png'
 import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
-import { Buffer } from 'buffer'
-import base64 from 'base-64';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 const CreateCategory = ({ navigation }) => {
   const [fdata, setFdata] = useState({
@@ -48,31 +32,44 @@ const CreateCategory = ({ navigation }) => {
     fetchData();
   }, []);
 
+  const EditCategory=(item)=>{
+    navigation.navigate('EditCategory', { item })
+  }
 
-
-  //lấy dữ hiện hiển thị lên list view
-  // useEffect(() => {
-  //   fetch(shareVarible.URLink + '/category/', {
-  //     method: 'GET',
-  //     headers: {
-  //       'Accept': 'application/json',
-  //       'Content-Type': 'application/json'
-  //     }
-  //   })
-  //     .then(response => response.json())
-  //     .then(data => setData(data),
-  //     )
-  //     .catch(error => console.log(error));
-  // }, []);
-
+  const DeteleCategory=(item)=>{
+    Alert.alert('DELETE', 'Delete this category?', [
+      {
+        text: 'Cancel',
+      },
+      {text: 'OK', onPress: () => fetch(shareVarible.URLink + '/category/delete/'+`${item}`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Xóa thành công đối tượng:', data);
+        fetchData();
+      })
+      .catch(error => {
+        console.error('Lỗi xóa đối tượng:', error);
+      }
+      )
+    }
+    ]);
+  }
   //design and show list category
   const renderlist = ((item) => {
     return (
       <View style={{
         flexDirection: 'row'
       }}>
-
-        <Image style={{
+        <View style={{
+          width : '70%',
+          flexDirection: 'row'}}>
+          <Image style={{
           width: 80, height: 80,
           borderRadius: 50, borderColor: 'black',
           borderWidth: 1, marginBottom: 15
@@ -86,7 +83,27 @@ const CreateCategory = ({ navigation }) => {
           }}>{item.name}</Text>
           <Text>{item.describe}</Text>
         </View>
+        </View>
+        
+        <View
+        style ={{
+          paddingLeft : 50,
+          width : 100,
+          flexDirection :'row',
+          justifyContent : 'center',
+          alignItems :'center'
+        }}
+        >
+        <TouchableOpacity  onPress={() => EditCategory(item)}>
+          <Ionicons name='pencil' size={35} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => DeteleCategory(item._id)}>
+             <Ionicons name='remove-circle-sharp' size={35} />
+        </TouchableOpacity>
+         
 
+        </View>
+        
       </View>
 
     )
@@ -96,7 +113,7 @@ const CreateCategory = ({ navigation }) => {
   //create category
   const SendtoBackend = () => {
     if (fdata.name == '' || fdata.describe == '') {
-      setErrormgs('All filed are required');
+      setErrormgs('All filed are required!!!');
       return;
     }
     if (fdata.image == '') {
@@ -247,7 +264,7 @@ const CreateCategory = ({ navigation }) => {
         {
           errormgs ? <Text style={{
             position: 'absolute',
-            marginTop: 280,
+            marginTop: 20,
             marginLeft: 150,
             color: 'red'
           }}>
@@ -259,7 +276,7 @@ const CreateCategory = ({ navigation }) => {
           <View
             style={{
               flexDirection: 'row',
-              marginTop: 280,
+              marginTop: 290,
               borderWidth: 1,
               borderRadius: 30,
               width: 150,

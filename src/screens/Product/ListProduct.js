@@ -24,66 +24,83 @@ const ListProduct = ({ navigation }) => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  //UPdateProduct
+
+  const UpdateProduct = (item) => {
+    console.log(item)
+  }
   return (
     <View
       style={{
-        flex: 1
+        flex: 1,
+        backgroundColor: '#EDF6D1',
       }}
-    >    
-
-      <FlatGrid
-        itemDimension={130}
-        data={dataipa}
-        style={styles.gridView}
-        spacing={10}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}>
-            <View style={[styles.itemContainer]}>
-              <Image style={styles.styimage} source={{ uri: item.image }} />
-              <Text style={styles.itemName}>{item.name}</Text>
-            </View>
-            <View
+    >
+      <TouchableOpacity
+        style={{ marginLeft: 10, marginTop:20}}
+        onPress={() => navigation.navigate('HomeAdmin')}
+      >
+        <Ionicons name='arrow-back-sharp' size={35} />
+      </TouchableOpacity>
+      <View style={{
+        height: "100%"
+      }}>
+        <FlatGrid
+          itemDimension={130}
+          data={dataipa}
+          style={styles.gridView}
+          spacing={10}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => UpdateProduct(item)}
               style={{
-
-                flexDirection: 'row',
                 justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: 15
+                alignItems: 'center'
               }}>
-              <Text style={{
-                fontSize: 17,
-                fontWeight: '600',
-                marginRight: 10
-              }}>{item.price} $</Text>
-              {
-                item.status == "0" ? <Text
-                  style={{
-                    height: 10,
-                    width: 10,
-                    backgroundColor: 'red',
-                    zIndex: 1,
-                    borderRadius: 10
-                  }}>
-                </Text> : <Text
-                  style={{
-                    height: 10,
-                    width: 10,
-                    backgroundColor: 'green',
-                    zIndex: 1,
-                    borderRadius: 10
-                  }}>
-                </Text>
-              }
-            </View>
+              <View style={[styles.itemContainer]}>
+                <Image style={styles.styimage} source={{ uri: item.image }} />
+                <Text style={styles.itemName}>{item.name}</Text>
+              </View>
+              <View
+                style={{
 
-          </TouchableOpacity>
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  marginTop: 15
+                }}>
+                <Text style={{
+                  fontSize: 17,
+                  fontWeight: '600',
+                  marginRight: 10
+                }}>{item.price} $</Text>
+                {
+                  item.status == "0" ? <Text
+                    style={{
+                      height: 10,
+                      width: 10,
+                      backgroundColor: 'red',
+                      zIndex: 1,
+                      borderRadius: 10
+                    }}>
+                  </Text> : <Text
+                    style={{
+                      height: 10,
+                      width: 10,
+                      backgroundColor: 'green',
+                      zIndex: 1,
+                      borderRadius: 10
+                    }}>
+                  </Text>
+                }
+              </View>
 
-        )}      
-      />
+            </TouchableOpacity>
+
+          )}
+        />
+      </View>
     </View>
   )
 }
@@ -93,7 +110,7 @@ const styles = StyleSheet.create({
   gridView: {
     flex: 1,
     backgroundColor: '#EDF6D1',
-    opacity: 0.98
+    opacity: 0.98,
   },
   itemContainer: {
     justifyContent: 'center',

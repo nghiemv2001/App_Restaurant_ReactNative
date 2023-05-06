@@ -22,6 +22,7 @@
     "nodemailer": "^6.9.1",
     "react": "18.1.0",
     "react-native": "0.70.8",
+    "react-native-chart-kit": "^6.12.0",
     "react-native-element-dropdown": "^2.8.2",
     "react-native-element-textinput": "^2.2.0",
     "react-native-gesture-handler": "~2.8.0",
@@ -36,6 +37,7 @@
     "react-native-swipe-list-view": "^3.2.9",
     "react-native-vector-icons": "^9.2.0",
     "react-navigation": "^4.4.4",
+    "react-redux": "^8.0.5",
     "react-swipeable-list": "^1.7.2",
     "utf8": "^3.0.0"
   },

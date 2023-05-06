@@ -9,12 +9,23 @@ const ListProductByCategogy = ({ route, navigation }) => {
   const [dataipa, setDataIPA] = useState([{}]);
   const idCategory = route.params.item._id;
   const dataroute = route.params.route.params.route.params.data
-  const idtable = route.params.route.params.route.params.data.item._id
+  const idtable = route.params.route.params.route.params.data._id
   const [fdata, setFdata] = useState({
+    id_product: "",
     ten_mon: "",
     hinh_mon: "",
     so_luong: "",
     gia: ""
+  })
+  const [dataChef, setdataChef] = useState({
+    id_product :'',
+    name: "",
+    image: "",
+    quantity: "",
+    status: '',
+    second: '',
+    minute: '',
+    hour: ''
   })
   const fetchData = () => {
     fetch(shareVarible.URLink + '/products/' + `${idCategory}`, {
@@ -34,21 +45,23 @@ const ListProductByCategogy = ({ route, navigation }) => {
   }, []);
 
   const sentoBackEnd = (item) => {
-    fdata.ten_mon = item.name;
-    fdata.hinh_mon = item.image;
-    fdata.so_luong = 1;
-    fdata.gia = item.price
-    console.log(fdata)
-    if(fdata.ten_mon == '' || fdata.so_luong ==""){
-      alert ("Data not null")
-    }else{
-      fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
+    //Post Product cheft  
+    const now = new Date();
+    dataChef.id_product = item._id
+    dataChef.name = item.name;
+    dataChef.image = item.image;
+    dataChef.quantity = 1;
+    dataChef.status = 0,
+    dataChef.second = now.getSeconds();
+    dataChef.minute = now.getHours();
+    dataChef.hour = now.getHours();
+    fetch(shareVarible.URLink + '/productcheft/create',
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(fdata)
+        body: JSON.stringify(dataChef)
       }).then(res => res.json()).then(
         data => {
 
@@ -57,13 +70,41 @@ const ListProductByCategogy = ({ route, navigation }) => {
             alert(data.error);
           }
           else {
-            const data = dataroute;
-            navigation.navigate('Bill', {data})
+            console.log("ok111")
           }
         }
       )
+    // Add product in BIll
+    fdata.id_product = item._id
+    fdata.ten_mon = item.name;
+    fdata.hinh_mon = item.image;
+    fdata.so_luong = 1;
+    fdata.gia = item.price
+    if (fdata.ten_mon == '' || fdata.so_luong == "") {
+      alert("Data not null")
+    } else {
+      fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(fdata)
+        }).then(res => res.json()).then(
+          data => {
+
+            if (data.error) {
+              setErrormgs(data.error);
+              alert(data.error);
+            }
+            else {
+              const data = dataroute;
+              navigation.navigate('Bill', { data })
+            }
+          }
+        )
     }
-    
+
   }
 
   return (
@@ -88,21 +129,6 @@ const ListProductByCategogy = ({ route, navigation }) => {
         >
           <Ionicons name='arrow-back-sharp' size={35} />
         </TouchableOpacity>
-        <TouchableOpacity 
-        onPress={() => navigation.navigate('CreateProduct')}
-        >
-          <Image
-            style={{
-              height: '100%',
-              width: 45,
-              marginRight: 15,
-              borderRadius: 60,
-            }}
-            source={img_plus_image}
-
-          />
-        </TouchableOpacity>
-
       </View>
       {
         dataipa.length != undefined ? <FlatGrid
@@ -166,7 +192,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
             textAlign: 'center',
             textAlignVertical: 'center'
           }}>
-            Chưa có sản phẩm loại này ! Bạn có thể tạo một sản phẩm mới!
+            Catalog haven't poduct!
           </Text>
       }
 

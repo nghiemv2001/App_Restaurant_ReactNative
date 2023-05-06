@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React from 'react'
+import React, {useEffect,useState} from 'react'
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import CustomDrawerWaitress from '../../component/CustomDrawerWaitress';
@@ -8,7 +8,10 @@ import CreateCategory from '../category/CreateCategory'
 import ListProduct from '../Product/ListProduct';
 import ListTableAdmin from '../table/ListTableAdmin'
 import ListProductByCategogy from '../Product/ListProductByCategogy';
+import ListInvoice from '../revenue/ListInvoice';
 import CreateProduct from '../Product/CreateProduct';
+import shareVarible from './../../AppContext'
+import ListProductAdmin from '../Chef/ListProductAdmin';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 const Drawer = createDrawerNavigator();
 const HomeAdmin = () => {
@@ -29,21 +32,35 @@ const HomeAdmin = () => {
                 <Ionicons name='restaurant' size={22}/>
             ),
         }}
-      name="Table" component={ListTableAdmin} />
+      name="Table" component={CreateTable} />
       <Drawer.Screen 
        options={{
         drawerIcon: ({color})=>(
             <Ionicons name='fast-food' size={22}/>
         ),
     }}
-      name="Food" component={ListProduct} />
+      name="Food" component={CreateProduct} />
       <Drawer.Screen 
        options={{
         drawerIcon: ({color})=>(
-            <Ionicons name='bar-chart-sharp' size={22}/>
+            <Ionicons name='md-grid' size={22}/>
         ),
     }}
-      name="Sale Goal" component={CreateCategory} />
+      name="Category" component={CreateCategory} />
+      <Drawer.Screen 
+       options={{
+        drawerIcon: ({color})=>(
+            <Ionicons name='newspaper' size={22}/>
+        ),
+    }}
+      name="Invoice" component={ListInvoice} />
+      <Drawer.Screen 
+       options={{
+        drawerIcon: ({color})=>(
+            <Ionicons name='list' size={22}/>
+        ),
+    }}
+      name="Cooking" component={ListProductAdmin} />
     </Drawer.Navigator>       
   );
 }

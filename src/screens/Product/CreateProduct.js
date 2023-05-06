@@ -143,7 +143,7 @@ const CreateProduct = ({navigation}) => {
           }
           else {
             alert('Create food successfully');
-            navigation.navigate('ListProduct');
+            navigation.navigate('HomeAdmin');
           }
         }
       )
@@ -151,18 +151,12 @@ const CreateProduct = ({navigation}) => {
   ///
   return (
     <View style={styles.viewmain}>
-      <Image
-        style={{
-          position: 'absolute',
-          resizeMode: 'stretch',
-          height: 450,
-          width: 280,
-          marginTop: -180,
-          marginLeft: 60
-        }}
-        source={mainpicture}
-      />
-
+      <TouchableOpacity 
+          onPress={() => navigation.navigate('ListProduct')}
+          style={{position : 'absolute', marginLeft : 350}}
+          >
+            <Ionicons name='md-list-outline' size={50} />
+        </TouchableOpacity>
       <View style={styles.containerdropdown}>
         {/* {renderLabel()} */}
         <Dropdown
@@ -238,7 +232,7 @@ const CreateProduct = ({navigation}) => {
       <View style={{
         height: "8%",
         width: '100%',
-        marginTop: 165,
+        marginTop: 175,
         justifyContent: 'space-evenly',
         alignContent: 'center',
         alignItems: 'center',
@@ -255,7 +249,7 @@ const CreateProduct = ({navigation}) => {
       {
           errormgs ? <Text style={{
             position: 'absolute',
-            marginTop: 575,
+            marginTop: 510,
             marginLeft: 130,
             color: 'red'
           }}>
@@ -266,7 +260,7 @@ const CreateProduct = ({navigation}) => {
         <View
           style={{
             flexDirection: 'row',
-            marginTop: 35,
+            marginTop: 50,
             borderWidth: 3,
             borderRadius: 30,
             width: '55%',
@@ -329,7 +323,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginLeft: 95,
     backgroundColor: 'white',
-    marginTop: 350
+    marginTop: 270
   },
   iconimage: {
     height: 40,
@@ -340,12 +334,12 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   containerdropdown: {
-    marginTop: 160,
+    marginTop: 80,
     height: 40,
     width: "70%",
     backgroundColor: 'white',
     borderRadius: 50,
-    marginLeft: 105,
+    marginLeft: 20,
     paddingLeft: 10
   },
 })

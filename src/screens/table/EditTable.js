@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Image } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Image,TouchableOpacity } from 'react-native'
 import React , {useState, useEffect} from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import mainpicture from '../../../assets/mainpicture.png'
@@ -10,6 +10,7 @@ import shareVarible from './../../AppContext'
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { LogBox } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
@@ -17,31 +18,48 @@ LogBox.ignoreLogs([
 
 const EditTable = ({ navigation , route}) => {
 
-    
+    const [dataApiTable, setAtaAPITable] = useState(null)
     const [data, setData] = useState({});
     const [imagesrc, setImage] = useState(null);
     const [errormgs, setErrormgs] = useState(null)
     const [value, setValue] = useState(null);
     const [isFocus, setIsFocus] = useState(false);
+    //get list table 
+    const fetchData = () => {
+      fetch(shareVarible.URLink + '/tables/', {
+       method: 'GET',
+       headers: {
+         'Accept': 'application/json',
+         'Content-Type': 'application/json'
+       }
+     })
+       .then(response => response.json())
+       .then(data => setAtaAPITable(data),
+       )
+       .catch(error => console.log(error));
+   }
+   useEffect(() => {
+    fetchData();
+  }, []);
     // read data object table form screen listable
      const datadropdown = [
-        { label: 'Còn trống', value: '0' },
-        { label: 'Đã đặt', value: '1' },
+      { label: 'emptytable', value: '0' },
+      { label: 'occupied', value: '1' },
+      { label: 'booking', value: '2' },
       ];
-      console.log(route.params.data)
      const getDetails =(type)=>{
-        if(route.params.data.item){
+        if(route.params.item){
           switch(type){
             case "id":
-              return route.params.data.item._id
+              return route.params.item._id
             case "name":
-              return route.params.data.item.name
+              return route.params.item.name
             case "peoples":
-              return route.params.data.item.peoples
+              return route.params.item.peoples
             case "status":
-              return route.params.data.item.status
+              return route.params.item.status
             case "image":
-              return route.params.data.item.image
+              return route.params.item.image
           }
         }
         return ""
@@ -82,7 +100,6 @@ const EditTable = ({ navigation , route}) => {
     else {
       setErrormgs(null);
     }
-    console.log("this data test : ", fdata)
     const updates =  {
       name : fdata.name,
       peoples : fdata.peoples,
@@ -103,7 +120,10 @@ const EditTable = ({ navigation , route}) => {
         }
         else {
           alert('Edit Table successfully');
-          navigation.navigate('ListTable');
+          fetchData()
+          console.log(dataApiTable)
+          navigation.navigate('HomeAdmin');
+          // navigation.navigate('ListTableAdmin');
         }
       }
     )
@@ -174,6 +194,12 @@ const EditTable = ({ navigation , route}) => {
   return (
     <View
       style={styles.View1}>
+        <TouchableOpacity
+        style={{ marginLeft: 10, }}
+        onPress={() => navigation.navigate('HomeAdmin')}
+      >
+        <Ionicons name='arrow-back-sharp' size={35} />
+      </TouchableOpacity>
       <Image
         style={styles.stylepicturemain}
         source={mainpicture} />
@@ -349,7 +375,7 @@ const styles = StyleSheet.create({
       height: 200,
       width: 200,
       borderWidth: 10,
-      marginTop: -60,
+      marginTop: -80,
       marginLeft: 100
     },
     View1: {
