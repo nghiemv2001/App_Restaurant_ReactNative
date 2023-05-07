@@ -13,9 +13,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import * as ImagePicker from 'expo-image-picker';
 const ChangProfile = ({navigation, route}) => {
-    console.log(route)
     const getDetails = (type) => {
         if (route.params.dataAPI) {
             switch (type) {
@@ -35,6 +34,8 @@ const ChangProfile = ({navigation, route}) => {
                     return route.params.dataAPI.image
                 case "birthday":
                     return route.params.dataAPI.birthday
+                case "password":
+                    return route.params.dataAPI.password
             }
         }
         return ""
@@ -48,18 +49,20 @@ const ChangProfile = ({navigation, route}) => {
         image: getDetails("image"),
         keycode: getDetails("keycode"),
         role: getDetails("role"),
+        password: getDetails("password")
     })
-    console.log(fdata)
+  
 
     const [date, setDate] = useState(new Date());
     const [show, setShow] = useState(false);
-    
+    const [image, setImage] = useState(null);
     const onChange = (event, selectedDate) => {
       const currentDate = selectedDate || date;
       setShow(Platform.OS === 'ios');
       setDate(currentDate);
-      const dateStr = date.toISOString().substring(0, 10);
+      const dateStr = currentDate.toISOString().substring(0, 10);
       setFdata({ ...fdata, birthday: dateStr})
+      
     };
     const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
     const showDatepicker = () => {
@@ -67,17 +70,93 @@ const ChangProfile = ({navigation, route}) => {
     };
 
     //changeprofile
-    const SentoBackend =()=>{
-        console.log(fdata)
+    const [ipemail, SetIpEmail] = useState(null);
+    const SentoBackend =async()=>{
+      if(fdata.name ==  ""){
+        alert('Khong duoc bo trong name')
+        return;
+      }
+      if (fdata.phone.length != 0) {
+        for (const item of fdata.phone) {
+          if (item != '0' && item != '1' && item != '2' && item != '3' && item != '4' && item != '5' && item != '6' && item != '7' && item != '8' && item != '9' || (fdata.phone.length < 9 || fdata.phone.length > 11)) {
+            alert('Khong duoc bo trong phone')
+            return;
+          }
+        }
+      }
+      const updates =  {
+        name : fdata.name,
+        email : fdata.email ,
+        phone : fdata.phone,
+        password : fdata.password,
+        keycode : fdata.keycode,
+        role : fdata.role,
+        image : fdata.image        
+      };
+      const response = await fetch(shareVarible.URLink + '/user/update/'+`${fdata.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      }).then(res => res.json()).then(
+        data => {
+          if (data.error) {
+            setErrormgs(data.error);
+            alert(data.error);
+          }
+          else {
+            alert('Successfully');
+            navigation.navigate('Profile',{data: route.params.dataAPI});
+            // navigation.navigate('ListTableAdmin');
+          }
+        }
+      )
     }
+    //upload image from drive to cloudinary 
+  const handleUpload = (image) => {
+    const data = new FormData()
+    data.append('file', image)
+    data.append('upload_preset', 'restaurant')
+    data.append("cloud_name", "dmsgfvp0y")
+    fetch("https://api.cloudinary.com/v1_1/dmsgfvp0y/upload", {
+      method: "post",
+      body: data
+    }).then(res => res.json()).
+      then(data => {
+        setImage(data.secure_url)
+        setFdata({ ...fdata, image: data.secure_url })
+      }).catch(err => {
+        Alert.alert("An Error Occured While Uploading")
+        console.log(err)
+      })
+  }
+    //take image from libary
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      let newfile = {
+        uri: result.assets[0].uri,
+        type: `test/${result.assets[0].uri.split(".")[1]}`,
+        name: `test.${result.assets[0].uri.split(".")[1]}`
+      }
+      handleUpload(newfile)
+      setImage(result.assets[0].uri);
+    }
+    else {
+      setImage(null);
+    }
+  };
     return (
         <View style={styles.V1}>
-          <TouchableOpacity style={{zIndex: 1}}>
+          <TouchableOpacity  onPress={pickImage} style={{zIndex: 1}}>
             {
-
-            }
-            {
-        fdata.image == ""?
+          fdata.image == ""?
         <Image
           style={{
             position: 'absolute',
@@ -189,7 +268,7 @@ const ChangProfile = ({navigation, route}) => {
             </TouchableOpacity>
            
             <TouchableOpacity
-            onPress={() => navigation.navigate('Profile')}
+            onPress={() => navigation.navigate('Profile',{data: route.params.dataAPI})}
           style={{
             zIndex: 1,
           }}>

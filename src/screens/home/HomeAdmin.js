@@ -12,6 +12,7 @@ import ListInvoice from '../revenue/ListInvoice';
 import CreateProduct from '../Product/CreateProduct';
 import shareVarible from './../../AppContext'
 import ListProductAdmin from '../Chef/ListProductAdmin';
+import ListAccount from '../auth/ListAccount';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 const Drawer = createDrawerNavigator();
 const HomeAdmin = () => {
@@ -61,6 +62,13 @@ const HomeAdmin = () => {
         ),
     }}
       name="Cooking" component={ListProductAdmin} />
+      <Drawer.Screen 
+       options={{
+        drawerIcon: ({color})=>(
+            <Ionicons name='people' size={22}/>
+        ),
+    }}
+      name="List Account" component={ListAccount} />
     </Drawer.Navigator>       
   );
 }

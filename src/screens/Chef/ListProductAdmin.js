@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { height } from 'deprecated-react-native-prop-types/DeprecatedImagePropType'
 const ListProductStep1 = ({navigation}) => {
     const [dataproduct, SetDataProduct] = useState(null)
     const [dataproduct2, SetDataProduct2] = useState({
@@ -61,7 +60,6 @@ const ListProductStep1 = ({navigation}) => {
 
         )
     })
-console.log(dataproduct)
     return (
         <View style={{height : '100%'}}>
             

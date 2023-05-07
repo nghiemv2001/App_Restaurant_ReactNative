@@ -82,7 +82,14 @@ const ListProductByCategogy = ({ route, navigation }) => {
     fdata.gia = item.price
     if (fdata.ten_mon == '' || fdata.so_luong == "") {
       alert("Data not null")
-    } else {
+      return ;
+    } 
+    if(item.status == 0){
+      alert("Out of sock")
+      return;
+    }
+
+    else {
       fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
         {
           method: 'POST',

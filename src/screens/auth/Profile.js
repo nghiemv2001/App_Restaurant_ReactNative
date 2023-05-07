@@ -10,15 +10,13 @@ import { TextInput } from 'react-native-element-textinput';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import shareVarible from './../../AppContext'
+import { useFocusEffect } from '@react-navigation/native'
 const Profile = ({navigation}) => {
-
   const route = useRoute();
-  const data = route.params?.data;
+  const data = route.params.data.email;
+  console.log(data)
   //take data API
   const [dataAPI, setDataAPI] = useState([]);
-  useEffect(() => {
-    fetchData();
-  }, []);
   const storeData = async (key, value) => {
     try {
       await AsyncStorage.setItem(key, value);
@@ -27,19 +25,23 @@ const Profile = ({navigation}) => {
     }
   }
   const fetchData = async () => {
-    const token = await AsyncStorage.getItem('token');
-    const requestOptions = {
+    fetch(shareVarible.URLink + '/user/' + `${data}`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    fetch(shareVarible.URLink + '/user/' + `${data}`, requestOptions)
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
       .then(response => response.json())
-      .then(data => setDataAPI(data))
+      .then(data => setDataAPI(data),
+      )
       .catch(error => console.log(error));
   };
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [])
+  );
   //Function change home 
   const changeHome=()=>{
     if(dataAPI.role == '0'){
@@ -173,32 +175,7 @@ const Profile = ({navigation}) => {
         <Text style={styles.stextemail}>
           01/01/2001
         </Text>
-        <TouchableOpacity
-          style={{
-            zIndex: 1,
-          }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 20,
-              borderWidth: 3,
-              borderRadius: 30,
-              justifyContent: 'center',
-              width: '80%',
-              marginLeft: 35,
-              backgroundColor: 'black',
 
-            }}
-          >
-            <Text style={styles.styleChangPassword}>
-              ChangPassword
-            </Text>
-            <Image
-              style={styles.ImagePassword}
-              source={changepassword}
-            />
-          </View>
-        </TouchableOpacity>
         <TouchableOpacity
           style={{
             zIndex: 1,
@@ -206,7 +183,7 @@ const Profile = ({navigation}) => {
           <View
             style={{
               flexDirection: 'row',
-              marginTop: 20,
+              marginTop: 50,
               borderWidth: 3,
               borderRadius: 30,
               justifyContent: 'center',

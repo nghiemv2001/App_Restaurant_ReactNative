@@ -18,6 +18,7 @@ import Signin from './src/screens/auth/Signin';
 import Signup from './src/screens/auth/Signup';
 import Profile from './src/screens/auth/Profile';
 import ChangProfile from './src/screens/auth/ChangProfile';
+import ListAccount from './src/screens/auth/ListAccount';
 //table
 import CreateTable from './src/screens/table/CreateTable';
 import EditTable from './src/screens/table/EditTable';
@@ -154,6 +155,9 @@ export default function App() {
           headerShown: false
         }} />
         <Stack.Screen name="ChangProfile" component={ChangProfile} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="ListAccount" component={ListAccount} options={{
           headerShown: false
         }} />
        </Stack.Navigator>

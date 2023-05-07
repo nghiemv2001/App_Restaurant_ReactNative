@@ -31,7 +31,7 @@ const Signup = ({ navigation }) => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
   const datadropdown = [
-    { label: 'Manager', value: '0' },
+    { label: 'Admin', value: '0' },
     { label: 'Waitress', value: '1' },
     { label: 'Chef', value: '3' },
   ];

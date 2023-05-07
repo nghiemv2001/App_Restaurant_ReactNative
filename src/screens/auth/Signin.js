@@ -115,7 +115,7 @@ const Signin = ({ navigation }) => {
             }
             else {
               alert('Login successfully');
-              navigation.navigate('Profile',{ data: fdata.email });
+              navigation.navigate('Profile',{ data : fdata});
             }
           }
         )
