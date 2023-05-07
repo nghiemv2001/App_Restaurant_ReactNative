@@ -7,59 +7,182 @@ import iconCamera from '../../../assets/iccamera.png'
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons'
-
-const EditProduct = ({ navigation , route}) => {
+import uploadimge from '../../../assets/2.png'
+import shareVarible from './../../AppContext'
+import * as ImagePicker from 'expo-image-picker';
+import RadioForm, { RadioButton, RadioButtonInput, RadioButtonLabel } from 'react-native-simple-radio-button';
+const EditProduct = ({ navigation, route }) => {
+    const [isFocus, setIsFocus] = useState(false);
+    const [isFocus1, setIsFocus2] = useState(false);
     const [valuename, setValueName] = useState([]);
     const [valueprice, setValuePrice] = useState([]);
-    const [isFocus, setIsFocus] = useState(false);
     const [value, setValue] = useState(null);
+    const [data, setData] = useState(null)
     const [dataapi, SetDataApi] = useState([]);
     const [image, setImage] = useState(null);
     const [errormgs, setErrormgs] = useState(null)
-    // read data object table form screen listable
-    
-    console.log(route.params.data)
-    const getDetails =(type)=>{
-        if(route.params.data.items){
-          switch(type){
-            case "id":
-              return route.params.data.item._id
-            case "name":
-              return route.params.data.item.name
-            case "peoples":
-              return route.params.data.item.price
-          }
+    const [setRadio, SetRadio] = useState(null)
+    //get data from route
+    const getDetails = (type) => {
+        if (route.params.item) {
+            switch (type) {
+                case "id":
+                    return route.params.item._id
+                case "name":
+                    return route.params.item.name
+                case "status":
+                    return route.params.item.status
+                case "category":
+                    return route.params.item.category
+                case "price":
+                    return route.params.item.price
+                case "image":
+                    return route.params.item.image
+            }
         }
         return ""
-      }
-    //   const [fdata, setFdata] = useState({
-    //     id : getDetails("id"),
-    //     name : getDetails("name"),
-    //     peoples :getDetails("price"),
-    //   })
-
-    //set dropdown
-    const dropdown = [
-        { label: 'Còn trống', value: '0' },
-        { label: 'Đã đặt', value: '1' },
+    }
+    //set fdata
+    const [fdata, setFdata] = useState({
+        id: getDetails("id"),
+        name: getDetails("name"),
+        status: getDetails("status"),
+        category: getDetails("category"),
+        price: getDetails("price"),
+        image: getDetails("image"),
+    })
+    // take list category 
+    const fetchData = () => {
+        fetch(shareVarible.URLink + '/category/', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(response => response.json())
+            .then(data => SetDataApi(data),
+            )
+            .catch(error => console.log(error));
+    };
+    useEffect(() => {
+        fetchData();
+    }, []);
+    //
+    //radio data
+    var radio_props = [
+        { label: 'available', value: 1 },
+        { label: 'inavailable', value: 0 }
     ];
+    //upload image from drive to cloudinary 
+  const handleUpload = (image) => {
+    const data = new FormData()
+    data.append('file', image)
+    data.append('upload_preset', 'restaurant')
+    data.append("cloud_name", "dmsgfvp0y")
+    fetch("https://api.cloudinary.com/v1_1/dmsgfvp0y/upload", {
+      method: "post",
+      body: data
+    }).then(res => res.json()).
+      then(data => {
+        setImage(data.secure_url)
+        setFdata({ ...fdata, image: data.secure_url })
+      }).catch(err => {
+        Alert.alert("An Error Occured While Uploading")
+        console.log(err)
+      })
+  }
+    //take image from camera
+    const takeImage = async () => {
+        let result = await ImagePicker.launchCameraAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+        if (!result.canceled) {
+            let newfile = {
+                uri: result.assets[0].uri,
+                type: `test/${result.assets[0].uri.split(".")[1]}`,
+                name: `test.${result.assets[0].uri.split(".")[1]}`
+            }
+            handleUpload(newfile)
+            setImage(result.assets[0].uri);
+        }
+        else {
+            setImage(null);
+        }
+    };
 
+    //take image from libary
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+        if (!result.canceled) {
+            let newfile = {
+                uri: result.assets[0].uri,
+                type: `test/${result.assets[0].uri.split(".")[1]}`,
+                name: `test.${result.assets[0].uri.split(".")[1]}`
+            }
+            handleUpload(newfile)
+            setImage(result.assets[0].uri);
+        }
+        else {
+            setImage(null);
+        }
+    };
+    //sentobackend
+    const SendtoBackend=async()=>{
+        if(fdata.category ==''){
+            setErrormgs("Warning ! Category not null?")
+            return;
+          }
+          if (fdata.name == '' || fdata.price == '') {
+            setErrormgs('All filed are required!!!!');
+            return;
+          }
+          if (fdata.image == '') {
+            setErrormgs('Image not foud!!!')
+            return;
+          }
+           const updates =  {
+            name : fdata.name,
+            price : fdata.price,
+            status : fdata.status,
+            image : fdata.image,
+            category : fdata.category
+          };
+          const response = await fetch(shareVarible.URLink + '/product/update/'+`${fdata.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updates),
+          }).then(res => res.json()).then(
+            data => {
+              if (data.error) {
+                setErrormgs(data.error);
+                alert(data.error);
+              }
+              else {
+                alert('Edit Food successfully');
+                fetchData()
+                navigation.navigate('HomeAdmin');
+              }
+            }
+          )
+    }
     return (
         <View style={styles.viewmain}>
             <Image
-                style={{
-                    position: 'absolute',
-                    resizeMode: 'stretch',
-                    height: 450,
-                    width: 280,
-                    marginTop: -180,
-                    marginLeft: 60
-                }}
+                style={styles.stylemainpicture}
                 source={mainpicture}
             />
-
-            <View style={styles.containerdropdown}>
-                {/* {renderLabel()} */}
+            <View style={{ flexDirection: 'row', marginTop: 150, marginLeft: 20 }}>
                 <Dropdown
                     style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
                     placeholderStyle={styles.placeholderStyle}
@@ -68,6 +191,7 @@ const EditProduct = ({ navigation , route}) => {
                     iconStyle={styles.iconStyle}
                     data={dataapi}
                     search
+                    value={fdata.category}
                     maxHeight={300}
                     labelField="name"
                     valueField="name"
@@ -78,7 +202,6 @@ const EditProduct = ({ navigation , route}) => {
                     onBlur={() => setIsFocus(false)}
                     onChange={item => {
                         setValue(item.name);
-
                         setFdata({ ...fdata, category: item._id })
                         setIsFocus(false);
                     }}
@@ -93,96 +216,70 @@ const EditProduct = ({ navigation , route}) => {
                         />
                     )} />
             </View>
-            <View style={styles.container}>
-                <AutoComplete
-                    value={valuename}
-                    style={styles.input}
-                    inputStyle={styles.inputStyle}
-                    labelStyle={styles.labelStyle}
-                    placeholderStyle={styles.placeholderStyle}
-                    textErrorStyle={styles.textErrorStyle}
-                    label="Name"
-                    placeholder="name of food..."
-                    placeholderTextColor="gray"
-                    onChangeText={e => {
-                        setValueName(e);
-                        setFdata({ ...fdata, name: e })
-                    }}
-                />
-            </View>
-            <View style={styles.containerprice}>
-                <AutoComplete
-                    value={valueprice}
+            <View style={{ marginTop: 30, alignItems: 'center' }}>
+                <TextInput
+                      value={`${fdata.name}`}
+                    style={styles.TIPpeoples}
+                    //   keyboardType='number-pad'
+                    onPressIn={() => setErrormgs(null)}
+                    onChangeText={(text) => setFdata({ ...fdata, name: text })}
+                    placeholder='Enter name food'>
+                </TextInput>
+                <TextInput
+                     value={`${fdata.price}`}  
+                    style={styles.TIPpeoples}
+                    
                     keyboardType='number-pad'
-                    style={styles.input}
-                    inputStyle={styles.inputStyle}
-                    labelStyle={styles.labelStyle}
-                    placeholderStyle={styles.placeholderStyle}
-                    textErrorStyle={styles.textErrorStyle}
-                    label="Price"
-                    placeholder="price of food..."
-                    placeholderTextColor="gray"
-                    onChangeText={e => {
-                        setValuePrice(e);
-                        setFdata({ ...fdata, price: e })
+                    onPressIn={() => setErrormgs(null)}
+                    onChangeText={(text) => setFdata({ ...fdata, price: text })}
+                    placeholder='Enter price food'>
+                </TextInput>
+            </View>
+            <View style={{ flexDirection: 'row' }}>
+                <Image source={{ uri: fdata.image }} style={styles.uploadimge} />
+                {/* {image && <Image source={{ uri: image }} style={styles.uploadimge} />} */}
+                <RadioForm
+                    style={{ marginLeft: 290, marginTop: 70 }}
+                    radio_props={radio_props}
+                    onPress={(value) => {
+                        setFdata({ ...fdata, status: value })
                     }}
                 />
             </View>
-            <Image source={{ uri: image }} style={styles.uploadimge} />
-            {/* {image && <Image source={{ uri: image }} style={styles.uploadimge} />} */}
-            <View style={{
-                height: "8%",
-                width: '100%',
-                marginTop: 135,
-                justifyContent: 'space-evenly',
-                alignContent: 'center',
-                alignItems: 'center',
-                flexDirection: 'row',
-                marginLeft : -20
-            }}>
-                <TouchableOpacity
-                //   onPress={takeImage}
-                >
+            <View style={{ flexDirection: 'row', marginTop : 0, justifyContent : 'space-evenly', marginLeft : -100, paddingHorizontal : 50 }}>
+                <TouchableOpacity onPress={takeImage}>
+                    <Image source={iconCamera} style={styles.iconimage} />
                 </TouchableOpacity>
-                <TouchableOpacity
-                //   onPress={pickImage}
-                >
+                <TouchableOpacity onPress={pickImage}>
                     <Image source={iconImage} style={styles.iconimage} />
                 </TouchableOpacity>
+
             </View>
-            {
-                errormgs ? <Text style={{
-                    position: 'absolute',
-                    marginTop: 575,
-                    marginLeft: 130,
-                    color: 'red'
-                }}>
-                    {errormgs}</Text> : null
-            }
+            <TouchableOpacity 
+            onPress={SendtoBackend}
+            >
+          <View
+            style={{
+              flexDirection: 'row',
+              marginTop: 90,
+              borderWidth: 1,
+              borderRadius: 30,
+              width: 150,
+              backgroundColor: '#fff',
+              height: 55,
+              marginLeft: 144,
+              backgroundColor: '#6AF597',
+              justifyContent: 'center',
+              alignItems: 'center',
+              position : 'absolute'
+            }}
+          >
+            <Ionicons name='md-checkmark-sharp' size={31}
+            />
+          </View>
+        </TouchableOpacity>
 
-            <TouchableOpacity >
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        marginTop: 90,
-                        borderWidth: 3,
-                        borderRadius: 30,
-                        width: '55%',
-                        backgroundColor: '#fff',
-                        height: 55,
-                        marginLeft: 94,
-                        backgroundColor: '#6AF597',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        position : 'absolute'
-                    }}
-                >
-                    <Ionicons name='md-checkmark-sharp' size={31}
-                        // onPress={SendtoBackend} 
-                        />
-                </View>
 
-            </TouchableOpacity>
         </View>
     )
 }
@@ -193,13 +290,25 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#EDF6D8",
     },
+    stylemainpicture: {
+        position: 'absolute',
+        resizeMode: 'stretch',
+        height: 450,
+        width: 280,
+        marginTop: -180,
+        marginLeft: 60
+    },
     container: {
         padding: 16,
-        marginTop: 0
+        marginTop: 40,
+        width: '90%',
+        marginLeft: 10
     },
     containerprice: {
         padding: 16,
-        marginTop: -20
+        marginTop: -20,
+        width: '90%',
+        marginLeft: 10
     },
     input: {
         height: 55,
@@ -221,14 +330,14 @@ const styles = StyleSheet.create({
     textErrorStyle: { fontSize: 16 },
     uploadimge: {
         position: 'absolute',
-        height: 200,
+        height: 170,
         width: 220,
-        borderRadius: 100,
+        borderRadius: 50,
         borderColor: 'black',
         borderWidth: 1,
-        marginLeft: 95,
+        marginLeft: 45,
         backgroundColor: 'white',
-        marginTop: 350
+        marginTop: 20
     },
     iconimage: {
         height: 40,
@@ -238,13 +347,21 @@ const styles = StyleSheet.create({
         zIndex: 1,
         borderRadius: 30
     },
-    containerdropdown: {
-        marginTop: 160,
+    dropdown: {
         height: 40,
-        width: "70%",
+        width: 180,
         backgroundColor: 'white',
         borderRadius: 50,
-        marginLeft: 105,
-        paddingLeft: 10
+        marginLeft: 150
+    },
+    TIPpeoples: {
+        height: 40,
+        width: 250,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        marginTop: -10,
+        marginBottom: 20,
+        paddingLeft: 5,
+        borderWidth: 1,
     },
 })

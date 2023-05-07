@@ -177,7 +177,6 @@ const CreateProduct = ({navigation}) => {
           onBlur={() => setIsFocus(false)}
           onChange={item => {
             setValue(item.name);
-          
             setFdata({ ...fdata, category: item._id })
             setIsFocus(false);
           }}

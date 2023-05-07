@@ -53,7 +53,7 @@ const ListProduct = ({ navigation }) => {
           spacing={10}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() => UpdateProduct(item)}
+              onPress={() => navigation.navigate('EditProduct',{item})}
               style={{
                 justifyContent: 'center',
                 alignItems: 'center'

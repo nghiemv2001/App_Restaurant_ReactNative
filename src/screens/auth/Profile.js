@@ -40,24 +40,38 @@ const Profile = ({navigation}) => {
       .then(data => setDataAPI(data))
       .catch(error => console.log(error));
   };
-
   //Function change home 
   const changeHome=()=>{
-    if(dataAPI.role == '1'){
+    if(dataAPI.role == '0'){
       navigation.navigate('HomeAdmin');
     }
-    else if(dataAPI.role =='2'){
+    else if(dataAPI.role =='1'){
       navigation.navigate('HomeWaitress');
     }
-    else if (dataAPI.role =='3'){
+    else if (dataAPI.role =='2'){
       navigation.navigate('HomeWaitress');
     }
   }
 
-
+  //change Profile
   return (
     <View style={styles.V1}>
       <View>
+      <Image
+      style={{
+        position: 'absolute',
+        height: 150,
+        width: 150,
+        zIndex: 1,
+        backgroundColor: 'gray',
+        marginLeft: 120,
+        borderRadius: 100,
+        marginTop: 40
+      }}
+      source={user_profile}
+      />
+      {
+        dataAPI.image == ""?
         <Image
           style={{
             position: 'absolute',
@@ -70,7 +84,22 @@ const Profile = ({navigation}) => {
             marginTop: 40
           }}
           source={user_profile}
-        />
+        /> :
+        <Image
+        style={{
+          position: 'absolute',
+          height: 150,
+          width: 150,
+          zIndex: 1,
+          backgroundColor: 'gray',
+          marginLeft: 120,
+          borderRadius: 100,
+          marginTop: 40
+        }}
+        source={{uri: dataAPI.image}}
+      /> 
+      }
+        
         <TouchableOpacity
         onPress={() => changeHome()}
         style={{
@@ -93,6 +122,7 @@ const Profile = ({navigation}) => {
         </TouchableOpacity>
          
         <TouchableOpacity
+         onPress={() => navigation.navigate('ChangProfile',{dataAPI})}
           style={{
             zIndex: 1,
           }}>
@@ -139,7 +169,7 @@ const Profile = ({navigation}) => {
         <Text style={styles.stextemail}>
           {dataAPI.phone}
         </Text>
-        <Text style={styles.slableemail}>Birth</Text>
+        <Text style={styles.slableemail}>Birthday</Text>
         <Text style={styles.stextemail}>
           01/01/2001
         </Text>

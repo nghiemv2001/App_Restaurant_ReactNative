@@ -84,6 +84,20 @@ const ListInvoice = ({navigation}) => {
                 keyExtractor={item => item._id}
 
             />
+             <TouchableOpacity
+                style={{
+                    position : 'absolute',
+                    zIndex: 1,
+                    justifyContent: 'flex-end',
+                    alignItems : 'center',
+                    marginTop : 500,
+                    marginLeft : 170
+                    
+                }}
+                onPress={() => navigation.navigate('ChartofInvoice', {datalistinvoice})}
+            >
+                <Ionicons name='pie-chart-sharp' size={75} />
+            </TouchableOpacity>
         </View>
     )
 }

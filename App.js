@@ -17,6 +17,7 @@ import ForgotPassword from './src/screens/auth/ForgotPassword';
 import Signin from './src/screens/auth/Signin';
 import Signup from './src/screens/auth/Signup';
 import Profile from './src/screens/auth/Profile';
+import ChangProfile from './src/screens/auth/ChangProfile';
 //table
 import CreateTable from './src/screens/table/CreateTable';
 import EditTable from './src/screens/table/EditTable';
@@ -56,15 +57,19 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-      <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
+      <Stack.Screen name="Signin" component={Signin} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
+          headerShown: false
+        }} /> 
+        <Stack.Screen name="HomeChef" component={HomeChef} options={{
           headerShown: false
         }} /> 
         <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
           headerShown: false
-        }} />
-        <Stack.Screen name="HomeChef" component={HomeChef} options={{
-          headerShown: false
         }} />  
+        
         <Stack.Screen name ="CreateProduct" component={CreateProduct} options={{
         headerShown : false
         }}/>
@@ -90,9 +95,7 @@ export default function App() {
         <Stack.Screen name ="EditProduct" component={EditProduct} options={{
         headerShown : false
         }}/>
-        <Stack.Screen name="Signin" component={Signin} options={{
-          headerShown: false
-        }} />
+        
         <Stack.Screen name="Profile" component={Profile} options={{
           headerShown: false
         }} />
@@ -148,6 +151,9 @@ export default function App() {
           headerShown: false
         }} />
         <Stack.Screen name="ChartofInvoice" component={ChartofInvoice} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="ChangProfile" component={ChangProfile} options={{
           headerShown: false
         }} />
        </Stack.Navigator>

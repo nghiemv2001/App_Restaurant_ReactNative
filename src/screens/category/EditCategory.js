@@ -129,7 +129,7 @@ const EditTableBackEnd=async()=>{
       }
       else {
         alert('Edit Categor successfully');
-        navigation.navigate('CreateCategory');
+        navigation.navigate('HomeAdmin');
         // navigation.navigate('HomeAdmin');
       }
     }
@@ -138,8 +138,15 @@ const EditTableBackEnd=async()=>{
   return (
     <View>
        <View style={styles.v1}>
+        
       {/* View input name , descrition , image category */}
       <View style={styles.V11}>
+      <TouchableOpacity
+        style={{ marginLeft: 10, marginTop: 20 }}
+        onPress={() => navigation.navigate('HomeAdmin')}
+      >
+        <Ionicons name='arrow-back-sharp' size={35} />
+      </TouchableOpacity>
         <TextInput
           value={fdata.name}
           onPressIn={() => setErrormgs(null)}
@@ -210,7 +217,7 @@ const EditTableBackEnd=async()=>{
           <View
             style={{
               flexDirection: 'row',
-              marginTop: 520,
+              marginTop: 500,
               borderWidth: 1,
               borderRadius: 100,
               width: 100,
