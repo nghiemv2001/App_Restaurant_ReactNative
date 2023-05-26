@@ -80,7 +80,7 @@ const ListProduct = ({ navigation }) => {
                     style={{
                       height: 10,
                       width: 10,
-                      backgroundColor: 'red',
+                      backgroundColor: 'green',
                       zIndex: 1,
                       borderRadius: 10
                     }}>
@@ -88,7 +88,7 @@ const ListProduct = ({ navigation }) => {
                     style={{
                       height: 10,
                       width: 10,
-                      backgroundColor: 'green',
+                      backgroundColor: 'red',
                       zIndex: 1,
                       borderRadius: 10
                     }}>

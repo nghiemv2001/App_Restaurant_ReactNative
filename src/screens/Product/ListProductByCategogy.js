@@ -70,7 +70,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
             alert(data.error);
           }
           else {
-            console.log("ok111")
+            
           }
         }
       )
@@ -84,7 +84,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
       alert("Data not null")
       return ;
     } 
-    if(item.status == 0){
+    if(item.status == 1){
       alert("Out of sock")
       return;
     }
@@ -173,7 +173,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
                     style={{
                       height: 10,
                       width: 10,
-                      backgroundColor: 'red',
+                      backgroundColor: 'green',
                       zIndex: 1,
                       borderRadius: 10
                     }}>
@@ -181,7 +181,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
                     style={{
                       height: 10,
                       width: 10,
-                      backgroundColor: 'green',
+                      backgroundColor: 'red',
                       zIndex: 1,
                       borderRadius: 10
                     }}>
@@ -199,7 +199,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
             textAlign: 'center',
             textAlignVertical: 'center'
           }}>
-            Catalog haven't poduct!
+            Out of sock !
           </Text>
       }
 

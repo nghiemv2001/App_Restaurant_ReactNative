@@ -14,7 +14,6 @@ import { useFocusEffect } from '@react-navigation/native'
 const Profile = ({navigation}) => {
   const route = useRoute();
   const data = route.params.data.email;
-  console.log(data)
   //take data API
   const [dataAPI, setDataAPI] = useState([]);
   const storeData = async (key, value) => {
@@ -50,8 +49,8 @@ const Profile = ({navigation}) => {
     else if(dataAPI.role =='1'){
       navigation.navigate('HomeWaitress');
     }
-    else if (dataAPI.role =='2'){
-      navigation.navigate('HomeWaitress');
+    else if (dataAPI.role =='3'){
+      navigation.navigate('HomeChef');
     }
   }
 
@@ -173,10 +172,11 @@ const Profile = ({navigation}) => {
         </Text>
         <Text style={styles.slableemail}>Birthday</Text>
         <Text style={styles.stextemail}>
-          01/01/2001
+        {dataAPI.birthday}
         </Text>
 
         <TouchableOpacity
+        onPress={() => navigation.navigate('Signin')}
           style={{
             zIndex: 1,
           }}>

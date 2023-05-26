@@ -13,10 +13,10 @@ const ChartofInvoice = ({ navigation, route }) => {
   const totalArray = dataChart.datalistinvoice.map((item) => item.total);
   const dayArray = dataChart.datalistinvoice.map((item) => (item.day));
   const dayMonthArray = dataChart.datalistinvoice.map((item) => ({ day: item.day, month: item.month }));
-  const NewArryMonth = dayMonthArray.map(({ day, month }) => `${day}/${month}`);
+  const NewArryMonth = dayMonthArray.map(({ day, month }) => `${day}/${month+1}`);
   console.log(NewArryMonth)
   const data = {
-    labels: NewArryMonth,
+    labels: dayArray,
     datasets: [
       {
         data: totalArray,

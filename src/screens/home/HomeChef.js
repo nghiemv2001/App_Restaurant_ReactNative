@@ -25,21 +25,21 @@ const HomeChef = () => {
                 <Ionicons name='md-list' size={22}/>
             ),
         }}
-      name="List Step 1" component={ListProductStep1} />
+      name="List raw food" component={ListProductStep1} />
       <Drawer.Screen 
         options={{
             drawerIcon: ({color})=>(
                 <Ionicons name='md-list-outline' size={22}/>
             ),
         }}
-      name="List Step 2" component={ListProductStep2} />
+      name="List cooking in progress" component={ListProductStep2} />
       <Drawer.Screen 
         options={{
             drawerIcon: ({color})=>(
                 <Ionicons name='md-list-sharp' size={22}/>
             ),
         }}
-      name="List Step 3" component={ListProductStep3} />
+      name="List cooked dishes" component={ListProductStep3} />
     </Drawer.Navigator>  
     
   )

@@ -43,6 +43,7 @@ const CreateProduct = ({navigation}) => {
       .then(data => SetDataApi(data),
       )
       .catch(error => console.log(error));
+      
   };
   useEffect(() => {
     fetchData();

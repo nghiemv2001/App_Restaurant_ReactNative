@@ -48,7 +48,7 @@ const BillAdmin = ({navigation, route}) => {
 };
 //CheckCard
 const CheckCard=()=>{
-  Alert.alert('Check', 'Check Card', [
+  Alert.alert('Check', 'Pay for this table, right?', [
     {
       text: 'Cancel',
       onPress: () => console.log('Cancel Pressed'),
@@ -59,7 +59,7 @@ const CheckCard=()=>{
 }
 //CheckCash
 const CheckCash=()=>{
-  Alert.alert('Check', 'Check Cash', [
+  Alert.alert('Check', 'Pay for this table, right?', [
     {
       text: 'Cancel',
       onPress: () => console.log('Cancel Pressed'),
@@ -110,7 +110,7 @@ const CreateInvoice=async(item)=>{
       body: JSON.stringify({ 
         name : dataipa.ten_ban_an, 
         total :total, 
-        day : now.getDay(), 
+        day : now.getDate(), 
         month : now.getMonth(), 
         minute : now.getMinutes(),
         hour : now .getHours(),
@@ -124,7 +124,7 @@ const CreateInvoice=async(item)=>{
           alert(data.error);
         }
         else {
-          console.log("ok")
+          
         }
       }
     )

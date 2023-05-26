@@ -54,7 +54,7 @@ const Bill = ({ navigation, route }) => {
     const dataproductchef1 = dataproductchef.find(p => p.id_product === item.id_product);
     console.log(dataproductchef1.status)
     if(dataproductchef1.status !== 0){
-      alert("Bep da che bien kh the xoa ");
+      alert("The cooked dish cannot be deleted!!!");
     }
     else{
       fetch(shareVarible.URLink + '/monan/delete/'+`${item._id}`, {

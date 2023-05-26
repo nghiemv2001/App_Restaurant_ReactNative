@@ -91,7 +91,8 @@ const ChangProfile = ({navigation, route}) => {
         password : fdata.password,
         keycode : fdata.keycode,
         role : fdata.role,
-        image : fdata.image        
+        image : fdata.image,
+        birthday : fdata.birthday         
       };
       const response = await fetch(shareVarible.URLink + '/user/update/'+`${fdata.id}`, {
         method: 'PUT',

@@ -58,7 +58,10 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-      <Stack.Screen name="Signin" component={Signin} options={{
+      <Stack.Screen name="Wellcome" component={Welcome} options={{
+          headerShown: false
+        }} />  
+        <Stack.Screen name="Signin" component={Signin} options={{
           headerShown: false
         }} />
         <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
@@ -69,8 +72,7 @@ export default function App() {
         }} /> 
         <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
           headerShown: false
-        }} />  
-        
+        }} />    
         <Stack.Screen name ="CreateProduct" component={CreateProduct} options={{
         headerShown : false
         }}/>
@@ -83,20 +85,15 @@ export default function App() {
         <Stack.Screen name ="ListProductByCategory" component={ListProductByCategogy} options={{
         headerShown : false
         }}/> 
-         
         <Stack.Screen name ="ListProduct" component={ListProduct} options={{
         headerShown : false
-        }}/>
-        <Stack.Screen name="Wellcome" component={Welcome} options={{
-          headerShown: false
-        }} />     
+        }}/>   
         <Stack.Screen name="ListTable" component={ListTable} options={{
           headerShown: false
         }} />
         <Stack.Screen name ="EditProduct" component={EditProduct} options={{
         headerShown : false
         }}/>
-        
         <Stack.Screen name="Profile" component={Profile} options={{
           headerShown: false
         }} />
