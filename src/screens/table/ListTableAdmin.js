@@ -139,12 +139,6 @@ const ListTableAdmin = ({navigation}) => {
       width : '100%',
       backgroundColor : '#EDF6D8'
     }}>
-       <TouchableOpacity
-        style={{ marginLeft: 10, }}
-        onPress={() => navigation.navigate('HomeAdmin')}
-      >
-        <Ionicons name='arrow-back-sharp' size={35} />
-      </TouchableOpacity>
       <View>
         {/* <SwipeListView
           data={data}

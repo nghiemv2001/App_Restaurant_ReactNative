@@ -60,49 +60,25 @@ export default function App() {
       <Stack.Navigator>
       <Stack.Screen name="Wellcome" component={Welcome} options={{
           headerShown: false
-        }} />  
+        }} />
         <Stack.Screen name="Signin" component={Signin} options={{
           headerShown: false
         }} />
         <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
           headerShown: false
-        }} /> 
+        }} />
         <Stack.Screen name="HomeChef" component={HomeChef} options={{
           headerShown: false
-        }} /> 
+        }} />
         <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
           headerShown: false
-        }} />    
-        <Stack.Screen name ="CreateProduct" component={CreateProduct} options={{
-        headerShown : false
-        }}/>
-        <Stack.Screen name="Bill" component={Bill} options={{
-          headerShown: false
-        }} />  
-        <Stack.Screen name ="ListCategory" component={ListCategory} options={{
-        headerShown : false
-        }}/>  
-        <Stack.Screen name ="ListProductByCategory" component={ListProductByCategogy} options={{
-        headerShown : false
-        }}/> 
-        <Stack.Screen name ="ListProduct" component={ListProduct} options={{
-        headerShown : false
-        }}/>   
-        <Stack.Screen name="ListTable" component={ListTable} options={{
-          headerShown: false
         }} />
-        <Stack.Screen name ="EditProduct" component={EditProduct} options={{
-        headerShown : false
-        }}/>
         <Stack.Screen name="Profile" component={Profile} options={{
           headerShown: false
         }} />
         <Stack.Screen name="Signup" component={Signup} options={{
           headerShown: false
         }} />
-        <Stack.Screen name="EditTable" component={EditTable} options={{
-          headerShown: false
-        }} />               
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} options={{
           headerShown: false
         }} />
@@ -111,8 +87,41 @@ export default function App() {
         }} />
         <Stack.Screen name="ReceiverPassword" component={ReceiverPassword} options={{
           headerShown: false
-        }} /> 
+        }} />
+        <Stack.Screen name="ChangProfile" component={ChangProfile} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="ListTableAdmin" component={ListTableAdmin} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="ListProductWaitress" component={ListProductWaitress} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="ListProductAdmin" component={ListProductAdmin} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="ListTable" component={ListTable} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="EditTable" component={EditTable} options={{
+          headerShown: false
+        }} />
         <Stack.Screen name="CreateTable" component={CreateTable} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="CreateProduct" component={CreateProduct} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="ListProduct" component={ListProduct} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="EditProduct" component={EditProduct} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="ListCategory" component={ListCategory} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="ListProductByCategory" component={ListProductByCategogy} options={{
           headerShown: false
         }} />
         <Stack.Screen name="EditCategory" component={EditCategory} options={{
@@ -121,10 +130,10 @@ export default function App() {
         <Stack.Screen name="CreateCategory" component={CreateCategory} options={{
           headerShown: false
         }} />
-        <Stack.Screen name="BillAdmin" component={BillAdmin} options={{
+        <Stack.Screen name="Bill" component={Bill} options={{
           headerShown: false
         }} />
-        <Stack.Screen name="ListTableAdmin" component={ListTableAdmin} options={{
+        <Stack.Screen name="BillAdmin" component={BillAdmin} options={{
           headerShown: false
         }} />
         <Stack.Screen name="ListProductInInvoice" component={ListProductInInvoice} options={{
@@ -142,23 +151,14 @@ export default function App() {
         <Stack.Screen name="ListProductStep3" component={ListProductStep3} options={{
           headerShown: false
         }} />
-        <Stack.Screen name="ListProductWaitress" component={ListProductWaitress} options={{
-          headerShown: false
-        }} />
-        <Stack.Screen name="ListProductAdmin" component={ListProductAdmin} options={{
-          headerShown: false
-        }} />
         <Stack.Screen name="ChartofInvoice" component={ChartofInvoice} options={{
-          headerShown: false
-        }} />
-        <Stack.Screen name="ChangProfile" component={ChangProfile} options={{
           headerShown: false
         }} />
         <Stack.Screen name="ListAccount" component={ListAccount} options={{
           headerShown: false
         }} />
-       </Stack.Navigator>
-    </NavigationContainer>  
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 const styles = StyleSheet.create({

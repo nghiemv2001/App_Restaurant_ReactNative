@@ -19,9 +19,13 @@ const HomeAdmin = () => {
   return (
     <Drawer.Navigator drawerContent={props=><CustomDrawerWaitress{...props}/>} 
     screenOptions={{
-        headerShown : true,
+        headerShown : false,
         drawerActiveTintColor:'green',
         drawerInactiveTintColor:'black',
+        headerStyle :{
+          height: 0
+        ,
+        },
         drawerStyle: {
           backgroundColor: 'white',
           width: 240,
@@ -33,7 +37,7 @@ const HomeAdmin = () => {
                 <Ionicons name='restaurant' size={22}/>
             ),
         }}
-      name="Table" component={CreateTable} />
+      name="Table" component={ListTableAdmin} />
       <Drawer.Screen 
        options={{
         drawerIcon: ({color})=>(

@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Image,TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Image,TouchableOpacity,Modal } from 'react-native'
 import React , {useState, useEffect} from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import mainpicture from '../../../assets/mainpicture.png'
@@ -11,13 +11,14 @@ import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { LogBox } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { Alert } from 'react-native'
 
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
 const EditTable = ({ navigation , route}) => {
-
+    const [modalVisible, setModalVisible] = useState(false);
     const [dataApiTable, setAtaAPITable] = useState(null)
     const [data, setData] = useState({});
     const [imagesrc, setImage] = useState(null);
@@ -119,7 +120,13 @@ const EditTable = ({ navigation , route}) => {
           alert(data.error);
         }
         else {
-          alert('Edit Table successfully');
+            <Modal
+        animationType="fade"
+        transparent={true}
+        visible={true}
+        onRequestClose={() => {
+          setModalVisible(true);
+        }}/>
           fetchData()
           console.log(dataApiTable)
           navigation.navigate('HomeAdmin');
