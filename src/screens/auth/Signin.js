@@ -8,12 +8,37 @@ import shareVarible from './../../AppContext'
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Modal from 'react-native-modal';
 const Signin = ({ navigation }) => {
+  
   //xu li data token 
   const initialState = {
     data: [],
     isLoading: false,
     error: null
+  };
+  const [isVisible, setIsVisible] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const CustomAlert = ({ isVisible, message, onConfirm }) => {
+    return (
+      <Modal isVisible={isVisible}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}> 
+          <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+            <Text>{message}</Text>
+            {/* <TouchableOpacity onPress={onConfirm} style={{justifyContent : 'center', alignItems: 'center'}}>
+              <Text style={{ color: 'blue', marginTop: 10 }}>OK</Text>
+            </TouchableOpacity> */}
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+  const showCustomAlert = (message) => {
+    setErrorMsg(message);
+    setIsVisible(true);
+  };
+  const handleConfirm = () => {
+    setIsVisible(false);
   };
   function dataReducer(state = initialState, action) {
     switch (action.type) {
@@ -100,6 +125,7 @@ const Signin = ({ navigation }) => {
       return;
     } 
     else {
+     
       fetch(shareVarible.URLink + '/signin',
         {
           method: 'POST',
@@ -111,17 +137,23 @@ const Signin = ({ navigation }) => {
           data => {
             if (data.error) {
               setErrormsg(data.error);
-              alert(data.error);
+              alert(data.error); console.log(1)
             }
             else {
-              alert('Login successfully');
-              navigation.navigate('Profile',{ data : fdata});
+              showCustomAlert('Login successfully');
             }
           }
         )
     }
   }
-
+  useEffect(() => {
+    if (isVisible) {
+      setTimeout(() => {
+        setIsVisible(false);
+        navigation.navigate('Profile', { data: fdata });
+      }, 1000); 
+    }
+  }, [isVisible, navigation]);
 
   //Hide or see  password
   const useTogglePasswordVisibility = () => {
@@ -151,6 +183,11 @@ const Signin = ({ navigation }) => {
 
   return (
     <KeyboardAwareScrollView style={styles.boss}>
+      <CustomAlert
+        isVisible={isVisible}
+        message={errorMsg}
+        onConfirm={handleConfirm}
+      />
       <Image style={styles.picturemain} source={mainpicture} />
       <Text style={styles.loginText}>Login</Text>
       <Text style={styles.nodetextemail}>Please enter your email</Text>
@@ -189,6 +226,7 @@ const Signin = ({ navigation }) => {
         <Text style={styles.textcontinue} onPress={() => navigation.navigate('Signup')}
         >Sign in</Text>
       </View>
+      
     </KeyboardAwareScrollView>
 
   )

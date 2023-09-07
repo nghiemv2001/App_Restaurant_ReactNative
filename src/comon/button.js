@@ -7,7 +7,7 @@ module.exports={
         fontSize: 32,
         textAlign: 'center',
         minWidth : 300,
-        marginTop : 50,
+        marginTop : 70,
         width: '50%',
         marginLeft: 55,
     },

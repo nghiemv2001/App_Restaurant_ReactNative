@@ -18,9 +18,6 @@ const Welcome = ({ navigation }) => {
         >
         </Icon.Button>
         </View>
-        
-
-
       </View>
     </View>
   )

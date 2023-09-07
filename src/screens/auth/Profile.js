@@ -3,26 +3,15 @@ import React, { useState, useEffect } from 'react'
 import imagetop from '../../../assets/login1.png'
 import penimage from '../../../assets/pen.png'
 import user_profile from '../../../assets/user_profile.png'
-import changepassword from '../../../assets/changpassword.png'
 import imageLogout from '../../../assets/imagelogout.png'
 import imageHome from '../../../assets/imghome.png'
-import { TextInput } from 'react-native-element-textinput';
 import { useRoute } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import shareVarible from './../../AppContext'
 import { useFocusEffect } from '@react-navigation/native'
 const Profile = ({navigation}) => {
   const route = useRoute();
   const data = route.params.data.email;
-  //take data API
   const [dataAPI, setDataAPI] = useState([]);
-  const storeData = async (key, value) => {
-    try {
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {
-      console.log(error);
-    }
-  }
   const fetchData = async () => {
     fetch(shareVarible.URLink + '/user/' + `${data}`, {
       method: 'GET',
@@ -179,11 +168,11 @@ const Profile = ({navigation}) => {
         onPress={() => navigation.navigate('Signin')}
           style={{
             zIndex: 1,
+            marginTop: 190,
           }}>
           <View
             style={{
               flexDirection: 'row',
-              marginTop: 50,
               borderWidth: 3,
               borderRadius: 30,
               justifyContent: 'center',
@@ -272,5 +261,4 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontWeight: 'bold',
   }
-
 })

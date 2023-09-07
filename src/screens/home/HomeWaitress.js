@@ -14,7 +14,7 @@ const HomeWaitress = () => {
     return (
         <Drawer.Navigator drawerContent={props=><CustomDrawerWaitress{...props}/>} 
         screenOptions={{
-            headerShown : true,
+            headerShown : false,
             drawerActiveTintColor:'green',
             drawerInactiveTintColor:'black',
             drawerStyle: {

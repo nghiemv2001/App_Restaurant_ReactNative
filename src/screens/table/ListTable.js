@@ -1,26 +1,27 @@
-import { View, Text, FlatList, Image, TouchableWithoutFeedback, TouchableOpacity, Alert } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Alert, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { Swipeble } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import img_food_ic from '../../../assets/foods.png'
-import img_edit_ic from '../../../assets/edit.png'
-import img_plus_image from '../../../assets/plus_image.jpg'
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-//import 'react-native-gesture-handler';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import CustomDrawer from '../../component/CustomDrawerWaitress'
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
-import CustomDrawerWaitress from '../../component/CustomDrawerWaitress';
-import CreateCategory from '../category/CreateCategory'
-import ListCategory from '../category/ListCategory';
-import ListProductByCategogy from '../Product/ListProductByCategogy';
-import ListProduct from '../Product/ListProduct';
-import Profile from '../auth/Profile'
+import { StyleSheet } from 'react-native';
 const Drawer = createDrawerNavigator();
 const ListTable = ({ fdata, navigation, props }) => {
+  const [datatenban, setDataTEnBan] = useState({
+    id_ban_an: "",
+    ten_ban_an: ''
+  })
+  const [data, setData] = useState(null);
+  const [showModel, setShowModal] = useState(false);
+  const [databills, setDataBills] = useState(null);
+  const [nameTable, setNameTable] = useState(null)
+  const [valueTable, setValueTable] = useState(null)
+  const [showModel2, setShowModal2] = useState(false);
+  useEffect(() => {
+    fetchData();
+  }, [])
   //read data
   const fetchData = () => {
     fetch(shareVarible.URLink + '/tables/', {
@@ -48,15 +49,7 @@ const ListTable = ({ fdata, navigation, props }) => {
       )
       .catch(error => console.log(error));
   }
-  useEffect(() => {
-    fetchData();
-  }, [])
-
   //kiem tra bill do co hay chua 
-  const [datatenban, setDataTEnBan] = useState({
-    id_ban_an: "",
-    ten_ban_an: ''
-  })
   const CheckNullTable = (data) => {
     setDataTEnBan({ id_ban_an: data._id })
     // gia tri ten_ban_an và data_id không giống nhau
@@ -78,7 +71,7 @@ const ListTable = ({ fdata, navigation, props }) => {
       ]);
     }
   }
-  //createBill and EditTable
+  // kiem tra ban do co bill chua va tao mot bill moi
   const CreateBillabdEditTable = async (data) => {
     //edit table
     const updates = {
@@ -101,10 +94,10 @@ const ListTable = ({ fdata, navigation, props }) => {
         }
         else {
           fetchData();
-          console.log("ok")
         }
       }
     )
+    //tao mot hoa don 
     fetch(shareVarible.URLink + '/hoa-don',
       {
         method: 'POST',
@@ -119,109 +112,110 @@ const ListTable = ({ fdata, navigation, props }) => {
             alert(data.error);
           }
           else {
-            alert('Create Bill successfully');
             fetchData();
           }
         }
       )
   }
-  const [data, setData] = useState(null);
-  const [databills, setDataBills] = useState(null);
+  // chuyen ban , gop ban
+  const moveTable = () => {
+    console.log("move")
+  }
+  const mergeTable = () => {
+    console.log("merge")
+  }
+  const adjustTable = (itemtable) => {
+    setValueTable(itemtable)
+    setNameTable(itemtable.name)
+    setShowModal(true)
+  }
+  useEffect(() => {
+  }, [nameTable,valueTable]);
+  //Design item in SwipeListView
   const renderlist = ((item) => {
     return (
-      <View style={{
-        flexDirection: 'row',
-        backgroundColor: '#EDF6D8',
-        marginBottom: 10
-      }}>
-
-        <Image style={{
-          width: 120, height: 120,
-          borderRadius: 50, borderColor: 'black',
-          borderWidth: 1, marginBottom: 15,
-          marginLeft: 10
-        }} source={{ uri: item.image }} />
-        <View style={{
-          marginLeft: 10
-        }}>
-          <Text style={{
-            fontSize: 30,
-            fontWeight: 'bold',
-          }}>{item.name}</Text>
+      <View style={styles.containner}>
+        <Image style={styles.imagepic} source={{ uri: item.image }} />
+        <View style={styles.containner2}>
+          <Text style={
+            styles.styText
+          }>{item.name}</Text>
           {
-                  item.status === "0" ? <Text
-                    style={{
-                      height: 30,
-                      width: 30,
-                      backgroundColor: 'red',
-                      zIndex: 1,
-                      borderRadius: 30,
-                      marginTop : 3
-                    }}>
-                  </Text> : item.status === "1" ? <Text
-                    style={{
-                      height: 30,
-                      width: 30,
-                      backgroundColor: 'green',
-                      zIndex: 1,
-                      borderRadius: 30,
-                      marginTop : 3
-                    }}>
-                  </Text> :<Text
-                    style={{
-                      height: 30,
-                      width: 30,
-                      backgroundColor: 'yellow',
-                      zIndex: 1,
-                      borderRadius: 30,
-                      marginTop:3
-                    }}>
-                  </Text>
-                }
-                <View style ={{flexDirection : 'row'}}>
-                <Ionicons name='people' size={28} />
-                <Text >{item.peoples}</Text>
-                </View>
+            item.status === "0" ? <Text
+              style={[styles.styTextStatus,
+              {
+                backgroundColor: 'red',
+              }
+              ]}>
+            </Text> : item.status === "1" ? <Text
+              style={[styles.styTextStatus, {
+                backgroundColor: 'green',
+              }]}>
+            </Text> : <Text
+              style={[styles.styTextStatus
+                , {
+                backgroundColor: 'yellow',
+              }]}>
+            </Text>
+          }
+          <View style={{ flexDirection: 'row' }}>
+            <Ionicons name='people' size={28} />
+            <Text >{item.peoples}</Text>
+          </View>
+        </View>
+        <View
+          style={{ flex: 4, justifyContent: 'space-evenly', alignItems: 'flex-end', padding: 10 }}
+        >
+          <TouchableOpacity onPress={() => adjustTable(item)}>
+            <Ionicons name='ellipsis-vertical-sharp' size={38} />
+          </TouchableOpacity>
         </View>
       </View>
     )
   })
+
   return (
-    <SafeAreaView style={{
-      height: '100%',
-      width: '100%',
-      backgroundColor: '#EDF6D8'
-    }}>
+    <SafeAreaView style={styles.containner3}>
       <View>
+        <Modal
+          transparent={true}
+          visible={showModel}
+          animationType='slide'
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView1}>
+              <Text style={styles.styText1}>{nameTable}</Text>
+              <TouchableOpacity style={styles.styTouch} onPress={() => { moveTable() }}>
+                <Text style={{ textAlign: 'center' }}>
+                  Move Tabe
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]} onPress={() => { mergeTable() }}>
+                <Text style={{ textAlign: 'center' }}>
+                  Merge Tabe
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
+                <Text style={{ textAlign: 'center' }} onPress={() => { setShowModal(false) }}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
         <SwipeListView
           data={data}
           renderItem={({ item }) => {
             return renderlist(item)
           }}
           renderHiddenItem={(data, rowMap) => (
-            <View style={{
-              flexDirection: 'row',
-              height: 135,
-              width: 200,
-              marginLeft: 250,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#808080',
-            }}>
-              <View style={{
-                height: '100%',
-                justifyContent: 'center',
-                alignContent: 'center'
-              }}>
+            <View style={styles.containner4}>
+              <View style={styles.containner5}>
                 <TouchableOpacity
                   onPress={() => CheckNullTable(data.item)}
                 >
                   <Image
-                    style={{
-                      height: 50,
-                      width: 50,
-                      marginRight: 20,
-                    }}
+                    style={styles.styimg}
                     source={img_food_ic}
                   />
                 </TouchableOpacity>
@@ -238,3 +232,89 @@ const ListTable = ({ fdata, navigation, props }) => {
 }
 
 export default ListTable
+
+const styles = StyleSheet.create({
+  containner: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: '#EDF6D8',
+    marginBottom: 10,
+  },
+  imagepic: {
+    flex: 3,
+    width: 120,
+    height: 120,
+    borderRadius: 50,
+    borderColor: 'black',
+    borderWidth: 1,
+    marginBottom: 15,
+    marginLeft: 10
+  },
+  containner2: {
+    marginLeft: 10,
+    flex: 3
+  },
+  styText: {
+    fontSize: 30,
+    fontWeight: 'bold',
+  },
+  styTextStatus: {
+    height: 30,
+    width: 30,
+    zIndex: 1,
+    borderRadius: 30,
+    marginTop: 3
+  },
+  containner3: {
+    height: '100%',
+    width: '100%',
+    backgroundColor: '#EDF6D8'
+  },
+  containner4: {
+    flexDirection: 'row',
+    height: 135,
+    width: 200,
+    marginLeft: 250,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#808080',
+  },
+  containner5: {
+    height: '100%',
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  styimg: {
+    height: 50,
+    width: 50,
+    marginRight: 40,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalView1: {
+    height: 250,
+    width: 180,
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 20,
+    shadowColor: 'blue',
+    elevation: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  styTouch: {
+    height: 40, width: 100,
+    borderRadius: 10,
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  styText1: {
+    fontSize: 22,
+    marginBottom: 10,
+    fontWeight: '500'
+  }
+})
