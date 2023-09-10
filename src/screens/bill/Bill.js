@@ -17,8 +17,10 @@ const Bill = ({ navigation, route }) => {
   const [errorMsg, setErrorMsg] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [showModel, setShowModal] = useState(false);
+  const [showModel3, setShowModal3] = useState(false);
   const [qty, setQyt] = useState(1);
-  const [price, setPrice]= useState(0);
+  const [price, setPrice] = useState(0);
+  const [dataItem, setDataItem] = useState(null);
   const CustomAlert = ({ isVisible, message, onConfirm }) => {
     return (
       <Modal
@@ -79,11 +81,42 @@ const Bill = ({ navigation, route }) => {
       )
       .catch(error => console.log(error));
   };
+  function isNumericString(value) {
+    const regex = /^[0-9]+$/;
+    return regex.test(value);
+  }
+  //Update Product in Bill
+  const updateProduct = () => {
+    if (isNumericString(price)) {
+      fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an/' + `${dataItem._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ so_luong: qty, gia: price })
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.error) {
+            alert(data.error);
+          } else {
+            showCustomAlert('success!');
+          }
+        }).catch(error => {
+          console.error(error);
+          showCustomAlert('An error occurred while updating the product');
+        });
+      setShowModal(false)
+    }
+    else {
+      showCustomAlert("Enter a number")
+    }
+  }
   //delete item
   const DeleteItem = (item) => {
     const dataproductchef1 = dataproductchef.find(p => p.id_product === item.id_product);
     if (dataproductchef1.status != 0) {
-      alert("The cooked dish cannot be deleted!!!");
+      showCustomAlert("The cooked dish cannot be deleted!!!");
     }
     else {
       fetch(shareVarible.URLink + '/monan/delete/' + `${item._id}`, {
@@ -96,7 +129,6 @@ const Bill = ({ navigation, route }) => {
         .then(response => response.json())
         .then(data => {
           showCustomAlert('Delete success!');
-
         })
         .catch(error => {
           console.error('Error', error);
@@ -111,17 +143,13 @@ const Bill = ({ navigation, route }) => {
   }
   const IncreasQYT = () => {
     setQyt(qty + 1);
-    
+
   }
   useEffect(() => {
   }, [qty]);
-  const updateProduct= () =>{
-    console.log(price)
-    console.log(qty)
-    setShowModal(false)
-  } 
   //dieu chinh san pham
-  const DialogAdjustProduct = (idProduct, soluongProduct, priceproduct) => {
+  const DialogAdjustProduct = (item, soluongProduct, priceproduct) => {
+    setDataItem(item)
     const valueqty = Number(soluongProduct);
     const valueprice = Number(priceproduct);
     setPrice(valueprice);
@@ -140,15 +168,18 @@ const Bill = ({ navigation, route }) => {
                 numberOfLines={1} >{item.ten_mon}</Text>
               <View style={styles.container5}>
                 <Text style={styles.styleText1}
-                >{item.gia} $</Text>
+                  numberOfLines={1}
+                >{item.gia}$</Text>
                 <Text style={styles.styleText1}
+                  numberOfLines={1}
                 >x {item.so_luong}</Text>
                 <Text style={styles.styleText2}
-                >=   {item.gia * item.so_luong} $</Text>
+                  numberOfLines={1}
+                >= {item.gia * item.so_luong} $</Text>
               </View>
             </View>
             <View style={styles.container6}>
-              <TouchableOpacity onPress={() => { DialogAdjustProduct(item._id, item.so_luong, item.gia) }}>
+              <TouchableOpacity onPress={() => { DialogAdjustProduct(item, item.so_luong, item.gia) }}>
                 <Ionicons name='ellipsis-vertical-sharp' size={35} />
               </TouchableOpacity>
             </View>
@@ -181,7 +212,8 @@ const Bill = ({ navigation, route }) => {
                 keyboardType='numeric'
                 enablesReturnKeyAutomatically
                 onChangeText={(text) => { setPrice(text) }}
-              /><Text>$</Text>
+              />
+              <Text>$</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
               <TouchableOpacity style={{
@@ -210,6 +242,13 @@ const Bill = ({ navigation, route }) => {
         >
           <Ionicons name='arrow-back-sharp' size={35} />
         </TouchableOpacity>
+        <View style={{height: 50, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
+              <Text style={{fontSize:22, fontWeight:'700'}}>{route.params.data.name}</Text>
+              <TouchableOpacity>
+                <Ionicons name="caret-down-sharp" size={30}/>
+              </TouchableOpacity>
+              
+    </View>
         <TouchableOpacity
           style={{ marginLeft: 10, }}
           onPress={() => navigation.navigate('ListCategory', { route })}
@@ -217,7 +256,6 @@ const Bill = ({ navigation, route }) => {
           <Ionicons name='add' size={40} />
         </TouchableOpacity>
       </View>
-
       {
         (dataipa !== null && typeof dataipa === 'object') ?
           <SwipeListView
@@ -255,7 +293,7 @@ const Bill = ({ navigation, route }) => {
             fontSize: 32,
             fontWeight: 'bold'
           }}
-        >{total}.00$</Text>
+        >{total} . 00 $</Text>
         <View style={styles.container11}>
         </View>
       </View>
@@ -349,13 +387,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   styleText1: {
-    width: 40,
+    width: '30%',
     fontSize: 18,
     textAlignVertical: 'center',
-    marginLeft: 10
+
   },
   styleText2: {
-    width: '50%',
+    width: '40%',
     fontSize: 18,
     textAlignVertical: 'center',
   },

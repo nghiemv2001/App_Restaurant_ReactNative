@@ -114,7 +114,6 @@ const EditTableBackEnd=async()=>{
     describe : fdata.describe,
     image : fdata.image
   };
-  console.log(updates)
   const response = await fetch(shareVarible.URLink + '/category/update/'+`${fdata.id}`, {
     method: 'PUT',
     headers: {

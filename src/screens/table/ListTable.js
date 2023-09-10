@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Alert, Modal } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Alert, Modal, FlatList, ScrollView } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
@@ -19,6 +19,15 @@ const ListTable = ({ fdata, navigation, props }) => {
   const [nameTable, setNameTable] = useState(null)
   const [valueTable, setValueTable] = useState(null)
   const [showModel2, setShowModal2] = useState(false);
+  const [statusAdjustTable, setStatusAdjustTable] = useState(false);
+  const data1 = [
+    { id: 'a', value: 'A' },
+    { id: 'b', value: 'B' },
+    { id: 'c', value: 'C' },
+    { id: 'd', value: 'D' },
+    { id: 'e', value: 'E' },
+    { id: 'f', value: 'F' },
+  ];
   useEffect(() => {
     fetchData();
   }, [])
@@ -119,10 +128,24 @@ const ListTable = ({ fdata, navigation, props }) => {
   }
   // chuyen ban , gop ban
   const moveTable = () => {
-    console.log("move")
+    setShowModal2(true)
+    setShowModal(false)
+    setStatusAdjustTable(false)
+  }
+  const adjustTableItem =(item)=>{
+    if(statusAdjustTable){
+      console.log("merge", item.name)
+      console.log(item)
+    }
+    else{
+      console.log("move", item.name)
+      console.log(item)
+    }
   }
   const mergeTable = () => {
-    console.log("merge")
+    setShowModal2(true)
+    setShowModal(false)
+    setStatusAdjustTable(true)
   }
   const adjustTable = (itemtable) => {
     setValueTable(itemtable)
@@ -130,7 +153,7 @@ const ListTable = ({ fdata, navigation, props }) => {
     setShowModal(true)
   }
   useEffect(() => {
-  }, [nameTable,valueTable]);
+  }, [nameTable, valueTable]);
   //Design item in SwipeListView
   const renderlist = ((item) => {
     return (
@@ -166,7 +189,8 @@ const ListTable = ({ fdata, navigation, props }) => {
         <View
           style={{ flex: 4, justifyContent: 'space-evenly', alignItems: 'flex-end', padding: 10 }}
         >
-          <TouchableOpacity onPress={() => adjustTable(item)}>
+          <TouchableOpacity 
+          onPress={() => adjustTable(item)}>
             <Ionicons name='ellipsis-vertical-sharp' size={38} />
           </TouchableOpacity>
         </View>
@@ -203,6 +227,50 @@ const ListTable = ({ fdata, navigation, props }) => {
             </View>
           </View>
         </Modal>
+        <ScrollView>
+          <Modal
+            transparent={true}
+            visible={showModel2}
+            animationType='slide'
+          >
+            <View style={styles.centeredView}>
+              <View style={styles.modalView2}>
+                <Text style={styles.styText1}>{nameTable}</Text>
+
+                <FlatList
+                  style={{ height: 100, width: 300, }}
+                  data={data}
+                  keyExtractor={(item) => item._id}
+                  renderItem={({ item }) => (
+                    
+                    <TouchableOpacity 
+                      onPress={()=>{adjustTableItem(item)}}
+                    style={
+                      {
+                        width: 70, 
+                        height: 70, 
+                        backgroundColor: 'lightblue', 
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        margin: 10,
+                      }}>
+                      <Text>{item.name}</Text>
+                    </TouchableOpacity>
+                  )}
+                  contentContainerStyle={{
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  numColumns={3} />
+                <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
+                  <Text style={{ textAlign: 'center' }} onPress={() => { setShowModal2(false) }}>
+                    Cancel
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </ScrollView>
         <SwipeListView
           data={data}
           renderItem={({ item }) => {
@@ -305,6 +373,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  modalView2: {
+    height: 420,
+    width: 320,
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 20,
+    shadowColor: 'blue',
+    elevation: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
   styTouch: {
     height: 40, width: 100,
     borderRadius: 10,
@@ -316,5 +395,14 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginBottom: 10,
     fontWeight: '500'
+  },
+  itemContainer: {
+    width: 100,
+    height: 100,
+  },
+  item: {
+    flex: 1,
+    margin: 3,
+    backgroundColor: 'lightblue',
   }
 })
