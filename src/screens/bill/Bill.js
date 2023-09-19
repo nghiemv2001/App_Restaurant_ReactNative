@@ -1,10 +1,11 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, TextInput,FlatList } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, TextInput, FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { Alert } from 'react-native'
 const Bill = ({ navigation, route }) => {
   useFocusEffect(
     React.useCallback(() => {
@@ -24,6 +25,10 @@ const Bill = ({ navigation, route }) => {
   const [dataItem, setDataItem] = useState(null);
   const [statusAdjustTable, setStatusAdjustTable] = useState(false);
   const [showModel2, setShowModal2] = useState(false);
+  const [datamerge, setDataMerge] = useState({
+    id_ban_doi: "",
+    id_ban_nhan: ""
+  })
   const CustomAlert = ({ isVisible, message, onConfirm }) => {
     return (
       <Modal
@@ -52,15 +57,14 @@ const Bill = ({ navigation, route }) => {
     setIsVisible(false);
   };
   var total = 0;
-  if (dataipa.length !== 0) {
-    total = dataipa.danh_sach_mon_an.reduce((acc, danh_sach_mon_an) => {
-      return acc + (danh_sach_mon_an.gia * danh_sach_mon_an.so_luong);
-    }, 0);
-  }
- 
+if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0) {
+  total = dataipa.danh_sach_mon_an.reduce((acc, danh_sach_mon_an) => {
+    return acc + (danh_sach_mon_an.gia * danh_sach_mon_an.so_luong);
+  }, 0);
+}
   //get data 1 bill 
   const fetchData = () => {
-    fetch(shareVarible.URLink + '/bill/' + `${idtable}`, {
+    fetch(shareVarible.URLink + '/bill/' + `${route.params.data._id}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -71,18 +75,18 @@ const Bill = ({ navigation, route }) => {
       .then(data => SetDataApi(data),
       )
       .catch(error => console.log(error));
-      //lay danh sach ban
-      fetch(shareVarible.URLink + '/tables/', {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(response => response.json())
-        .then(data => setData(data),
-        )
-        .catch(error => console.log(error));
+    //lay danh sach ban
+    fetch(shareVarible.URLink + '/tables/', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => setData(data),
+      )
+      .catch(error => console.log(error));
     //get list product chef
     fetch(shareVarible.URLink + '/productchef/', {
       method: 'GET',
@@ -165,15 +169,58 @@ const Bill = ({ navigation, route }) => {
     setShowModal1(false)
     setStatusAdjustTable(false)
   }
+  
   const adjustTableItem = (item) => {
     if (statusAdjustTable) {
-      console.log("merge id ban dich", item._id)
-      console.log("merge",  route.params.data._id)
-
+      const datamerge = {
+        id_ban_nhan: item._id,
+        id_ban_doi: route.params.data._id,
+      };
+  
+      Alert.alert(
+        'Confirm Merge Table',
+        'Are you sure merge',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Thực hiện fetch và các hành động khác ở đây
+              fetch(shareVarible.URLink + '/merge', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(datamerge)
+              }).then(res => res.json()).then(
+                data => {
+                  if (data.error) {
+                    setErrormgs(data.error);
+                    alert(data.error);
+                  } else {
+                    navigation.navigate('ListTable')
+                    showCustomAlert('success!');
+                    
+                  }
+                }
+              );
+            },
+          },
+          {
+            text: 'Cancel',
+          },
+        ],
+        {
+          cancelable: true,
+          onDismiss: () =>
+            Alert.alert(
+              'This alert was dismissed by tapping outside of the alert dialog.',
+            ),
+        }
+      )
     }
     else {
       console.log("move id ban dich", item._id)
-      console.log("move",  route.params.data._id)
+      console.log("move", route.params.data._id)
     }
   }
   const mergeTable = () => {
@@ -182,7 +229,8 @@ const Bill = ({ navigation, route }) => {
     setStatusAdjustTable(true)
   }
   useEffect(() => {
-  }, [qty]);
+    fetchData(); // Gọi fetchData mỗi khi idtable hoặc qty thay đổi
+  }, [idtable, qty]);
   //dieu chinh san pham
   const DialogAdjustProduct = (item, soluongProduct, priceproduct) => {
     setDataItem(item)
@@ -192,7 +240,7 @@ const Bill = ({ navigation, route }) => {
     setQyt(valueqty)
     setShowModal(true)
   }
-  //Render Faglist
+
   const renderlist = ((item) => {
     return (
       <View style={styles.container1}>
@@ -240,7 +288,7 @@ const Bill = ({ navigation, route }) => {
       >
         <View style={styles.centeredView2}>
           <View style={styles.modalView3}>
-          <Text style={styles.styText1}>{route.params.data.name}</Text>
+            <Text style={styles.styText1}>{route.params.data.name}</Text>
 
             <FlatList
               style={{ height: 100, width: 300, }}
@@ -363,7 +411,7 @@ const Bill = ({ navigation, route }) => {
         (dataipa !== null && typeof dataipa === 'object') ?
           <SwipeListView
             data={dataipa.danh_sach_mon_an}
-            renderItem={({ item }) => {
+            renderItem={({ item, index }) => {
               return renderlist(item)
             }}
             renderHiddenItem={(dataipa, rowMap) => (
@@ -384,7 +432,7 @@ const Bill = ({ navigation, route }) => {
             )}
             leftOpenValue={0}
             rightOpenValue={-150}
-            keyExtractor={item => item._id}
+            keyExtractor={(item, index) => index.toString()}
           />
           :
           <Text style={{

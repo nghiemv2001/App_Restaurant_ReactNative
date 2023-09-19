@@ -29,6 +29,7 @@ const ListTable = ({ fdata, navigation, props }) => {
     { id: 'f', value: 'F' },
   ];
   useEffect(() => {
+    console.log("1")
     fetchData();
   }, [])
   //read data
@@ -60,6 +61,7 @@ const ListTable = ({ fdata, navigation, props }) => {
   }
   //kiem tra bill do co hay chua 
   const CheckNullTable = (data) => {
+    console.log(datatenban)
     setDataTEnBan({ id_ban_an: data._id })
     // gia tri ten_ban_an và data_id không giống nhau
     const arrbills = Object.values(databills);
@@ -127,6 +129,8 @@ const ListTable = ({ fdata, navigation, props }) => {
       )
   }
   useEffect(() => {
+    console.log("123")
+    navigation.navigate('HomeWaitress')
   }, [nameTable, valueTable]);
   //Design item in SwipeListView
   const renderlist = ((item) => {
