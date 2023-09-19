@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Alert, Modal, FlatList, ScrollView } from 'react-native'
+import { View, Text, Image, TouchableOpacity, Alert} from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
@@ -126,32 +126,6 @@ const ListTable = ({ fdata, navigation, props }) => {
         }
       )
   }
-  // chuyen ban , gop ban
-  const moveTable = () => {
-    setShowModal2(true)
-    setShowModal(false)
-    setStatusAdjustTable(false)
-  }
-  const adjustTableItem =(item)=>{
-    if(statusAdjustTable){
-      console.log("merge", item.name)
-      console.log(item)
-    }
-    else{
-      console.log("move", item.name)
-      console.log(item)
-    }
-  }
-  const mergeTable = () => {
-    setShowModal2(true)
-    setShowModal(false)
-    setStatusAdjustTable(true)
-  }
-  const adjustTable = (itemtable) => {
-    setValueTable(itemtable)
-    setNameTable(itemtable.name)
-    setShowModal(true)
-  }
   useEffect(() => {
   }, [nameTable, valueTable]);
   //Design item in SwipeListView
@@ -189,10 +163,6 @@ const ListTable = ({ fdata, navigation, props }) => {
         <View
           style={{ flex: 4, justifyContent: 'space-evenly', alignItems: 'flex-end', padding: 10 }}
         >
-          <TouchableOpacity 
-          onPress={() => adjustTable(item)}>
-            <Ionicons name='ellipsis-vertical-sharp' size={38} />
-          </TouchableOpacity>
         </View>
       </View>
     )
@@ -201,76 +171,6 @@ const ListTable = ({ fdata, navigation, props }) => {
   return (
     <SafeAreaView style={styles.containner3}>
       <View>
-        <Modal
-          transparent={true}
-          visible={showModel}
-          animationType='slide'
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView1}>
-              <Text style={styles.styText1}>{nameTable}</Text>
-              <TouchableOpacity style={styles.styTouch} onPress={() => { moveTable() }}>
-                <Text style={{ textAlign: 'center' }}>
-                  Move Tabe
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]} onPress={() => { mergeTable() }}>
-                <Text style={{ textAlign: 'center' }}>
-                  Merge Tabe
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
-                <Text style={{ textAlign: 'center' }} onPress={() => { setShowModal(false) }}>
-                  Cancel
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
-        <ScrollView>
-          <Modal
-            transparent={true}
-            visible={showModel2}
-            animationType='slide'
-          >
-            <View style={styles.centeredView}>
-              <View style={styles.modalView2}>
-                <Text style={styles.styText1}>{nameTable}</Text>
-
-                <FlatList
-                  style={{ height: 100, width: 300, }}
-                  data={data}
-                  keyExtractor={(item) => item._id}
-                  renderItem={({ item }) => (
-                    
-                    <TouchableOpacity 
-                      onPress={()=>{adjustTableItem(item)}}
-                    style={
-                      {
-                        width: 70, 
-                        height: 70, 
-                        backgroundColor: 'lightblue', 
-                        justifyContent: 'center', 
-                        alignItems: 'center', 
-                        margin: 10,
-                      }}>
-                      <Text>{item.name}</Text>
-                    </TouchableOpacity>
-                  )}
-                  contentContainerStyle={{
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                  numColumns={3} />
-                <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
-                  <Text style={{ textAlign: 'center' }} onPress={() => { setShowModal2(false) }}>
-                    Cancel
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </Modal>
-        </ScrollView>
         <SwipeListView
           data={data}
           renderItem={({ item }) => {

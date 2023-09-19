@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, TextInput } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, TextInput,FlatList } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
@@ -11,16 +11,19 @@ const Bill = ({ navigation, route }) => {
       fetchData();
     }, [])
   );
+  const [data, setData] = useState(null);
   const [dataipa, SetDataApi] = useState([]);
   const [dataproductchef, SetDataProductChef] = useState(null)
   const idtable = route.params.data._id
   const [errorMsg, setErrorMsg] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [showModel, setShowModal] = useState(false);
-  const [showModel3, setShowModal3] = useState(false);
+  const [showModel1, setShowModal1] = useState(false);
   const [qty, setQyt] = useState(1);
   const [price, setPrice] = useState(0);
   const [dataItem, setDataItem] = useState(null);
+  const [statusAdjustTable, setStatusAdjustTable] = useState(false);
+  const [showModel2, setShowModal2] = useState(false);
   const CustomAlert = ({ isVisible, message, onConfirm }) => {
     return (
       <Modal
@@ -54,6 +57,7 @@ const Bill = ({ navigation, route }) => {
       return acc + (danh_sach_mon_an.gia * danh_sach_mon_an.so_luong);
     }, 0);
   }
+ 
   //get data 1 bill 
   const fetchData = () => {
     fetch(shareVarible.URLink + '/bill/' + `${idtable}`, {
@@ -67,7 +71,18 @@ const Bill = ({ navigation, route }) => {
       .then(data => SetDataApi(data),
       )
       .catch(error => console.log(error));
-
+      //lay danh sach ban
+      fetch(shareVarible.URLink + '/tables/', {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(response => response.json())
+        .then(data => setData(data),
+        )
+        .catch(error => console.log(error));
     //get list product chef
     fetch(shareVarible.URLink + '/productchef/', {
       method: 'GET',
@@ -145,6 +160,27 @@ const Bill = ({ navigation, route }) => {
     setQyt(qty + 1);
 
   }
+  const moveTable = () => {
+    setShowModal2(true)
+    setShowModal1(false)
+    setStatusAdjustTable(false)
+  }
+  const adjustTableItem = (item) => {
+    if (statusAdjustTable) {
+      console.log("merge id ban dich", item._id)
+      console.log("merge",  route.params.data._id)
+
+    }
+    else {
+      console.log("move id ban dich", item._id)
+      console.log("move",  route.params.data._id)
+    }
+  }
+  const mergeTable = () => {
+    setShowModal2(true)
+    setShowModal1(false)
+    setStatusAdjustTable(true)
+  }
   useEffect(() => {
   }, [qty]);
   //dieu chinh san pham
@@ -199,6 +235,73 @@ const Bill = ({ navigation, route }) => {
       }
       <Modal
         transparent={true}
+        visible={showModel2}
+        animationType='slide'
+      >
+        <View style={styles.centeredView2}>
+          <View style={styles.modalView3}>
+          <Text style={styles.styText1}>{route.params.data.name}</Text>
+
+            <FlatList
+              style={{ height: 100, width: 300, }}
+              data={data}
+              keyExtractor={(item) => item._id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => { adjustTableItem(item) }}
+                  style={
+                    {
+                      width: 70,
+                      height: 70,
+                      backgroundColor: 'lightblue',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      margin: 10,
+                    }}>
+                  <Text>{item.name}</Text>
+                </TouchableOpacity>
+              )}
+              contentContainerStyle={{
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              numColumns={3} />
+            <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
+              <Text style={{ textAlign: 'center' }} onPress={() => { setShowModal2(false) }}>
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        transparent={true}
+        visible={showModel1}
+        animationType='slide'
+      >
+        <View style={styles.centeredView2}>
+          <View style={styles.modalView2}>
+            <Text style={styles.styText1}>{route.params.data.name}</Text>
+            <TouchableOpacity style={styles.styTouch} onPress={() => { moveTable() }}>
+              <Text style={{ textAlign: 'center' }}>
+                Move Tabe
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]} onPress={() => { mergeTable() }}>
+              <Text style={{ textAlign: 'center' }}>
+                Merge Tabe
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
+              <Text style={{ textAlign: 'center' }} onPress={() => { setShowModal1(false) }}>
+                Cancel
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        transparent={true}
         visible={showModel}
         animationType='slide'
       >
@@ -242,13 +345,13 @@ const Bill = ({ navigation, route }) => {
         >
           <Ionicons name='arrow-back-sharp' size={35} />
         </TouchableOpacity>
-        <View style={{height: 50, justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
-              <Text style={{fontSize:22, fontWeight:'700'}}>{route.params.data.name}</Text>
-              <TouchableOpacity>
-                <Ionicons name="caret-down-sharp" size={30}/>
-              </TouchableOpacity>
-              
-    </View>
+        <View style={{ height: 50, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
+          <Text style={{ fontSize: 22, fontWeight: '700' }}>{route.params.data.name}</Text>
+          <TouchableOpacity onPress={() => { setShowModal1(true) }}>
+            <Ionicons name="caret-down-sharp" size={30} />
+          </TouchableOpacity>
+
+        </View>
         <TouchableOpacity
           style={{ marginLeft: 10, }}
           onPress={() => navigation.navigate('ListCategory', { route })}
@@ -528,5 +631,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderRadius: 10
-  }
+  },
+  centeredView2: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalView2: {
+    height: 250,
+    width: 180,
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 20,
+    shadowColor: 'blue',
+    elevation: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalView3: {
+    height: 420,
+    width: 320,
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 20,
+    shadowColor: 'blue',
+    elevation: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  styText1: {
+    fontSize: 22,
+    marginBottom: 10,
+    fontWeight: '500'
+  },
 })
