@@ -1,4 +1,4 @@
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity } from 'react-native'
+import { View, Text, Button, StyleSheet, Image, TouchableOpacity,Alert } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import shareVarible from './../../AppContext'
 import { FlatGrid } from 'react-native-super-grid';
@@ -100,7 +100,9 @@ const ListProductByCategogy = ({ route, navigation }) => {
             }
             else {
               const data = dataroute;
-              navigation.navigate('Bill', { data })
+              // navigation.navigate('Bill', { data })
+              // navigation.navigate("HomeWaitress")
+              Alert.alert("Thanh cong")
             }
           }
         )

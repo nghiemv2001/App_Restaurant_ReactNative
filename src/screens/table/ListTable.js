@@ -7,8 +7,15 @@ import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { StyleSheet } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native'
 const Drawer = createDrawerNavigator();
-const ListTable = ({ fdata, navigation, props }) => {
+const ListTable = ({navigation}) => {
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [])
+  );
+  // console.log(refreshData, reloadTableData)
   const [datatenban, setDataTEnBan] = useState({
     id_ban_an: "",
     ten_ban_an: ''
@@ -28,10 +35,6 @@ const ListTable = ({ fdata, navigation, props }) => {
     { id: 'e', value: 'E' },
     { id: 'f', value: 'F' },
   ];
-  useEffect(() => {
-    console.log("1")
-    fetchData();
-  }, [])
   //read data
   const fetchData = () => {
     fetch(shareVarible.URLink + '/tables/', {
@@ -61,7 +64,9 @@ const ListTable = ({ fdata, navigation, props }) => {
   }
   //kiem tra bill do co hay chua 
   const CheckNullTable = (data) => {
-    console.log(datatenban)
+    fetchData()
+    // console.log("check null table ", datatenban)
+    // console.log("List table" , data)
     setDataTEnBan({ id_ban_an: data._id })
     // gia tri ten_ban_an và data_id không giống nhau
     const arrbills = Object.values(databills);
@@ -128,10 +133,9 @@ const ListTable = ({ fdata, navigation, props }) => {
         }
       )
   }
-  useEffect(() => {
-    console.log("123")
-    navigation.navigate('HomeWaitress')
-  }, [nameTable, valueTable]);
+  // useEffect(() => {
+  //   fetchData();
+  // }, []);
   //Design item in SwipeListView
   const renderlist = ((item) => {
     return (

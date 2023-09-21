@@ -1,5 +1,5 @@
-import { View, Text } from 'react-native'
-import React from 'react'
+import { TouchableOpacity } from 'react-native'
+import React, {useEffect} from 'react'
 import 'react-native-gesture-handler';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -9,12 +9,21 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import CustomDrawerWaitress from '../../component/CustomDrawerWaitress';
 import ListTable from '../table/ListTable'
 import ListProductWaitress from '../Chef/ListProductWaitress';
+import { useFocusEffect } from '@react-navigation/native'
 const Drawer = createDrawerNavigator();
 const HomeWaitress = () => {
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     console.log("loai lai")
+  //   }, [])
+  // )
     return (
         <Drawer.Navigator drawerContent={props=><CustomDrawerWaitress{...props}/>} 
         screenOptions={{
             headerShown : false,
+            headerStyle:{
+              height: 0,
+            },
             drawerActiveTintColor:'green',
             drawerInactiveTintColor:'black',
             drawerStyle: {

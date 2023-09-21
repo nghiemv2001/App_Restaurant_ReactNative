@@ -58,7 +58,10 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-      <Stack.Screen name="Wellcome" component={Welcome} options={{
+      <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="Wellcome" component={Welcome} options={{
           headerShown: false
         }} />
         <Stack.Screen name="Signin" component={Signin} options={{
@@ -70,9 +73,7 @@ export default function App() {
         <Stack.Screen name="HomeChef" component={HomeChef} options={{
           headerShown: false
         }} />
-        <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
-          headerShown: false
-        }} />
+        
         <Stack.Screen name="Profile" component={Profile} options={{
           headerShown: false
         }} />

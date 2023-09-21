@@ -7,11 +7,12 @@ import { SwipeListView } from 'react-native-swipe-list-view';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Alert } from 'react-native'
 const Bill = ({ navigation, route }) => {
-  useFocusEffect(
-    React.useCallback(() => {
-      fetchData();
-    }, [])
-  );
+  // console.log(data)
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     fetchData();
+  //   }, [])
+  // );
   const [data, setData] = useState(null);
   const [dataipa, SetDataApi] = useState([]);
   const [dataproductchef, SetDataProductChef] = useState(null)
@@ -25,10 +26,12 @@ const Bill = ({ navigation, route }) => {
   const [dataItem, setDataItem] = useState(null);
   const [statusAdjustTable, setStatusAdjustTable] = useState(false);
   const [showModel2, setShowModal2] = useState(false);
+  const [databills, setDataBills] = useState(null);
   const [datamerge, setDataMerge] = useState({
     id_ban_doi: "",
     id_ban_nhan: ""
   })
+  const [renderItem, setRenderItem] = useState(true)
   const CustomAlert = ({ isVisible, message, onConfirm }) => {
     return (
       <Modal
@@ -85,6 +88,18 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
     })
       .then(response => response.json())
       .then(data => setData(data),
+      )
+      .catch(error => console.log(error));
+       //lấy toàn bộ bills
+    fetch(shareVarible.URLink + '/bills/', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => setDataBills(data),
       )
       .catch(error => console.log(error));
     //get list product chef
@@ -197,9 +212,9 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
                     setErrormgs(data.error);
                     alert(data.error);
                   } else {
-                    navigation.navigate('ListTable')
                     showCustomAlert('success!');
-                    
+                    fetchData();
+                    navigation.navigate('HomeWaitress')
                   }
                 }
               );
@@ -219,8 +234,8 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
       )
     }
     else {
-      console.log("move id ban dich", item._id)
-      console.log("move", route.params.data._id)
+      // console.log("move id ban dich", item._id)
+      // console.log("move", route.params.data._id)
     }
   }
   const mergeTable = () => {
@@ -296,7 +311,8 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
               keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  onPress={() => { adjustTableItem(item) }}
+                  onPress={() => { 
+                    adjustTableItem(item) }}
                   style={
                     {
                       width: 70,
@@ -410,6 +426,7 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
       {
         (dataipa !== null && typeof dataipa === 'object') ?
           <SwipeListView
+            style={styles.swipeListView}
             data={dataipa.danh_sach_mon_an}
             renderItem={({ item, index }) => {
               return renderlist(item)
@@ -435,8 +452,10 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
             keyExtractor={(item, index) => index.toString()}
           />
           :
-          <Text style={{
+          <View style={styles.View1}>
+             <Text style={{
           }}>Chưa có bất kì món ăn nào</Text>
+          </View>
       }
       <View style={styles.container10}>
         <Text
@@ -712,4 +731,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: '500'
   },
+  View1:{
+    height: "70%",
+    justifyContent:'center',
+    alignItems:"center"
+  }
 })
