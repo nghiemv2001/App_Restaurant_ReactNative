@@ -5,6 +5,7 @@ import shareVarible from './../../AppContext'
 import uploadimge2 from '../../../assets/UpLoadImage.png'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 const ListCategory = ({navigation, route}) => {
+  console.log(route.params.route.params)
   const idtable  = route.params.route.params.data._id
   const [dataipa, setDataIPA] = useState([{}]);
   const [items, setItems] = useState([

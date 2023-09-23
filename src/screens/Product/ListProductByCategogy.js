@@ -9,6 +9,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
   const idCategory = route.params.item._id;
   const dataroute = route.params.route.params.route.params.data
   const idtable = route.params.route.params.route.params.data._id
+  console.log(idtable)
   useEffect(() => {
     fetchData();
   }, []);
@@ -85,6 +86,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
     }
 
     else {
+      console.log("them mon an", idtable)
       fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
         {
           method: 'POST',
@@ -100,9 +102,9 @@ const ListProductByCategogy = ({ route, navigation }) => {
             }
             else {
               const data = dataroute;
-              // navigation.navigate('Bill', { data })
+              navigation.navigate('Bill', { data })
               // navigation.navigate("HomeWaitress")
-              Alert.alert("Thanh cong")
+              // Alert.alert("Thanh cong")
             }
           }
         )

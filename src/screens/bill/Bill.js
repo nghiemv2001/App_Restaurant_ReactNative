@@ -6,17 +6,21 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Alert } from 'react-native'
+import { id } from 'deprecated-react-native-prop-types/DeprecatedTextPropTypes'
 const Bill = ({ navigation, route }) => {
-  // console.log(data)
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     fetchData();
-  //   }, [])
-  // );
+  console.log(route)
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [])
+  );
   const [data, setData] = useState(null);
   const [dataipa, SetDataApi] = useState([]);
   const [dataproductchef, SetDataProductChef] = useState(null)
-  const idtable = route.params.data._id
+  const [routeData, setRouteData] = useState(route);
+  // const idtable = route.params.data._id
+  const [idtable, setIDTable] = useState(route.params.data._id)
+  const [nameTable, setNameTable] = useState(route.params.data.name)
   const [errorMsg, setErrorMsg] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [showModel, setShowModal] = useState(false);
@@ -60,14 +64,14 @@ const Bill = ({ navigation, route }) => {
     setIsVisible(false);
   };
   var total = 0;
-if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0) {
-  total = dataipa.danh_sach_mon_an.reduce((acc, danh_sach_mon_an) => {
-    return acc + (danh_sach_mon_an.gia * danh_sach_mon_an.so_luong);
-  }, 0);
-}
+  if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0) {
+    total = dataipa.danh_sach_mon_an.reduce((acc, danh_sach_mon_an) => {
+      return acc + (danh_sach_mon_an.gia * danh_sach_mon_an.so_luong);
+    }, 0);
+  }
   //get data 1 bill 
   const fetchData = () => {
-    fetch(shareVarible.URLink + '/bill/' + `${route.params.data._id}`, {
+    fetch(shareVarible.URLink + '/bill/' + `${idtable}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -75,9 +79,19 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
       }
     })
       .then(response => response.json())
-      .then(data => SetDataApi(data),
+      .then(data => {
+        if (data) {
+          SetDataApi(data);
+          if (data.ten_ban_an) {
+            setNameTable(data.ten_ban_an);
+          } else {
+            console.log("Không có thuộc tính 'ten_ban_an' trong dữ liệu.");
+          }
+        }
+      },
       )
-      .catch(error => console.log(error));
+      .catch(error => console.log("hihi", error));
+
     //lay danh sach ban
     fetch(shareVarible.URLink + '/tables/', {
       method: 'GET',
@@ -90,7 +104,7 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
       .then(data => setData(data),
       )
       .catch(error => console.log(error));
-       //lấy toàn bộ bills
+    //lấy toàn bộ bills
     fetch(shareVarible.URLink + '/bills/', {
       method: 'GET',
       headers: {
@@ -170,6 +184,7 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
         )
     }
   }
+
   const SlowQYT = () => {
     if (qty > 1) {
       setQyt(qty - 1)
@@ -184,14 +199,14 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
     setShowModal1(false)
     setStatusAdjustTable(false)
   }
-  
+
   const adjustTableItem = (item) => {
     if (statusAdjustTable) {
       const datamerge = {
         id_ban_nhan: item._id,
         id_ban_doi: route.params.data._id,
       };
-  
+
       Alert.alert(
         'Confirm Merge Table',
         'Are you sure merge',
@@ -212,12 +227,15 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
                     setErrormgs(data.error);
                     alert(data.error);
                   } else {
-                    showCustomAlert('success!');
-                    fetchData();
-                    navigation.navigate('HomeWaitress')
+                    route.params.data._id = datamerge.id_ban_nhan
+                    setIDTable(datamerge.id_ban_nhan)
+                    fetchData()
+                    setNameTable(dataipa.ten_ban_an)
+                    console.log(route.params.data._id)
                   }
                 }
               );
+
             },
           },
           {
@@ -232,6 +250,7 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
             ),
         }
       )
+      console.log(dataipa.ten_ban_an)
     }
     else {
       // console.log("move id ban dich", item._id)
@@ -244,7 +263,7 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
     setStatusAdjustTable(true)
   }
   useEffect(() => {
-    fetchData(); // Gọi fetchData mỗi khi idtable hoặc qty thay đổi
+    fetchData();
   }, [idtable, qty]);
   //dieu chinh san pham
   const DialogAdjustProduct = (item, soluongProduct, priceproduct) => {
@@ -303,7 +322,7 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
       >
         <View style={styles.centeredView2}>
           <View style={styles.modalView3}>
-            <Text style={styles.styText1}>{route.params.data.name}</Text>
+            <Text style={styles.styText1}>{nameTable}</Text>
 
             <FlatList
               style={{ height: 100, width: 300, }}
@@ -311,8 +330,9 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
               keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  onPress={() => { 
-                    adjustTableItem(item) }}
+                  onPress={() => {
+                    adjustTableItem(item)
+                  }}
                   style={
                     {
                       width: 70,
@@ -410,7 +430,7 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
           <Ionicons name='arrow-back-sharp' size={35} />
         </TouchableOpacity>
         <View style={{ height: 50, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
-          <Text style={{ fontSize: 22, fontWeight: '700' }}>{route.params.data.name}</Text>
+          <Text style={{ fontSize: 22, fontWeight: '700' }}>{nameTable}</Text>
           <TouchableOpacity onPress={() => { setShowModal1(true) }}>
             <Ionicons name="caret-down-sharp" size={30} />
           </TouchableOpacity>
@@ -453,8 +473,8 @@ if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0
           />
           :
           <View style={styles.View1}>
-             <Text style={{
-          }}>Chưa có bất kì món ăn nào</Text>
+            <Text style={{
+            }}>Chưa có bất kì món ăn nào</Text>
           </View>
       }
       <View style={styles.container10}>
@@ -731,9 +751,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontWeight: '500'
   },
-  View1:{
+  View1: {
     height: "70%",
-    justifyContent:'center',
-    alignItems:"center"
+    justifyContent: 'center',
+    alignItems: "center"
   }
 })
