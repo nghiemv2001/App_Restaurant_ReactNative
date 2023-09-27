@@ -8,34 +8,64 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Alert } from 'react-native'
 import { id } from 'deprecated-react-native-prop-types/DeprecatedTextPropTypes'
 const Bill = ({ navigation, route }) => {
-  console.log(route)
+  
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
     }, [])
   );
+  const getDetails = (type) => {
+    if (route.params.data) {
+      switch (type) {
+        case "id":
+          return route.params.data._id
+        case "name":
+          return route.params.data.name
+        case "peoples":
+          return route.params.data.peoples
+        case "status":
+          return 0
+        case "image":
+          return route.params.data.image
+      }
+    }
+    return ""
+  }
+  const [dataTable, setdataTable] = useState({
+    id: getDetails("id"),
+    name: getDetails("name"),
+    peoples: getDetails("peoples"),
+    status: getDetails("status"),
+    image: getDetails("image")
+  })
+  const [dataTableMove, setdataTableMove] = useState({
+    id: getDetails("id"),
+    name: getDetails("name"),
+    peoples: getDetails("peoples"),
+    status: "1",
+    image: getDetails("image")
+  })
   const [data, setData] = useState(null);
   const [dataipa, SetDataApi] = useState([]);
   const [dataproductchef, SetDataProductChef] = useState(null)
-  const [routeData, setRouteData] = useState(route);
-  // const idtable = route.params.data._id
   const [idtable, setIDTable] = useState(route.params.data._id)
   const [nameTable, setNameTable] = useState(route.params.data.name)
   const [errorMsg, setErrorMsg] = useState('');
   const [isVisible, setIsVisible] = useState(false);
-  const [showModel, setShowModal] = useState(false);
-  const [showModel1, setShowModal1] = useState(false);
   const [qty, setQyt] = useState(1);
   const [price, setPrice] = useState(0);
   const [dataItem, setDataItem] = useState(null);
-  const [statusAdjustTable, setStatusAdjustTable] = useState(false);
+  const [showModel, setShowModal] = useState(false);
+  const [showModel1, setShowModal1] = useState(false);
   const [showModel2, setShowModal2] = useState(false);
+  const [showModel3, setShowModal3] = useState(false);
+  const [showModelMove, setShowModalMove] = useState(false);
+  const [showModelCofirmMove, setShowModalConfimMove] = useState(false);
   const [databills, setDataBills] = useState(null);
   const [datamerge, setDataMerge] = useState({
     id_ban_doi: "",
     id_ban_nhan: ""
   })
-  const [renderItem, setRenderItem] = useState(true)
   const CustomAlert = ({ isVisible, message, onConfirm }) => {
     return (
       <Modal
@@ -71,7 +101,7 @@ const Bill = ({ navigation, route }) => {
   }
   //get data 1 bill 
   const fetchData = () => {
-    fetch(shareVarible.URLink + '/bill/' + `${idtable}`, {
+    fetch(shareVarible.URLink + '/bill/' + `${route.params.data._id}`, {
       method: 'GET',
       headers: {
         'Accept': 'application/json',
@@ -84,13 +114,11 @@ const Bill = ({ navigation, route }) => {
           SetDataApi(data);
           if (data.ten_ban_an) {
             setNameTable(data.ten_ban_an);
-          } else {
-            console.log("Không có thuộc tính 'ten_ban_an' trong dữ liệu.");
           }
         }
       },
       )
-      .catch(error => console.log("hihi", error));
+      .catch(error => console.log(error));
 
     //lay danh sach ban
     fetch(shareVarible.URLink + '/tables/', {
@@ -194,73 +222,134 @@ const Bill = ({ navigation, route }) => {
     setQyt(qty + 1);
 
   }
+
   const moveTable = () => {
-    setShowModal2(true)
-    setShowModal1(false)
-    setStatusAdjustTable(false)
-  }
-
-  const adjustTableItem = (item) => {
-    if (statusAdjustTable) {
-      const datamerge = {
-        id_ban_nhan: item._id,
-        id_ban_doi: route.params.data._id,
-      };
-
-      Alert.alert(
-        'Confirm Merge Table',
-        'Are you sure merge',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Thực hiện fetch và các hành động khác ở đây
-              fetch(shareVarible.URLink + '/merge', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(datamerge)
-              }).then(res => res.json()).then(
-                data => {
-                  if (data.error) {
-                    setErrormgs(data.error);
-                    alert(data.error);
-                  } else {
-                    route.params.data._id = datamerge.id_ban_nhan
-                    setIDTable(datamerge.id_ban_nhan)
-                    fetchData()
-                    setNameTable(dataipa.ten_ban_an)
-                    console.log(route.params.data._id)
-                  }
-                }
-              );
-
-            },
-          },
-          {
-            text: 'Cancel',
-          },
-        ],
-        {
-          cancelable: true,
-          onDismiss: () =>
-            Alert.alert(
-              'This alert was dismissed by tapping outside of the alert dialog.',
-            ),
+    const datamerge = {
+      id_ban_nhan: dataItem._id,
+      id_ban_doi: route.params.data._id,
+    };
+    fetch(shareVarible.URLink + '/table/update/' + `${datamerge.id_ban_doi}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataTable),
+    }).then(res => res.json()).then(
+      data => {
+        if (data.error) {
+          console.log(data.error)
         }
-      )
-      console.log(dataipa.ten_ban_an)
-    }
-    else {
-      // console.log("move id ban dich", item._id)
-      // console.log("move", route.params.data._id)
-    }
+      }
+    )
+    fetch(shareVarible.URLink + '/table/update/' + `${datamerge.id_ban_nhan}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({status: 1}),
+    }).then(res => res.json()).then(
+      data => {
+        if (data.error) {
+          console.log(data.error)
+        }
+      }
+    )
+    fetch(shareVarible.URLink + '/bill/update/' + `${dataipa._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ten_ban_an : dataItem.ten_ban_an , danh_sach_mon_an : dataipa.danh_sach_mon_an}),
+    }).then(res => res.json()).then(
+      data => {
+        if (data.error) {
+          console.log(data.error)
+        }
+      }
+    )
+    fetch(shareVarible.URLink + '/hoa-don',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id_ban_an: datamerge.id_ban_nhan, ten_ban_an: dataItem.name })
+    }).then(res => res.json()).then(
+      data => {
+        if (data.error) {
+          console.log(data.error)
+        }
+        else {
+          fetch(shareVarible.URLink + '/movebill',
+          {
+            method :'POST',
+            headers : {
+              'Content-Type': 'application/json'
+            },
+            body :JSON.stringify({id_doi : datamerge.id_ban_doi, id_nhan :datamerge.id_ban_nhan})
+          }).then(res =>res.json()).then(
+            data =>{
+              if(data.error){
+                console.log(data.error)
+              }
+              else{
+                route.params.data._id = datamerge.id_ban_nhan
+                setIDTable(datamerge.id_ban_nhan)
+                fetchData()
+                setNameTable(dataipa.ten_ban_an)
+        
+                setShowModalConfimMove(false)
+              }
+            }
+          )
+        }
+      }
+    )
+  }
+  const MergeTable = () => {
+    const datamerge = {
+      id_ban_nhan: dataItem._id,
+      id_ban_doi: route.params.data._id,
+    };
+    const response = fetch(shareVarible.URLink + '/table/update/' + `${datamerge.id_ban_doi}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dataTable),
+    }).then(res => res.json()).then(
+      data => {
+        if (data.error) {
+          setErrormgs(data.error);
+          alert(data.error);
+        }
+      }
+    )
+    // // Thực hiện fetch và các hành động khác ở đây
+    fetch(shareVarible.URLink + '/merge', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(datamerge)
+    }).then(res => res.json()).then(
+      data => {
+        if (data.error) {
+          setErrormgs(data.error);
+          alert(data.error);
+        } else {
+          route.params.data._id = datamerge.id_ban_nhan
+          setIDTable(datamerge.id_ban_nhan)
+          fetchData()
+          setNameTable(dataipa.ten_ban_an)
+          setShowModal2(false)
+        }
+      }
+    );
   }
   const mergeTable = () => {
     setShowModal2(true)
     setShowModal1(false)
-    setStatusAdjustTable(true)
   }
   useEffect(() => {
     fetchData();
@@ -315,6 +404,94 @@ const Bill = ({ navigation, route }) => {
           onConfirm={handleConfirm}
         /> : null
       }
+      {/* confirm merge or move*/}
+      <Modal
+        transparent={true}
+        visible={showModel1}
+        animationType='slide'
+      >
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 100,
+            width: 300,
+            backgroundColor: "#FDD736",
+            borderTopLeftRadius: 40,
+            borderTopRightRadius: 40,
+            justifyContent: 'space-around',
+            alignItems: 'center'
+          }}>
+            <TouchableOpacity
+              onPress={() => { setShowModal1(false) }}
+              style={{ right: 100, top: 10 }}>
+              <Text style={{ fontSize: 22 }}>skip&nbsp;&rarr;</Text>
+            </TouchableOpacity>
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 100 }} />
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 100 }} />
+          </View>
+          <View style={{
+            height: 200,
+            width: 300,
+            backgroundColor: "white",
+            borderBottomLeftRadius: 40,
+            borderBottomRightRadius: 40,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            <Text style={{
+              fontFamily: ''
+            }}>Do you want to merge a table or move a table?</Text>
+            <Text style={{
+              fontFamily: ''
+            }}>Please select the option you'd like to do.</Text>
+            <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
+              <TouchableOpacity style={{
+                height: 40,
+                width: 70,
+                borderRadius: 40,
+                backgroundColor: '#566FA5',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 1
+              }}
+                onPress={() => { mergeTable() }}
+              >
+                <Text style={{ color: 'white' }}>merge</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{
+                height: 40,
+                width: 70,
+                borderRadius: 40,
+                backgroundColor: '#566FA5',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+                onPress={() => {
+                  setShowModal1(false)
+                  setShowModalMove(true)
+                }}
+              >
+                <Text style={{ color: 'white' }}>move</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+          <View style={{
+            height: 60,
+            width: 60,
+            position: "absolute",
+            backgroundColor: "white",
+            borderWidth: 1,
+            borderColor: "gray",
+            borderRadius: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            top: 270
+          }}>
+            <Ionicons name='at-sharp' size={30} />
+          </View>
+        </View>
+      </Modal>
+      {/*FlaList merge */}
       <Modal
         transparent={true}
         visible={showModel2}
@@ -322,28 +499,33 @@ const Bill = ({ navigation, route }) => {
       >
         <View style={styles.centeredView2}>
           <View style={styles.modalView3}>
-            <Text style={styles.styText1}>{nameTable}</Text>
-
+            <Text style={styles.styText1}>--{nameTable}--</Text>
             <FlatList
               style={{ height: 100, width: 300, }}
               data={data}
               keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
-                <TouchableOpacity
-                  onPress={() => {
-                    adjustTableItem(item)
-                  }}
-                  style={
-                    {
-                      width: 70,
-                      height: 70,
-                      backgroundColor: 'lightblue',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      margin: 10,
-                    }}>
-                  <Text>{item.name}</Text>
-                </TouchableOpacity>
+                (item.status == "1" && item._id != dataTable.id) ?
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowModal3(true)
+                      setDataItem(item)
+                    }}
+                    style={
+                      {
+                        width: 90,
+                        height: 90,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        margin: 10,
+                        borderWidth: 1,
+                        borderColor: "gray",
+                        borderRadius: 40
+                      }}>
+                    <Ionicons name="restaurant-outline" size={35} />
+                    <Text>{item.name}</Text>
+                  </TouchableOpacity>
+                  : null
               )}
               contentContainerStyle={{
                 justifyContent: 'center',
@@ -358,32 +540,221 @@ const Bill = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
+      {/* FlaList merge move */}
       <Modal
         transparent={true}
-        visible={showModel1}
+        visible={showModelMove}
         animationType='slide'
       >
         <View style={styles.centeredView2}>
-          <View style={styles.modalView2}>
-            <Text style={styles.styText1}>{route.params.data.name}</Text>
-            <TouchableOpacity style={styles.styTouch} onPress={() => { moveTable() }}>
-              <Text style={{ textAlign: 'center' }}>
-                Move Tabe
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]} onPress={() => { mergeTable() }}>
-              <Text style={{ textAlign: 'center' }}>
-                Merge Tabe
-              </Text>
-            </TouchableOpacity>
+          <View style={styles.modalView3}>
+            <Text style={styles.styText1}>--{nameTable}--</Text>
+            <FlatList
+              style={{ height: 100, width: 300, }}
+              data={data}
+              keyExtractor={(item) => item._id}
+              renderItem={({ item }) => (
+                (item.status == "0" && item._id != dataTable.id) ?
+                  <TouchableOpacity
+                    onPress={() => {
+                      setShowModalConfimMove(true)
+                      setShowModalMove(false)
+                      setDataItem(item)
+                    }}
+                    style={
+                      {
+                        width: 90,
+                        height: 90,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        margin: 10,
+                        borderWidth: 1,
+                        borderColor: "gray",
+                        borderRadius: 40
+                      }}>
+                    <Ionicons name="restaurant-outline" size={35} />
+                    <Text>{item.name}</Text>
+                  </TouchableOpacity>
+                  : null
+              )}
+              contentContainerStyle={{
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+              numColumns={3} />
             <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
-              <Text style={{ textAlign: 'center' }} onPress={() => { setShowModal1(false) }}>
+              <Text style={{ textAlign: 'center' }} onPress={() => { setShowModalMove(false) }}>
                 Cancel
               </Text>
             </TouchableOpacity>
           </View>
         </View>
       </Modal>
+      {/* confirm merge */}
+      <Modal
+        transparent={true}
+        visible={showModel3}
+        animationType='slide'
+      >
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 100,
+            width: 300,
+            backgroundColor: "#FDD736",
+            borderTopLeftRadius: 40,
+            borderTopRightRadius: 40,
+            justifyContent: 'space-around',
+            alignItems: 'center'
+          }}>
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 100 }} />
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 100 }} />
+          </View>
+          <View style={{
+            height: 200,
+            width: 300,
+            backgroundColor: "white",
+            borderBottomLeftRadius: 40,
+            borderBottomRightRadius: 40,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            <Text style={{
+              fontFamily: ''
+            }}>Are you sure?</Text>
+            <Text style={{
+              fontFamily: ''
+            }}>Please select the option you'd like to do.</Text>
+            <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
+              <TouchableOpacity style={{
+                height: 40,
+                width: 70,
+                borderRadius: 40,
+                backgroundColor: '#566FA5',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 1
+              }}
+                onPress={() => { setShowModal3(false) }}
+              >
+                <Text style={{ color: 'white' }}>cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{
+                height: 40,
+                width: 70,
+                borderRadius: 40,
+                backgroundColor: '#566FA5',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+                onPress={() => {
+                  setShowModal3(false)
+                  MergeTable()
+                }}
+              >
+                <Text style={{ color: 'white' }}>ok</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+          <View style={{
+            height: 60,
+            width: 60,
+            position: "absolute",
+            backgroundColor: "white",
+            borderWidth: 1,
+            borderColor: "gray",
+            borderRadius: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            top: 270
+          }}>
+            <Ionicons name='at-sharp' size={30} />
+          </View>
+        </View>
+      </Modal>
+      {/* confirm move */}
+      <Modal
+        transparent={true}
+        visible={showModelCofirmMove}
+        animationType='slide'
+      >
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 100,
+            width: 300,
+            backgroundColor: "#FDD736",
+            borderTopLeftRadius: 40,
+            borderTopRightRadius: 40,
+            justifyContent: 'space-around',
+            alignItems: 'center'
+          }}>
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 100 }} />
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 100 }} />
+          </View>
+          <View style={{
+            height: 200,
+            width: 300,
+            backgroundColor: "white",
+            borderBottomLeftRadius: 40,
+            borderBottomRightRadius: 40,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            <Text style={{
+              fontFamily: ''
+            }}>Are you sure?</Text>
+            <Text style={{
+              fontFamily: ''
+            }}>Please select the option you'd like to do.</Text>
+            <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
+              <TouchableOpacity style={{
+                height: 40,
+                width: 70,
+                borderRadius: 40,
+                backgroundColor: '#566FA5',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 1
+              }}
+                onPress={() => { setShowModalConfimMove(false) }}
+              >
+                <Text style={{ color: 'white' }}>cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{
+                height: 40,
+                width: 70,
+                borderRadius: 40,
+                backgroundColor: '#566FA5',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+                onPress={() => {
+                    setShowModalMove(false)
+                    moveTable()
+                }}
+              >
+                <Text style={{ color: 'white' }}>ok</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+          <View style={{
+            height: 60,
+            width: 60,
+            position: "absolute",
+            backgroundColor: "white",
+            borderWidth: 1,
+            borderColor: "gray",
+            borderRadius: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            top: 270
+          }}>
+            <Ionicons name='at-sharp' size={30} />
+          </View>
+        </View>
+      </Modal>
+      {/* adjust product item in flalist */}
       <Modal
         transparent={true}
         visible={showModel}
@@ -424,6 +795,7 @@ const Bill = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
+
       <View style={styles.container7}>
         <TouchableOpacity onPress={() => navigation.navigate('HomeWaitress')}
         >
@@ -711,13 +1083,12 @@ const styles = StyleSheet.create({
     width: 200,
   },
   styTouch: {
-    width: 100,
-    height: 40,
-    backgroundColor: '#00FFFF',
+    height: 45,
+    width: 120,
+    borderRadius: 40,
+    backgroundColor: '#566FA5',
     justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderRadius: 10
+    alignItems: 'center'
   },
   centeredView2: {
     flex: 1,
@@ -748,8 +1119,8 @@ const styles = StyleSheet.create({
   },
   styText1: {
     fontSize: 22,
-    marginBottom: 10,
-    fontWeight: '500'
+    top: -10,
+    fontWeight: '700'
   },
   View1: {
     height: "70%",

@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, Alert} from 'react-native'
+import { View, Text, Image, TouchableOpacity, Alert, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
@@ -9,32 +9,24 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import { StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'
 const Drawer = createDrawerNavigator();
-const ListTable = ({navigation}) => {
+const ListTable = ({ navigation }) => {
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
     }, [])
   );
-  // console.log(refreshData, reloadTableData)
   const [datatenban, setDataTEnBan] = useState({
     id_ban_an: "",
     ten_ban_an: ''
   })
   const [data, setData] = useState(null);
+  const [dataitem, setDataItem] = useState(null);
   const [showModel, setShowModal] = useState(false);
   const [databills, setDataBills] = useState(null);
   const [nameTable, setNameTable] = useState(null)
   const [valueTable, setValueTable] = useState(null)
-  const [showModel2, setShowModal2] = useState(false);
   const [statusAdjustTable, setStatusAdjustTable] = useState(false);
-  const data1 = [
-    { id: 'a', value: 'A' },
-    { id: 'b', value: 'B' },
-    { id: 'c', value: 'C' },
-    { id: 'd', value: 'D' },
-    { id: 'e', value: 'E' },
-    { id: 'f', value: 'F' },
-  ];
+  
   //read data
   const fetchData = () => {
     fetch(shareVarible.URLink + '/tables/', {
@@ -65,30 +57,21 @@ const ListTable = ({navigation}) => {
   //kiem tra bill do co hay chua 
   const CheckNullTable = (data) => {
     fetchData()
-    // console.log("check null table ", datatenban)
-    // console.log("List table" , data)
     setDataTEnBan({ id_ban_an: data._id })
-    // gia tri ten_ban_an và data_id không giống nhau
     const arrbills = Object.values(databills);
     const table = arrbills.find(t => t.id_ban_an === data._id);
     if (table != undefined) {
       navigation.navigate('Bill', { data })
     }
     else {
-      Alert.alert('BILL', 'Table empty ! Create bill ?', [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'OK', onPress: () =>
-            CreateBillabdEditTable(data)
-        },
-      ]);
+      setShowModal(true)
+      setDataItem(data)
     }
   }
   // kiem tra ban do co bill chua va tao mot bill moi
-  const CreateBillabdEditTable = async (data) => {
+  const CreateBillabdEditTable = (data) => {
+    setShowModal(false)
+    console.log(shareVarible.URLink + '/table/update/' + `${dataitem._id}`)
     //edit table
     const updates = {
       name: data.name,
@@ -96,7 +79,7 @@ const ListTable = ({navigation}) => {
       status: 1,
       image: data.image
     };
-    const response = await fetch(shareVarible.URLink + '/table/update/' + `${data._id}`, {
+    const response = fetch(shareVarible.URLink + '/table/update/' + `${dataitem._id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -105,11 +88,10 @@ const ListTable = ({navigation}) => {
     }).then(res => res.json()).then(
       data => {
         if (data.error) {
-          setErrormgs(data.error);
           alert(data.error);
         }
         else {
-          fetchData();
+          navigation.navigate('Bill', { data })
         }
       }
     )
@@ -120,11 +102,11 @@ const ListTable = ({navigation}) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id_ban_an: data._id, ten_ban_an: data.name })
+        body: JSON.stringify({ id_ban_an: dataitem._id, ten_ban_an: dataitem.name })
       }).then(res => res.json()).then(
         data => {
           if (data.error) {
-            setErrormgs(data.error);
+      
             alert(data.error);
           }
           else {
@@ -133,10 +115,6 @@ const ListTable = ({navigation}) => {
         }
       )
   }
-  // useEffect(() => {
-  //   fetchData();
-  // }, []);
-  //Design item in SwipeListView
   const renderlist = ((item) => {
     return (
       <View style={styles.containner}>
@@ -168,16 +146,90 @@ const ListTable = ({navigation}) => {
             <Text >{item.peoples}</Text>
           </View>
         </View>
-        <View
-          style={{ flex: 4, justifyContent: 'space-evenly', alignItems: 'flex-end', padding: 10 }}
-        >
-        </View>
       </View>
     )
   })
 
   return (
     <SafeAreaView style={styles.containner3}>
+      <Modal
+        transparent={true}
+        visible={showModel}
+        animationType='slide'
+      >
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 100,
+            width: 300,
+            backgroundColor: "#FDD736",
+            borderTopLeftRadius: 40,
+            borderTopRightRadius: 40,
+            justifyContent: 'space-around',
+            alignItems: 'center'
+          }}>
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 100 }} />
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 100 }} />
+          </View>
+          <View style={{
+            height: 200,
+            width: 300,
+            backgroundColor: "white",
+            borderBottomLeftRadius: 40,
+            borderBottomRightRadius: 40,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            <Text style={{
+              fontFamily: ''
+            }}>It seems that the table doesn't have a bill yet</Text>
+            <Text style={{
+              fontFamily: ''
+            }}>let's create a bill for the table, shall we? </Text>
+            <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
+              <TouchableOpacity style={{
+                height: 40,
+                width: 70,
+                borderRadius: 40,
+                backgroundColor: 'white',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderWidth: 1
+              }}
+              onPress={() => { setShowModal(false) }}
+              >
+                <Text style={{ color: 'black' }}>skip</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{
+                height: 40,
+                width: 70,
+                borderRadius: 40,
+                backgroundColor: '#566FA5',
+                justifyContent: 'center',
+                alignItems: 'center'
+              }}
+              onPress={() => {CreateBillabdEditTable(data)}}
+              >
+                <Text style={{ color: 'white' }}>create</Text>
+              </TouchableOpacity>
+            </View>
+
+          </View>
+          <View style={{
+            height: 60,
+            width: 60,
+            position: "absolute",
+            backgroundColor: "white",
+            borderWidth: 1,
+            borderColor: "gray",
+            borderRadius: 100,
+            justifyContent: 'center',
+            alignItems: 'center',
+            top: 270
+          }}>
+            <Ionicons name='at-sharp' size={30} />
+          </View>
+        </View>
+      </Modal>
       <View>
         <SwipeListView
           data={data}
@@ -215,6 +267,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: '#EDF6D8',
     marginBottom: 10,
+    width: "100%"
   },
   imagepic: {
     flex: 3,
@@ -227,11 +280,13 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
   containner2: {
+    width: "100%",
     marginLeft: 10,
     flex: 3
   },
   styText: {
     fontSize: 30,
+    width: "100%",
     fontWeight: 'bold',
   },
   styTextStatus: {
@@ -265,33 +320,6 @@ const styles = StyleSheet.create({
     width: 50,
     marginRight: 40,
   },
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  modalView1: {
-    height: 250,
-    width: 180,
-    backgroundColor: 'white',
-    padding: 30,
-    borderRadius: 20,
-    shadowColor: 'blue',
-    elevation: 5,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  modalView2: {
-    height: 420,
-    width: 320,
-    backgroundColor: 'white',
-    padding: 30,
-    borderRadius: 20,
-    shadowColor: 'blue',
-    elevation: 5,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
   styTouch: {
     height: 40, width: 100,
     borderRadius: 10,
@@ -312,5 +340,45 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: 3,
     backgroundColor: 'lightblue',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: "100%",
+    width: "100%"
+  },
+  modalView: {
+    height: 250,
+    width: 180,
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 20,
+    shadowColor: 'blue',
+    elevation: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  View1: {
+    height: 250,
+    width: 180,
+    backgroundColor: 'yellow',
+    padding: 30,
+    borderRadius: 20,
+    shadowColor: 'blue',
+    elevation: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  View1: {
+    height: 250,
+    width: 180,
+    backgroundColor: 'white',
+    padding: 30,
+    borderRadius: 20,
+    shadowColor: 'blue',
+    elevation: 5,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
