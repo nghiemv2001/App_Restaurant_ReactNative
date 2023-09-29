@@ -10,6 +10,7 @@ import img_salenumber from '../../../assets/salenumber.png'
 import img_movetable from '../../../assets/table_bar.png'
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import Icon from 'react-native-vector-icons/FontAwesome'
 
 const ListTableAdmin = ({navigation}) => {
   const [databills, setDataBills] = useState(null);
@@ -135,61 +136,15 @@ const ListTableAdmin = ({navigation}) => {
   })
   return (
 <SafeAreaView style ={{
-      height : '100%',
-      width : '100%',
-      backgroundColor : '#EDF6D8'
+  backgroundColor:'#EDF6D8'
     }}>
-      <View>
-        {/* <SwipeListView
-          data={data}
-          renderItem={({ item }) => {
-            return renderlist(item)
-          }}
-          renderHiddenItem={(data, rowMap) => (
-            <View style={{
-              flexDirection: 'row',
-              height: 135,
-              width: 200,
-              marginLeft: 211,
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#808080',
-            }}>
-              <View style={{
-                borderRightWidth: 3,
-                height: '100%',
-                justifyContent: 'center',
-                alignContent: 'center'
-              }}>
-                <TouchableOpacity 
-                  onPress={() => navigation.navigate('EditTable',{ data })}
-                > 
-                  <Ionicons name='md-pencil' size={55} style={{marginRight : 10}} />
-                </TouchableOpacity>
-                
-              </View>
-              <View>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('BillAdmin')}
-                >
-                  <Image
-                  style={{
-                    height: 60,
-                    width: 60,
-                    marginLeft: 20
-                  }}
-                  
-                  source={img_salenumber}
-                />
-                </TouchableOpacity>
-                
-              </View>
-            </View>
-          )}
-          leftOpenValue={0}
-          rightOpenValue={-200}
-          keyExtractor={item => item._id}
-        /> */}
+      {/* <TouchableOpacity style={{position:'absolute',marginTop: 40, marginLeft: 345, zIndex:1}}
+      onPress={()=>navigation.navigate("CreateTable")}
+      >
+         <Ionicons name="add" size={40} color="black" />
+      </TouchableOpacity> */}
+   
+      <View style={{backgroundColor:'red'}}>
         <FlatList
           data={data}
           renderItem={({ item }) => {

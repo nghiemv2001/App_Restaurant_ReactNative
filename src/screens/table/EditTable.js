@@ -40,6 +40,7 @@ const EditTable = ({ navigation , route}) => {
        .catch(error => console.log(error));
    }
    useEffect(() => {
+    console.log("1")
     fetchData();
   }, []);
     // read data object table form screen listable
@@ -128,8 +129,6 @@ const EditTable = ({ navigation , route}) => {
           setModalVisible(true);
         }}/>
           fetchData()
-          console.log(dataApiTable)
-          navigation.navigate('HomeAdmin');
           // navigation.navigate('ListTableAdmin');
         }
       }
@@ -202,10 +201,10 @@ const EditTable = ({ navigation , route}) => {
     <View
       style={styles.View1}>
         <TouchableOpacity
-        style={{ marginLeft: 10, }}
+        style={{ marginLeft: 10, marginTop: 30}}
         onPress={() => navigation.navigate('HomeAdmin')}
       >
-        <Ionicons name='arrow-back-sharp' size={35} />
+        <Ionicons name='arrow-undo-circle-outline' size={35} />
       </TouchableOpacity>
       <Image
         style={styles.stylepicturemain}

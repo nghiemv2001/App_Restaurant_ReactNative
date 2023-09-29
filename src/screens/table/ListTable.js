@@ -8,8 +8,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'
+import { useSelector, useDispatch } from 'react-redux';
 const Drawer = createDrawerNavigator();
 const ListTable = ({ navigation }) => {
+  const darkMode = useSelector(state=>state.tableReducer.darkMode);
   useFocusEffect(
     React.useCallback(() => {
       fetchData();

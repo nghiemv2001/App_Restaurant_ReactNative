@@ -234,7 +234,7 @@ return (
         style={{ marginLeft: 10, }}
         onPress={() => navigation.navigate('ListTableAdmin')}
       >
-        <Ionicons name='arrow-back-sharp' size={35} />
+        <Ionicons name='arrow-undo-circle-outline' size={45} />
       </TouchableOpacity>
     </View>
 

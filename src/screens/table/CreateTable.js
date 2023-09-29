@@ -10,7 +10,7 @@ import shareVarible from './../../AppContext'
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons'
-const CreateTable = ({ navigation, route }) => {
+const CreateTable = ({ navigation}) => {
   const [fdata, setFdata] = useState({
     name: "",
     peoples: "",
@@ -66,9 +66,7 @@ const CreateTable = ({ navigation, route }) => {
             alert(data.error);
           }
           else {
-            alert('Create Table successfully');
-            navigation.navigate('HomeAdmin');
-            console.log(data)
+            navigation.navigate("HomeAdmin")
           }
         }
       )
@@ -139,27 +137,22 @@ const CreateTable = ({ navigation, route }) => {
   return (
     <View
       style={styles.View1}>
-      <View style={{ flexDirection: 'row' }}>
-
-        <View style={{ width: "80%" }}>
+         <TouchableOpacity
+        style={{ marginLeft: 10, marginTop: 20}}
+        onPress={() => navigation.navigate('HomeAdmin')}
+      >
+        <Ionicons name='arrow-undo-circle-outline' size={35} />
+      </TouchableOpacity>
+      <View style={{ flexDirection: 'row', marginTop: 30, justifyContent:'center', alignItems:'center' }}>
           <Image
             style={styles.stylepicturemain}
             source={mainpicture} />
-        </View >
-        <TouchableOpacity
-          onPress={() => navigation.navigate('ListTableAdmin')}
-          >
-         
-            <Ionicons name='md-list-outline' size={50} />
-   
-        </TouchableOpacity>
       </View>
-
-
       <KeyboardAwareScrollView >
         <View
           style={{
             flexDirection: 'row',
+            justifyContent:'center',
           }}>
           <View
             style={{
@@ -230,8 +223,17 @@ const CreateTable = ({ navigation, route }) => {
             </View>
           </View>
         </View>
-        <Image style={styles.PTtable}
-          source={{ uri: imagesrc }}></Image>
+        {
+          (imagesrc == null) ? 
+          <View>
+            <Ionicons style= {{position:'absolute', marginTop: 80, marginLeft: 170, zIndex:1}}name="images" size={35}/>
+          <Image style={styles.PTtable}
+            source={{ uri: imagesrc }}></Image>
+          </View>
+          :
+             <Image style={styles.PTtable}
+            source={{ uri: imagesrc }}></Image>
+        }
         <View
           style={{
             flexDirection: 'row',
@@ -284,18 +286,17 @@ const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: 'white',
-    marginTop: -15,
+    marginTop: 0,
     width: 250,
-    height: 40,
+    height: 50,
     borderRadius: 40,
   },
   dropdown: {
-    height: 40,
+    height: 50,
     borderColor: 'gray',
     borderWidth: 1,
     borderRadius: 40,
-    paddingLeft: 10
-
+    paddingLeft: 10,
   },
   icon: {
     marginRight: 5,
@@ -326,14 +327,12 @@ const styles = StyleSheet.create({
     height: 200,
     width: 200,
     borderWidth: 10,
-    marginTop: -60,
-    marginLeft: 130
+    marginTop: -90,
   },
   View1: {
     height: '100%',
     width: '100%',
     justifyContent: 'center',
-
     backgroundColor: '#EDF6D8',
     marginTop: 10,
   },
@@ -342,33 +341,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#50663C',
     marginLeft: 5,
-    marginBottom: 20
+    marginBottom: 10,
+    marginTop: 10
   },
   Tpeoples: {
     fontSize: 23,
     fontWeight: 'bold',
     color: '#50663C',
     marginLeft: 5,
-    marginBottom: 20
+    marginTop: 30
   },
   Tstatus: {
     fontSize: 23,
     fontWeight: 'bold',
     color: '#50663C',
-    marginLeft: 5
+    marginLeft: 5,
+    marginTop: 35
   },
   TIPname: {
-    height: 40,
+    height: 50,
     width: 250,
     backgroundColor: 'white',
     borderRadius: 20,
     marginTop: -10,
-    marginBottom: 20,
+    marginBottom: 30,
     paddingLeft: 5,
     borderWidth: 1,
   },
   TIPpeoples: {
-    height: 40,
+    height: 50,
     width: 250,
     backgroundColor: 'white',
     borderRadius: 20,
@@ -386,7 +387,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     marginTop: 10,
     marginLeft: 90,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: 'black'
   },
   Tcamera: {
@@ -420,14 +421,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     borderRadius: 50,
-    marginTop: 25,
+    marginTop: 50,
     borderWidth: 1,
   },
   styleerrormgs: {
     width: '100%',
     position: 'absolute',
     fontSize: 17,
-    marginTop: 420,
+    marginTop: 440,
     textAlign: 'center',
     color: '#CD5C5C',
     fontWeight: '400'

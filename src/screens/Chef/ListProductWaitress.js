@@ -33,41 +33,16 @@ const ListProductStep1 = () => {
       fetchData();
     }, []) 
   );
-
-  // //Edit Product 
-  // const EditProduct=async(item)=>{
-  //   console.log(item)
-  //   const now = new Date();
-  //   dataproduct2.name = item.name,
-  //   dataproduct2.image = item.image,
-  //   dataproduct2.status = 1,
-  //   dataproduct2.quantity = item.quantity,
-  //   dataproduct2.second = now.getSeconds(),
-  //   dataproduct2.minute = now.getMinutes(),
-  //   dataproduct2.hour = now.getHours()
-  //   const response = await fetch(shareVarible.URLink + '/productchef/update/'+`${item._id}`, {
-  //     method: 'PUT',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify(dataproduct2),
-  //   }).then(res => res.json()).then(
-  //     data => {
-  //       if (data.error) {
-  //         setErrormgs(data.error);
-  //         alert(data.error);
-  //       }
-  //       else {
-  //         fetchData()
-  //         alert("OK");
-  //       }
-  //     }
-  //   )
-  // }
-  //render Faglist
+    const sortDataByStatus = (data) => {
+      const status0 = data.filter(item => item.status === 0);
+      const status1 = data.filter(item => item.status === 1);
+      const status2 = data.filter(item => item.status === 2);
+      return [...status0, ...status1, ...status2];
+    };
+  
   const renderlist = ((item) => {
     return (
-        <View style={{marginBottom : 3, backgroundColor: '#EDF6D8', paddingVertical : 5, paddingRight : 200,paddingLeft : 5,flexDirection : 'row'}}>
+      <View style={{ marginBottom: 3, borderBottomWidth: 1, borderColor: 'gray', backgroundColor: '#EDF6D8', paddingVertical: 5, paddingRight: 200, paddingLeft: 5, flexDirection: 'row' }}>
         <Image style={{height : 100, width : 100}}  source={{ uri: item.image }}/>
           <View style={{flexDirection : 'column', justifyContent :'space-between', paddingLeft : 5, width :'100%'}}>
             <View style={{flexDirection : 'row' }}> 
@@ -98,9 +73,10 @@ const ListProductStep1 = () => {
 })
 
   return (
-    <View style={{backgroundColor :'black'}}>
+    <View style={{justifyContent: "center", alignItems:'center'}}>
             <FlatList
-                data={dataproduct}
+                style={{paddingHorizontal: 10, marginTop: 30}}
+                data={sortDataByStatus(dataproduct)}
                 renderItem={({ item }) => {
                     return renderlist(item)
                 }}

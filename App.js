@@ -53,12 +53,18 @@ import ListProductAdmin from './src/screens/Chef/ListProductAdmin';
 import ChartofInvoice from './src/screens/Chart/ChartofInvoice';
 const Stack = createNativeStackNavigator();
 
+import { Provider } from 'react-redux';
+import Redux from './src/redux/store'
 
 export default function App() {
   return (
+    <Provider store={Redux.store}>
     <NavigationContainer>
       <Stack.Navigator>
-      <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
+      <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
           headerShown: false
         }} />
         <Stack.Screen name="Wellcome" component={Welcome} options={{
@@ -67,9 +73,7 @@ export default function App() {
         <Stack.Screen name="Signin" component={Signin} options={{
           headerShown: false
         }} />
-        <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
-          headerShown: false
-        }} />
+        
         <Stack.Screen name="HomeChef" component={HomeChef} options={{
           headerShown: false
         }} />
@@ -160,6 +164,7 @@ export default function App() {
         }} />
       </Stack.Navigator>
     </NavigationContainer>
+    </Provider>
   );
 }
 const styles = StyleSheet.create({

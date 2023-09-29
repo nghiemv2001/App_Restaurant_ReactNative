@@ -1,35 +1,31 @@
-import { View, Text } from 'react-native'
-import React, {useEffect,useState} from 'react'
-import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import React from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import CustomDrawerWaitress from '../../component/CustomDrawerWaitress';
-import CreateTable from '../table/CreateTable'
 import CreateCategory from '../category/CreateCategory'
-import ListProduct from '../Product/ListProduct';
 import ListTableAdmin from '../table/ListTableAdmin'
-import ListProductByCategogy from '../Product/ListProductByCategogy';
 import ListInvoice from '../revenue/ListInvoice';
 import CreateProduct from '../Product/CreateProduct';
-import shareVarible from './../../AppContext'
 import ListProductAdmin from '../Chef/ListProductAdmin';
 import ListAccount from '../auth/ListAccount';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 const Drawer = createDrawerNavigator();
+import { useSelector, useDispatch } from 'react-redux';
 const HomeAdmin = () => {
+  const darkMode = useSelector(state=>state.tableReduce.darkMode);
+  console.log(darkMode)
   return (
     <Drawer.Navigator drawerContent={props=><CustomDrawerWaitress{...props}/>} 
     screenOptions={{
-        headerShown : false,
-        drawerActiveTintColor:'green',
-        drawerInactiveTintColor:'black',
-        headerStyle :{
-          height: 0
-        ,
-        },
-        drawerStyle: {
-          backgroundColor: 'white',
-          width: 240,
-        },
+      headerShown : false,
+      headerStyle:{
+        height: 0,
+      },
+      drawerActiveTintColor:'green',
+      drawerInactiveTintColor:'black',
+      drawerStyle: {
+        backgroundColor: 'white',
+        width: 240,
+      },
       }}>
       <Drawer.Screen 
         options={{
