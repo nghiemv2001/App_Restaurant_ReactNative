@@ -37,12 +37,12 @@ const ListProduct = ({ navigation }) => {
         backgroundColor: '#EDF6D1',
       }}
     >
-      <TouchableOpacity
-        style={{ marginLeft: 10, marginTop:20}}
+      {/* <TouchableOpacity
+        style={{ marginLeft: 10, marginTop:40}}
         onPress={() => navigation.navigate('HomeAdmin')}
       >
-        <Ionicons name='arrow-back-sharp' size={35} />
-      </TouchableOpacity>
+        <Ionicons name='arrow-undo-circle-outline' size={35} />
+      </TouchableOpacity> */}
       <View style={{
         height: "100%"
       }}>

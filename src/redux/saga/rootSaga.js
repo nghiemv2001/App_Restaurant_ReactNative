@@ -1,7 +1,8 @@
 import {all, takeEvery} from 'redux-saga/effects'
-import appSaga from './appSaga'
+import tableSaga from './tableSaga'
 
 const sagas = function*(){
-    yield all([takeEvery('CHANGE_TABLE_MODE', appSaga)])
+    console.log("2")
+    yield all([takeEvery('GET_TABLE_LIST', tableSaga)])
 };
 export default sagas;

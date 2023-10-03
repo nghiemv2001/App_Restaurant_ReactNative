@@ -27,12 +27,14 @@ import ListTableAdmin from './src/screens/table/ListTableAdmin';
 //category
 import CreateCategory from './src/screens/category/CreateCategory';
 import ListCategory from './src/screens/category/ListCategory';
+import ListCategoryAdmin from './src/screens/category/ListCategoryAdmin';
 import EditCategory from './src/screens/category/EditCategory';
 //Product
 import CreateProduct from './src/screens/Product/CreateProduct';
 import ListProduct from './src/screens/Product/ListProduct';
 import EditProduct from './src/screens/Product/EditProduct';
 import ListProductByCategogy from './src/screens/Product/ListProductByCategogy';
+import ListProductByCategogyAdmin from './src/screens/Product/ListProductByCategoryAdmin';
 //bill
 import Bill from './src/screens/bill/Bill'
 import BillAdmin from './src/screens/bill/BillAdmin';
@@ -129,10 +131,16 @@ export default function App() {
         <Stack.Screen name="ListProductByCategory" component={ListProductByCategogy} options={{
           headerShown: false
         }} />
+        <Stack.Screen name="ListProductByCategoryAdmin" component={ListProductByCategogyAdmin} options={{
+          headerShown: false
+        }} />
         <Stack.Screen name="EditCategory" component={EditCategory} options={{
           headerShown: false
         }} />
         <Stack.Screen name="CreateCategory" component={CreateCategory} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="ListCategoryAdmin" component={ListCategoryAdmin} options={{
           headerShown: false
         }} />
         <Stack.Screen name="Bill" component={Bill} options={{

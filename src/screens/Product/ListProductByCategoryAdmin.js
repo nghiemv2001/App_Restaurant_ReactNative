@@ -8,8 +8,6 @@ const ListProductByCategogy = ({ route, navigation }) => {
   console.log(route)
   const [dataipa, setDataIPA] = useState([{}]);
   const idCategory = route.params.item._id;
-  const dataroute = route.params.route.params.route.params.data
-  const idtable = route.params.route.params.route.params.data._id
   useEffect(() => {
     fetchData();
   }, []);
@@ -43,75 +41,78 @@ const ListProductByCategogy = ({ route, navigation }) => {
       )
       .catch(error => console.log(error));
   };
-  const sentoBackEnd = (item) => {
-    //Post Product cheft  
-    const now = new Date();
-    dataChef.id_product = item._id
-    dataChef.name = item.name;
-    dataChef.image = item.image;
-    dataChef.quantity = 1;
-    dataChef.status = 0,
-      dataChef.second = now.getSeconds();
-    dataChef.minute = now.getHours();
-    dataChef.hour = now.getHours();
-    fetch(shareVarible.URLink + '/productcheft/create',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dataChef)
-      }).then(res => res.json()).then(
-        data => {
+//   const sentoBackEnd = (item) => {
+//     //Post Product cheft  
+//     const now = new Date();
+//     dataChef.id_product = item._id
+//     dataChef.name = item.name;
+//     dataChef.image = item.image;
+//     dataChef.quantity = 1;
+//     dataChef.status = 0,
+//       dataChef.second = now.getSeconds();
+//     dataChef.minute = now.getHours();
+//     dataChef.hour = now.getHours();
+//     fetch(shareVarible.URLink + '/productcheft/create',
+//       {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify(dataChef)
+//       }).then(res => res.json()).then(
+//         data => {
 
-          if (data.error) {
-            setErrormgs(data.error);
-            alert(data.error);
-          }
-        }
-      )
-    // Add product in BIll
-    fdata.id_product = item._id
-    fdata.ten_mon = item.name;
-    fdata.hinh_mon = item.image;
-    fdata.so_luong = 1;
-    fdata.gia = item.price
-    if (fdata.ten_mon == '' || fdata.so_luong == "") {
-      alert("Data not null")
-      return;
-    }
-    if (item.status == 1) {
-      alert("Out of sock")
-      return;
-    }
+//           if (data.error) {
+//             setErrormgs(data.error);
+//             alert(data.error);
+//           }
+//         }
+//       )
+//     // Add product in BIll
+//     fdata.id_product = item._id
+//     fdata.ten_mon = item.name;
+//     fdata.hinh_mon = item.image;
+//     fdata.so_luong = 1;
+//     fdata.gia = item.price
+//     if (fdata.ten_mon == '' || fdata.so_luong == "") {
+//       alert("Data not null")
+//       return;
+//     }
+//     if (item.status == 1) {
+//       alert("Out of sock")
+//       return;
+//     }
 
-    else {
-      fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(fdata)
-        }).then(res => res.json()).then(
-          data => {
-            if (data.error) {
-              setErrormgs(data.error);
-              alert(data.error);
-            }
-            else {
-              const data = dataroute;
-              navigation.navigate('Bill', { data })
-            }
-          }
-        )
-    }
-  }
+//     else {
+//       fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
+//         {
+//           method: 'POST',
+//           headers: {
+//             'Content-Type': 'application/json'
+//           },
+//           body: JSON.stringify(fdata)
+//         }).then(res => res.json()).then(
+//           data => {
+//             if (data.error) {
+//               setErrormgs(data.error);
+//               alert(data.error);
+//             }
+//             else {
+//               const data = dataroute;
+//               navigation.navigate('Bill', { data })
+//             }
+//           }
+//         )
+//     }
+//   }
   return (
     <View style={styles.containerbos}>
       <View style={styles.container}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeWaitress')}>
-          <Ionicons name='arrow-back-sharp' size={35} />
+        <TouchableOpacity onPress={() => navigation.navigate('HomeAdmin')}>
+          <Ionicons name='arrow-undo-circle-sharp' size={35} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('CreateProduct')}>
+          <Ionicons name='add' size={35} />
         </TouchableOpacity>
       </View>
       {
@@ -121,7 +122,8 @@ const ListProductByCategogy = ({ route, navigation }) => {
           style={styles.gridView}
           spacing={10}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => sentoBackEnd(item)}
+            <TouchableOpacity 
+            // onPress={() => sentoBackEnd(item)}
               style={styles.styButton}>
               <View style={[styles.itemContainer]}>
                 <Image style={styles.styimage} source={{ uri: item.image }} />
@@ -193,14 +195,16 @@ const styles = StyleSheet.create({
   },
   container: {
     height: 50,
-    marginTop: 20,
+    marginTop: 30,
     width: '100%',
     backgroundColor: '#EDF6D8',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    paddingHorizontal: 20
   },
   containerbos: {
-    flex: 1
+    flex: 1,
+    backgroundColor: '#EDF6D1',
   },
   styButton: {
     justifyContent: 'center',

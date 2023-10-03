@@ -152,12 +152,12 @@ const CreateProduct = ({navigation}) => {
   ///
   return (
     <View style={styles.viewmain}>
-      <TouchableOpacity 
+      {/* <TouchableOpacity 
           onPress={() => navigation.navigate('ListProduct')}
           style={{position : 'absolute', marginLeft : 350}}
           >
             <Ionicons name='md-list-outline' size={50} />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       <View style={styles.containerdropdown}>
         {/* {renderLabel()} */}
         <Dropdown

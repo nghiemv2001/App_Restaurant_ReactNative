@@ -1,20 +1,19 @@
 const initData={
-    darkMode : false,
+    tableList: [],
     isloading: false
 };
 const tableReducer = ( state = initData, {type, payload})=>{
     switch(type){
-        case 'CHANGE_TABLE_MODE':
+        case 'GET_TABLE_LIST':
             return {
                 ...state,
                 isloading : true
             };
-
-        case 'CHANGE_TABLE_SUCCESS':
+        case 'GET_TABLE_LIST_SUCCESS':
             return{
                 ...state,
-                isloading: false,
-                darkMode: payload.darkMode
+                tableList: payload,
+                isloading: true
             };
         default:
             return state;

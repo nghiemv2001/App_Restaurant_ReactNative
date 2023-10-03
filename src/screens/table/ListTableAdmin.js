@@ -1,18 +1,12 @@
 import { View, Text, FlatList, Image, TouchableWithoutFeedback, TouchableOpacity, Alert } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import { Swipeble } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { SwipeListView } from 'react-native-swipe-list-view';
-import img_food_ic from '../../../assets/foods.png'
-import img_edit_ic from '../../../assets/edit.png'
-import img_plus_image from '../../../assets/plus_image.jpg'
-import img_salenumber from '../../../assets/salenumber.png'
-import img_movetable from '../../../assets/table_bar.png'
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import Icon from 'react-native-vector-icons/FontAwesome'
-
+import { useSelector, useDispatch } from 'react-redux';
 const ListTableAdmin = ({navigation}) => {
+  const tables = useSelector(state => state.tableReducer.tableList);
+  const dispatch = useDispatch();
   const [databills, setDataBills] = useState(null);
   const fetchData = () => {
      fetch(shareVarible.URLink + '/tables/', {
@@ -23,7 +17,7 @@ const ListTableAdmin = ({navigation}) => {
       }
     })
       .then(response => response.json())
-      .then(data => setData(data),
+      .then(data => {setData(data)},
       )
       .catch(error => console.log(error));
 
@@ -44,7 +38,9 @@ const ListTableAdmin = ({navigation}) => {
 
      //read data
   useEffect(() => {
-   fetchData()
+   fetchData(),
+   dispatch({type : "GET_TABLE_LIST"})
+   console.log("List table admin", tables)
   },[])
   const [data, setData] = useState(null);
   ///checktablenull
@@ -138,19 +134,20 @@ const ListTableAdmin = ({navigation}) => {
 <SafeAreaView style ={{
   backgroundColor:'#EDF6D8'
     }}>
-      {/* <TouchableOpacity style={{position:'absolute',marginTop: 40, marginLeft: 345, zIndex:1}}
+      <TouchableOpacity style={{position:'absolute',marginTop: 40, marginLeft: 345, zIndex:1}}
       onPress={()=>navigation.navigate("CreateTable")}
       >
          <Ionicons name="add" size={40} color="black" />
-      </TouchableOpacity> */}
+      </TouchableOpacity>
    
       <View style={{backgroundColor:'red'}}>
+        
         <FlatList
-          data={data}
+          data={tables}
           renderItem={({ item }) => {
             return renderlist(item)
           }}
-          keyExtractor={item => item._id}/>
+          keyExtractor={item => item._id}/> 
         
       </View>
     </SafeAreaView>

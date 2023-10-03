@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TextInput, Image,TouchableOpacity,Modal } from 'react-native'
-import React , {useState, useEffect} from 'react'
+import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Modal } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import mainpicture from '../../../assets/mainpicture.png'
 import setImagenull from '../../../assets/2.png'
@@ -12,69 +12,82 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import { LogBox } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Alert } from 'react-native'
-
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
-const EditTable = ({ navigation , route}) => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const [dataApiTable, setAtaAPITable] = useState(null)
-    const [data, setData] = useState({});
-    const [imagesrc, setImage] = useState(null);
-    const [errormgs, setErrormgs] = useState(null)
-    const [value, setValue] = useState(null);
-    const [isFocus, setIsFocus] = useState(false);
-    //get list table 
-    const fetchData = () => {
-      fetch(shareVarible.URLink + '/tables/', {
-       method: 'GET',
-       headers: {
-         'Accept': 'application/json',
-         'Content-Type': 'application/json'
-       }
-     })
-       .then(response => response.json())
-       .then(data => setAtaAPITable(data),
-       )
-       .catch(error => console.log(error));
-   }
-   useEffect(() => {
-    console.log("1")
+const EditTable = ({ navigation, route }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+  const [dataApiTable, setAtaAPITable] = useState(null)
+  const [data, setData] = useState({});
+  const [imagesrc, setImage] = useState(null);
+  const [errormgs, setErrormgs] = useState(null)
+  const [value, setValue] = useState(null);
+  const [isFocus, setIsFocus] = useState(false);
+  const [showModalConfirmDeleteTable, SetShowMadalConfirmDeleteTable] = useState(false)
+  //get list table 
+  const fetchData = () => {
+    fetch(shareVarible.URLink + '/tables/', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => setAtaAPITable(data),
+      )
+      .catch(error => console.log(error));
+  }
+  useEffect(() => {
     fetchData();
   }, []);
-    // read data object table form screen listable
-     const datadropdown = [
-      { label: 'emptytable', value: '0' },
-      { label: 'occupied', value: '1' },
-      { label: 'booking', value: '2' },
-      ];
-     const getDetails =(type)=>{
-        if(route.params.item){
-          switch(type){
-            case "id":
-              return route.params.item._id
-            case "name":
-              return route.params.item.name
-            case "peoples":
-              return route.params.item.peoples
-            case "status":
-              return route.params.item.status
-            case "image":
-              return route.params.item.image
-          }
-        }
-        return ""
+  const deleteTable = () => {
+    fetch( shareVarible.URLink + '/table/delete/'+ `${fdata.id}`,{
+      method : 'DELETE', 
+      headers:{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       }
-      const [fdata, setFdata] = useState({
-        id : getDetails("id"),
-        name : getDetails("name"),
-        peoples :getDetails("peoples"),
-        status :getDetails("status"), 
-        image : getDetails("image")
-      })
-      //create table
-  const SendtoBackend = async() => {
+    }).then(response => response.json())
+    .then(data=> {
+        navigation.navigate("HomeAdmin")
+    }).catch(error=>{
+      console.log("Error : ", error);
+    })
+  }
+  // read data object table form screen listable
+  const datadropdown = [
+    { label: 'emptytable', value: '0' },
+    { label: 'occupied', value: '1' },
+    { label: 'booking', value: '2' },
+  ];
+  const getDetails = (type) => {
+    if (route.params.item) {
+      switch (type) {
+        case "id":
+          return route.params.item._id
+        case "name":
+          return route.params.item.name
+        case "peoples":
+          return route.params.item.peoples
+        case "status":
+          return route.params.item.status
+        case "image":
+          return route.params.item.image
+      }
+    }
+    return ""
+  }
+  const [fdata, setFdata] = useState({
+    id: getDetails("id"),
+    name: getDetails("name"),
+    peoples: getDetails("peoples"),
+    status: getDetails("status"),
+    image: getDetails("image")
+  })
+  //create table
+  const SendtoBackend = async () => {
     if (fdata.name == "") {
       setErrormgs('Name table is not null');
       return;
@@ -102,13 +115,13 @@ const EditTable = ({ navigation , route}) => {
     else {
       setErrormgs(null);
     }
-    const updates =  {
-      name : fdata.name,
-      peoples : fdata.peoples,
-      status : fdata.status,
-      image : fdata.image
+    const updates = {
+      name: fdata.name,
+      peoples: fdata.peoples,
+      status: fdata.status,
+      image: fdata.image
     };
-    const response = await fetch(shareVarible.URLink + '/table/update/'+`${fdata.id}`, {
+    const response = await fetch(shareVarible.URLink + '/table/update/' + `${fdata.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -121,15 +134,15 @@ const EditTable = ({ navigation , route}) => {
           alert(data.error);
         }
         else {
-            <Modal
-        animationType="fade"
-        transparent={true}
-        visible={true}
-        onRequestClose={() => {
-          setModalVisible(true);
-        }}/>
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={true}
+            onRequestClose={() => {
+              setModalVisible(true);
+            }} />
           fetchData()
-          // navigation.navigate('ListTableAdmin');
+          navigation.navigate('HomeAdmin');
         }
       }
     )
@@ -200,12 +213,64 @@ const EditTable = ({ navigation , route}) => {
   return (
     <View
       style={styles.View1}>
-        <TouchableOpacity
-        style={{ marginLeft: 10, marginTop: 30}}
-        onPress={() => navigation.navigate('HomeAdmin')}
+      <Modal
+        transparent={true}
+        visible={showModalConfirmDeleteTable}
+        animationType='fade'
       >
-        <Ionicons name='arrow-undo-circle-outline' size={35} />
-      </TouchableOpacity>
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 70,
+            width: 300,
+            backgroundColor: "#FDD736",
+            borderTopLeftRadius: 40,
+            borderTopRightRadius: 40,
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            <Ionicons name='help' size={70} color="white" style={{ marginTop: 3, position: 'absolute' }} />
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 140 }} />
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 140 }} />
+          </View>
+          <View style={{
+            height: 150,
+            width: 300,
+            backgroundColor: "white",
+            borderBottomLeftRadius: 40,
+            borderBottomRightRadius: 40,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Delete Table</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height:'40%', alignItems:'flex-end'}}>
+              <TouchableOpacity 
+              onPress={()=> {SetShowMadalConfirmDeleteTable(false)}}
+              style={[styles.styButton,{ backgroundColor:'#D85261'}]}>
+                <Text style={{fontSize:18 , fontWeight:'600'}}>Cancel</Text>
+                </TouchableOpacity>
+              <TouchableOpacity 
+              onPress={()=>{deleteTable()}}
+              style={[styles.styButton, {backgroundColor:'#038857'}]}>
+                <Text style={{fontSize:18 , fontWeight:'600'}}>OK</Text>
+                </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: "100%", paddingHorizontal: 15 }}>
+        <TouchableOpacity
+          style={{ marginLeft: 10, marginTop: 30 }}
+          onPress={() => navigation.navigate('HomeAdmin')}
+        >
+          <Ionicons name='arrow-undo-circle-outline' size={35} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{ marginLeft: 10, marginTop: 30 }}
+          onPress={() => SetShowMadalConfirmDeleteTable(true)}
+        >
+          <Ionicons name='close' size={35} />
+        </TouchableOpacity>
+      </View>
       <Image
         style={styles.stylepicturemain}
         source={mainpicture} />
@@ -322,171 +387,183 @@ const EditTable = ({ navigation , route}) => {
 export default EditTable
 
 const styles = StyleSheet.create({
-    v1: {
-      height: '100%',
-      width: '100%',
-    },
-    V11: {
-      height: '55%',
-      width: '100%',
-      backgroundColor: '#EDF6D8'
-    },
-    V12: {
-      height: '45%',
-      width: '100%',
-      backgroundColor: 'white'
-    },
-    container: {
-      backgroundColor: 'white',
-      marginTop: -15,
-      width: 250,
-      height: 40,
-      borderRadius: 40,
-    },
-    dropdown: {
-      height: 40,
-      borderColor: 'gray',
-      borderWidth: 1,
-      borderRadius: 40,
-      paddingLeft: 10
-  
-    },
-    icon: {
-      marginRight: 5,
-    },
-    label: {
-      position: 'absolute',
-      backgroundColor: 'white',
-      left: 22,
-      top: 8,
-      zIndex: 999,
-      paddingHorizontal: 8,
-      fontSize: 14,
-    },
-    placeholderStyle: {
-      fontSize: 16,
-    },
-    selectedTextStyle: {
-      fontSize: 16,
-    },
-    iconStyle: {
-      width: 20,
-      height: 20,
-    },
-    inputSearchStyle: {
-      height: 40,
-      fontSize: 16,
-    },
-    stylepicturemain: {
-      height: 200,
-      width: 200,
-      borderWidth: 10,
-      marginTop: -80,
-      marginLeft: 100
-    },
-    View1: {
-      height: '100%',
-      width: '100%',
-      justifyContent: 'center',
-      alignItems: 'flex-start',
-      backgroundColor: '#EDF6D8',
-      marginTop: 10,
-    },
-    Tname: {
-      fontSize: 23,
-      fontWeight: 'bold',
-      color: '#50663C',
-      marginLeft: 5,
-      marginBottom: 20
-    },
-    Tpeoples: {
-      fontSize: 23,
-      fontWeight: 'bold',
-      color: '#50663C',
-      marginLeft: 5,
-      marginBottom: 20
-    },
-    Tstatus: {
-      fontSize: 23,
-      fontWeight: 'bold',
-      color: '#50663C',
-      marginLeft: 5
-    },
-    TIPname: {
-      height: 40,
-      width: 250,
-      backgroundColor: 'white',
-      borderRadius: 20,
-      marginTop: -10,
-      marginBottom: 20,
-      paddingLeft: 5,
-      borderWidth: 1,
-    },
-    TIPpeoples: {
-      height: 40,
-      width: 250,
-      backgroundColor: 'white',
-      borderRadius: 20,
-      marginTop: -10,
-      marginBottom: 20,
-      paddingLeft: 5,
-      borderWidth: 1,
-    },
-    TIPstatus: {
-  
-    },
-    PTtable: {
-      height: 220,
-      width: '70%',
-      borderRadius: 50,
-      marginTop: 10,
-      marginLeft: 65,
-      borderWidth: 1,
-      borderColor: 'black'
-    },
-    Tcamera: {
-      height: 40,
-      width: 100,
-      backgroundColor: 'white',
-      textAlign: 'center',
-      textAlignVertical: 'center',
-      borderRadius: 10,
-      fontWeight: '500',
-      color: '#50663C',
-    },
-    TLibary: {
-      height: 40,
-      width: 100,
-      backgroundColor: 'white',
-      textAlign: 'center',
-      textAlignVertical: 'center',
-      borderRadius: 10,
-      fontWeight: '500',
-      color: '#50663C',
-    },
-    TAdd: {
-      height: 50,
-      width: 200,
-      textAlign: 'center',
-      textAlignVertical: 'center',
-      backgroundColor: 'white',
-      marginLeft: 110,
-      color: '#50663C',
-      fontSize: 30,
-      fontWeight: 'bold',
-      borderRadius: 50,
-      marginTop: 25,
-      borderWidth: 1,
-    },
-    styleerrormgs: {
-      width: '100%',
-      position: 'absolute',
-      fontSize: 17,
-      marginTop: 420,
-      textAlign: 'center',
-      color: '#CD5C5C',
-      fontWeight: '400'
-    }
-  
-  
-  })
+  v1: {
+    height: '100%',
+    width: '100%',
+  },
+  V11: {
+    height: '55%',
+    width: '100%',
+    backgroundColor: '#EDF6D8'
+  },
+  V12: {
+    height: '45%',
+    width: '100%',
+    backgroundColor: 'white'
+  },
+  container: {
+    backgroundColor: 'white',
+    marginTop: -15,
+    width: 250,
+    height: 40,
+    borderRadius: 40,
+  },
+  dropdown: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 40,
+    paddingLeft: 10
+
+  },
+  icon: {
+    marginRight: 5,
+  },
+  label: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    left: 22,
+    top: 8,
+    zIndex: 999,
+    paddingHorizontal: 8,
+    fontSize: 14,
+  },
+  placeholderStyle: {
+    fontSize: 16,
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  stylepicturemain: {
+    height: 200,
+    width: 200,
+    borderWidth: 10,
+    marginTop: -80,
+    marginLeft: 100
+  },
+  View1: {
+    height: '100%',
+    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: '#EDF6D8',
+    marginTop: 10,
+  },
+  Tname: {
+    fontSize: 23,
+    fontWeight: 'bold',
+    color: '#50663C',
+    marginLeft: 5,
+    marginBottom: 20
+  },
+  Tpeoples: {
+    fontSize: 23,
+    fontWeight: 'bold',
+    color: '#50663C',
+    marginLeft: 5,
+    marginBottom: 20
+  },
+  Tstatus: {
+    fontSize: 23,
+    fontWeight: 'bold',
+    color: '#50663C',
+    marginLeft: 5
+  },
+  TIPname: {
+    height: 40,
+    width: 250,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginTop: -10,
+    marginBottom: 20,
+    paddingLeft: 5,
+    borderWidth: 1,
+  },
+  TIPpeoples: {
+    height: 40,
+    width: 250,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    marginTop: -10,
+    marginBottom: 20,
+    paddingLeft: 5,
+    borderWidth: 1,
+  },
+  TIPstatus: {
+
+  },
+  PTtable: {
+    height: 220,
+    width: '70%',
+    borderRadius: 50,
+    marginTop: 10,
+    marginLeft: 65,
+    borderWidth: 1,
+    borderColor: 'black'
+  },
+  Tcamera: {
+    height: 40,
+    width: 100,
+    backgroundColor: 'white',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    borderRadius: 10,
+    fontWeight: '500',
+    color: '#50663C',
+  },
+  TLibary: {
+    height: 40,
+    width: 100,
+    backgroundColor: 'white',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    borderRadius: 10,
+    fontWeight: '500',
+    color: '#50663C',
+  },
+  TAdd: {
+    height: 50,
+    width: 200,
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    backgroundColor: 'white',
+    marginLeft: 110,
+    color: '#50663C',
+    fontSize: 30,
+    fontWeight: 'bold',
+    borderRadius: 50,
+    marginTop: 25,
+    borderWidth: 1,
+  },
+  styleerrormgs: {
+    width: '100%',
+    position: 'absolute',
+    fontSize: 17,
+    marginTop: 420,
+    textAlign: 'center',
+    color: '#CD5C5C',
+    fontWeight: '400'
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  styButton:{
+    height : 45, width: 100, 
+    borderWidth: 1, 
+    borderRadius: 30, 
+    justifyContent:'center', 
+    alignItems:'center'
+  }
+
+})
