@@ -5,17 +5,19 @@ import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 const CreateCategory = ({ navigation }) => {
-  const [ fdata, setFdata ] = useState({
+  const [fdata, setFdata] = useState({
     name: "",
-    describe:"",
+    describe: "",
     image: ""
   })
+  const [statusButton, setStatusButton] = useState(false)
   const [data, setData] = useState({});
   const [image, setImage] = useState(null);
   const [errormgs, setErrormgs] = useState(null)
   const [item, setItem] = useState(null)
   const [showModalConfirmDeleteCategory, setShowModalConfirmDeleteCategory] = useState(false)
   const [showModalConfirmAdjustCategory, setShowModalConfirmAdjustCategory] = useState(false)
+  const [showModalAlert, setShowModalAlert] = useState(false);
   //test data 
   const fetchData = () => {
     fetch(shareVarible.URLink + '/category/ ', {
@@ -34,67 +36,100 @@ const CreateCategory = ({ navigation }) => {
     fetchData();
   }, []);
   const EditCategory = () => {
-    setFdata({ ...fdata, name: item.name , describe:item.describe})
+    setFdata({ ...fdata, name: item.name, describe: item.describe })
     setImage(item.image)
     setShowModalConfirmAdjustCategory(false)
   }
   const DeteleCategory = () => {
-    Alert.alert('DELETE', 'Delete this category?', [
-      {
-        text: 'Cancel',
-      },
-      {
-        text: 'OK', onPress: () => fetch(shareVarible.URLink + '/category/delete/' + `${item._id}`, {
-          method: 'DELETE',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(response => response.json())
-          .then(data => {
-            setShowModalConfirmDeleteCategory(false)
-            fetchData();
-          })
-          .catch(error => {
-            console.error('Lỗi xóa đối tượng:', error);
-          }
-          )
+    fetch(shareVarible.URLink + '/category/delete/' + `${item._id}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
       }
-    ]);
+    })
+      .then(response => response.json())
+      .then(data => {
+        setShowModalConfirmDeleteCategory(false)
+        fetchData();
+        setShowModalAlert(true)
+      })
+      .catch(error => {
+        console.error('Lỗi xóa đối tượng:', error);
+      }
+      )
   }
   //create category
   const SendtoBackend = () => {
-    if (fdata.name === '' || fdata.describe === '') {
-      setErrormgs('All fields are required!!!');
-      return;
-    }
-    if (fdata.image === '') {
-      setErrormgs('Image not found!!!');
-      return;
-    }
-    fetch(shareVarible.URLink + '/category/creat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-        body: JSON.stringify(fdata),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.error) {
-        setErrormgs(data.error);
-        alert(data.error);
-      } else {
-        setFdata({ ...fdata, name: "" , describe:""})
-        setImage(null);
-        fetchData();
+    if (statusButton) {
+      if (fdata.name === '' || fdata.describe === '') {
+        setErrormgs('All fields are required!!!');
+        return;
       }
-    })
-    .catch((error) => {
-      console.error('Error sending data:', error);
-    });
-};
+      
+      else {
+        setErrormgs(null);
+      }
+      const updates = {
+        name: fdata.name,
+        describe: fdata.describe,
+        image: image
+      };
+      const response = fetch(shareVarible.URLink + '/category/update/' + `${item._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      }).then(res => res.json()).then(
+        data => {
+          if (data.error) {
+            setErrormgs(data.error);
+            alert(data.error);
+          }
+          else {
+            setFdata({ ...fdata, name: "", describe: "" })
+            setImage(null);
+            fetchData()
+            setShowModalAlert(true)
+          }
+        }
+      )
+      setStatusButton(false)
+    }
+    else {
+      if (fdata.name === '' || fdata.describe === '') {
+        setErrormgs('All fields are required!!!');
+        return;
+      }
+      if (fdata.image === '') {
+        setErrormgs('Image not found!!!');
+        return;
+      }
+      fetch(shareVarible.URLink + '/category/creat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(fdata),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.error) {
+            setErrormgs(data.error);
+            alert(data.error);
+          } else {
+            setFdata({ ...fdata, name: "", describe: "" })
+            setImage(null);
+            fetchData();
+            setShowModalAlert(true)
+          }
+        })
+        .catch((error) => {
+          console.error('Error sending data:', error);
+        });
+    }
+  };
   //upload image from drive to cloudinary 
   const handleUpload = (image) => {
     const data = new FormData()
@@ -170,7 +205,9 @@ const CreateCategory = ({ navigation }) => {
         <View style={styles.styView1}>
           <TouchableOpacity onPress={() => {
             setShowModalConfirmAdjustCategory(true)
-            setItem(item)}}>
+            setItem(item)
+            setStatusButton(true)
+          }}>
             <Ionicons name='pencil' size={35} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => {
@@ -185,7 +222,7 @@ const CreateCategory = ({ navigation }) => {
   })
   return (
     <View style={styles.v1}>
-       <Modal
+      <Modal
         transparent={true}
         visible={showModalConfirmDeleteCategory}
         animationType='fade'
@@ -214,21 +251,22 @@ const CreateCategory = ({ navigation }) => {
             alignItems: 'center',
           }}>
             <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Delete Table</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height:'40%', alignItems:'flex-end'}}>
-              <TouchableOpacity 
-              onPress={()=> {setShowModalConfirmDeleteCategory(false)}}
-              style={[styles.styButton,{ backgroundColor:'#D85261'}]}>
-                <Text style={{fontSize:18 , fontWeight:'600'}}>Cancel</Text>
-                </TouchableOpacity>
-              <TouchableOpacity 
-              onPress={()=>{DeteleCategory()}}
-              style={[styles.styButton, {backgroundColor:'#038857'}]}>
-                <Text style={{fontSize:18 , fontWeight:'600'}}>OK</Text>
-                </TouchableOpacity>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
+              <TouchableOpacity
+                onPress={() => { setShowModalConfirmDeleteCategory(false) }}
+                style={[styles.styButton, { backgroundColor: '#D85261' }]}>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => { DeteleCategory() }}
+                style={[styles.styButton, { backgroundColor: '#038857' }]}>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>OK</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
+
       <Modal
         transparent={true}
         visible={showModalConfirmAdjustCategory}
@@ -258,18 +296,47 @@ const CreateCategory = ({ navigation }) => {
             alignItems: 'center',
           }}>
             <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Adjust Category</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height:'40%', alignItems:'flex-end'}}>
-              <TouchableOpacity 
-              onPress={()=> {setShowModalConfirmAdjustCategory(false)}}
-              style={[styles.styButton,{ backgroundColor:'#D85261'}]}>
-                <Text style={{fontSize:18 , fontWeight:'600'}}>Cancel</Text>
-                </TouchableOpacity>
-              <TouchableOpacity 
-              onPress={()=>{EditCategory()}}
-              style={[styles.styButton, {backgroundColor:'#038857'}]}>
-                <Text style={{fontSize:18 , fontWeight:'600'}}>OK</Text>
-                </TouchableOpacity>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
+              <TouchableOpacity
+                onPress={() => { setShowModalConfirmAdjustCategory(false) }}
+                style={[styles.styButton, { backgroundColor: '#D85261' }]}>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => { EditCategory() }}
+                style={[styles.styButton, { backgroundColor: '#038857' }]}>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>OK</Text>
+              </TouchableOpacity>
             </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        transparent={true}
+        visible={showModalAlert}
+        animationType='fade'
+      >
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 300,
+            width: 300,
+            backgroundColor: "white",
+            borderRadius: 40,
+            justifyContent:'space-evenly',
+            alignItems: 'center',
+          }}>
+
+            <View style={{height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems:'center'}}>
+              <Ionicons  name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"}/>
+            </View>
+            <Text style={{fontSize:22, fontWeight: "700", color:'#3564C1'}}>
+             Success
+            </Text>
+            <TouchableOpacity 
+            onPress={()=>{setShowModalAlert(false)}}
+            style={{height: 40, width: 140, backgroundColor:'#3564C1', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Continue</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -289,22 +356,22 @@ const CreateCategory = ({ navigation }) => {
           placeholder="Category describe"
         />
         {
-          image == null ?<View style={[styles.uploadimge, {justifyContent:'center', alignItems:'center'}]}><Ionicons name="camera-outline" size={50}/></View> :image && <Image source={{ uri: image }} style={styles.uploadimge} />
+          image == null ? <View style={[styles.uploadimge, { justifyContent: 'center', alignItems: 'center' }]}><Ionicons name="camera-outline" size={50} /></View> : image && <Image source={{ uri: image }} style={styles.uploadimge} />
         }
         {/* <Image source={{ uploadimge }} style={styles.uploadimge} />
         {} */}
         <View style={styles.styView2}>
-       <Text style={styles.styTextImage}
-          onPress={takeImage}>Camera</Text>
-        <Text style={styles.styTextImageLibary}
-          onPress={pickImage}>Libary</Text>
+          <Text style={styles.styTextImage}
+            onPress={takeImage}>Camera</Text>
+          <Text style={styles.styTextImageLibary}
+            onPress={pickImage}>Libary</Text>
         </View>
-          <View style={{ marginTop: 40}}>
-        <TouchableOpacity onPress={SendtoBackend}
-          style={styles.styButtonCreate}>
-          <Ionicons name='md-checkmark-sharp' size={31} />
-        </TouchableOpacity>
-      </View>
+        <View style={{ marginTop: 40 }}>
+          <TouchableOpacity onPress={SendtoBackend}
+            style={styles.styButtonCreate}>
+            <Ionicons name='md-checkmark-sharp' size={31} />
+          </TouchableOpacity>
+        </View>
         {
           errormgs ? <Text style={styles.styTextError}>
             {errormgs}</Text> : null}
@@ -316,7 +383,7 @@ const CreateCategory = ({ navigation }) => {
           renderItem={({ item }) => {
             return renderlist(item)
           }}
-          keyExtractor={item => item._id}/>
+          keyExtractor={item => item._id} />
       </View>
     </View>
   )
@@ -410,25 +477,25 @@ const styles = StyleSheet.create({
     marginLeft: 150,
     color: 'red'
   },
-  styView2:{
-    flexDirection:'row', 
-        width: '100%', 
-        justifyContent:'space-evenly', 
-        marginTop: 40, 
-        marginLeft: 90, 
-        paddingHorizontal: 80
-  },
-  styButtonCreate:{
+  styView2: {
     flexDirection: 'row',
-            borderWidth: 1,
-            borderRadius: 30,
-            width: 150,
-            height: 55,
-            marginLeft: 144,
-            backgroundColor: '#6AF597',
-            justifyContent: 'center',
-            alignItems: 'center',
-            marginTop:10
+    width: '100%',
+    justifyContent: 'space-evenly',
+    marginTop: 40,
+    marginLeft: 90,
+    paddingHorizontal: 80
+  },
+  styButtonCreate: {
+    flexDirection: 'row',
+    borderWidth: 1,
+    borderRadius: 30,
+    width: 150,
+    height: 55,
+    marginLeft: 144,
+    backgroundColor: '#6AF597',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10
   },
   centeredView: {
     flex: 1,
@@ -436,11 +503,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 22,
   },
-  styButton:{
-    height : 45, width: 100, 
-    borderWidth: 1, 
-    borderRadius: 30, 
-    justifyContent:'center', 
-    alignItems:'center'
+  styButton: {
+    height: 45, width: 100,
+    borderWidth: 1,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
