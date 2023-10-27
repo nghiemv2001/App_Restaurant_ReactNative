@@ -1,58 +1,53 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import { LineChart } from 'react-native-chart-kit';
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Dimensions } from 'react-native';
 import { Svg, Path } from 'react-native-svg';
-import { useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { style } from 'deprecated-react-native-prop-types/DeprecatedViewPropTypes';
-
+import shareVarible from '../../AppContext'
 const ChartofInvoice = ({ navigation, route }) => {
-  const [dataChart, setDataChart] = useState(
-    route.params)
-  const totalArray = dataChart.datalistinvoice.map((item) => item.total);
-  const dayArray = dataChart.datalistinvoice.map((item) => (item.day));
-  const dayMonthArray = dataChart.datalistinvoice.map((item) => ({ day: item.day, month: item.month }));
-  const NewArryMonth = dayMonthArray.map(({ day, month }) => `${day}/${month+1}`);
-  console.log(NewArryMonth)
+  const hourRangesValues = Object.values(route.params.newHourRanges);
+  const sum = hourRangesValues.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+  const hourRangesKeys = Object.keys(route.params.newHourRanges);
   const data = {
-    labels: dayArray,
+    labels: hourRangesKeys,
     datasets: [
       {
-        data: totalArray,
-      },
+        data: hourRangesValues,
+        color: (opacity = 1) => `rgba(0, 0, 0, 1)`,
+        strokeWidth: 1
+      }
     ],
   };
-
-  let total = 0;
-  for (let i = 0; i < dataChart.datalistinvoice.length; i++) {
-    total += dataChart.datalistinvoice[i].total;
-  }
-
-  console.log(dataChart.datalistinvoice.length)
   return (
     <View>
-      <TouchableOpacity
-        style={{ marginLeft: 10, marginTop: 10 }}
-        onPress={() => navigation.navigate('HomeAdmin')}
-      >
-        <Ionicons name='arrow-back-sharp' size={35} />
-      </TouchableOpacity>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity
+          style={{ marginLeft: 10, marginTop: 30 }}
+          onPress={() => navigation.navigate('HomeAdmin')}
+        >
+          <Ionicons name='arrow-back-sharp' size={35} />
+        </TouchableOpacity>
+        <View style={{ marginLeft: 100, alignItems: 'center', marginTop: 15 }}>
+          <Text style={{ fontSize: 16, fontWeight: "700" }}>INVOICE</Text>
+          <Text style={{ fontSize: 16, fontWeight: "700" }}>{route.params.selected.day}/{route.params.selected.month}/{route.params.selected.year}</Text>
+        </View>
+      </View>
       <LineChart
         data={data}
         width={Dimensions.get('window').width}
         height={500}
-        yAxisSuffix="k"
-        yAxisInterval={1} // optional, defaults to 1
+        yAxisSuffix="$"
+        yAxisInterval={1}
         chartConfig={{
-          backgroundColor: '#e26a00',
-          backgroundGradientFrom: '#fb8c00',
-          backgroundGradientTo: '#ffa726',
-          decimalPlaces: 2, // optional, defaults to 2dp
-          color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-          labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+          backgroundColor: 'white',
+          backgroundGradientFrom: 'white',
+          backgroundGradientTo: 'white',
+          decimalPlaces: 0,
+          color: () => `rgba(0, 0, 0, 1)`,
+          labelColor: () => `rgba(0, 0, 0, 1)`,
           style: {
-            borderRadius: 16,
+            borderRadius: 1,
           },
           propsForDots: {
             r: '6',
@@ -66,31 +61,15 @@ const ChartofInvoice = ({ navigation, route }) => {
           borderRadius: 16,
         }}
       />
-
-      <View style={{
-        height: '24%',
-        width: "100%",
-        backgroundColor: 'white',
-        borderTopLeftRadius: 40,
-        borderBottomRightRadius: 40,
-        borderTopRightRadius: 15,
-        borderBottomLeftRadius: 15,
-        marginHorizontal: 5,
-        alignItems: 'center',
-        borderWidth: 2
-      }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: -30 }}>
-          <Ionicons name='newspaper' size={45} style={{ paddingLeft: 50, marginTop: 10 }} />
-
-          <Text style={{ fontSize: 30 }}>{dataChart.datalistinvoice.length}</Text>
-
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 60}}>
+        <View style={{alignItems:'center'}}>
+          <Text style={{fontSize: 22, color:"#989898", fontWeight: '500'}}>Sales</Text>
+          <Text style={{fontSize: 22, color:"#9CE6A9", fontWeight: 'bold'}}>{sum} $</Text>
         </View>
-
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginLeft: -30 , marginLeft : -5}}>
-          <Ionicons name='logo-bitcoin' size={45} style={{ paddingLeft: 50, marginTop: 10 }} />
-          <Text style={{ fontSize: 25, marginTop : -15 }}>{total}$</Text>
+        <View style={{alignItems:'center'}}>
+        <Text style={{fontSize: 22, color:"#989898", fontWeight: '500', alignItems:'center'}}>Bills</Text>
+          <Text style={{fontSize: 22, fontWeight : 'bold', color:'#F5504F'}}>{route.params.numberOfElements}</Text>
         </View>
-
       </View>
     </View>
   )

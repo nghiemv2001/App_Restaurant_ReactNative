@@ -19,7 +19,7 @@ module.exports={
         fontSize: 32,
         textAlign: 'center',
         minWidth : 300,
-        marginTop : 10,
+        marginTop : 40,
         width: '50%',
         marginLeft: 53,
     },

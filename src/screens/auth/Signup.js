@@ -5,7 +5,7 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  Pressable
+  Modal
 } from 'react-native'
 import React, { useState } from 'react'
 import mainpicture from '../../../assets/mainpicture.png'
@@ -15,8 +15,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import shareVarible from './../../AppContext'
 import { Dropdown } from 'react-native-element-dropdown';
 import AntDesign from '@expo/vector-icons/AntDesign';
+import Ionicons from 'react-native-vector-icons/Ionicons'
 const Signup = ({ navigation }) => {
 
+  const [alertSuccess, setAlertSuccess] = useState(false)
   //take data
   const [fdata, setFdata] = useState({
     name: '',
@@ -24,21 +26,22 @@ const Signup = ({ navigation }) => {
     phone: '',
     password: '',
     keycode: '',
-    role :''
+    role: ''
   })
-
-  //
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [password, setPassword] = useState('');
+  const [password1, setPassword1] = useState('');
+  const [errormsg, setErrormsg] = useState(null);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const datadropdown = [
     { label: 'Admin', value: '0' },
     { label: 'Waitress', value: '1' },
-    { label: 'Chef', value: '3' },
+    { label: 'Chef', value: '2' },
   ];
   //call API
   const SendtoBackend = () => {
-    // onChangeText={(text) => setFdata({ ...fdata, email: text })
-    const keycode = 0;
     setFdata({ ...fdata, keycode: '0000' })
     if (fdata.name == '') {
       setErrormsg('NOTE : Name are required !!!');
@@ -79,7 +82,7 @@ const Signup = ({ navigation }) => {
       setErrormsg('NOTE : Password must have at least one Digit. !!!');
       return;
     }
-    if(!fdata.role){
+    if (!fdata.role) {
       setErrormsg('NOTE : Role is not null!!!')
     }
     else {
@@ -88,7 +91,6 @@ const Signup = ({ navigation }) => {
         return;
       }
       else {
-        console.log(fdata);
         fetch(shareVarible.URLink + '/signup', {
           method: 'POST',
           headers: {
@@ -99,106 +101,86 @@ const Signup = ({ navigation }) => {
           .then(res => res.json()).then(
             data => {
               if (data.error) {
+                console.log(data.error)
                 setErrormsg(data.error);
               }
               else {
-                alert('register account successfully');
-                navigation.navigate('Signin');
+                setAlertSuccess(true)
               }
             }
           )
       }
     }
   };
-
-  // //Hide or see  password
-  // const { passwordVisibility, rightIcon, handlePasswordVisibility } = useTogglePasswordVisibility();
-  const [password, setPassword] = useState('');
-  // const { passwordVisibility1, rightIcon1, handlePasswordVisibility1 } = useTogglePasswordVisibility1();
-  const [password1, setPassword1] = useState('');
-
-  // const useTogglePasswordVisibility = () => {
-  //   const [passwordVisibility1, setPasswordVisibility] = useState(true);
-  //   const [rightIcon, setRightIcon] = useState('eye');
-
-  //   const handlePasswordVisibility = () => {
-  //     if (rightIcon === 'eye') {
-  //       setRightIcon('eye-off');
-  //       setPasswordVisibility(!passwordVisibility);
-  //     } else if (rightIcon === 'eye-off') {
-  //       setRightIcon('eye');
-  //       setPasswordVisibility(!passwordVisibility);
-  //     }
-  //   };
-
-  //   return {
-  //     passwordVisibility,
-  //     rightIcon,
-  //     handlePasswordVisibility
-  //   };
-  // };
-  // //Hide or see  confimpassword
-  // const useTogglePasswordVisibility1 = () => {
-  //   const [passwordVisibility1, setPasswordVisibility1] = useState(true);
-  //   const [rightIcon1, setRightIcon1] = useState('eye');
-  //   const handlePasswordVisibility1 = () => {
-  //     if (rightIcon1 === 'eye') {
-  //       setRightIcon1('eye-off');
-  //       setPasswordVisibility1(!passwordVisibility1);
-  //     } else if (rightIcon1 === 'eye-off') {
-  //       setRightIcon1('eye');
-  //       setPasswordVisibility1(!passwordVisibility1);
-  //     }
-  //   };
-  //   return {
-  //     passwordVisibility1,
-  //     rightIcon1,
-  //     handlePasswordVisibility1
-  //   };
-  // };
-
-  //set erorr
-  const [errormsg, setErrormsg] = useState(null);
   return (
     <KeyboardAwareScrollView style={styles.boss}>
+      <Modal
+        transparent={true}
+        visible={alertSuccess}
+        animationType='fade'
+      >
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 300,
+            width: 300,
+            backgroundColor: "white",
+            borderRadius: 40,
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+          }}>
+
+            <View style={{ height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"} />
+            </View>
+            <Text style={{ fontSize: 22, fontWeight: "700", color: '#3564C1' }}>
+              Success
+            </Text>
+            <TouchableOpacity
+              onPress={() => { navigation.navigate("Signin") }}
+              style={{ height: 40, width: 140, backgroundColor: '#3564C1', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <Image style={styles.picturemain} source={mainpicture} />
       <Text style={styles.textSignup}>Create New</Text>
       <Text style={styles.textSignup1}>Account</Text>
       <View style={styles.stylesdropdown}>
-              {/* {renderLabel()} */}
-              <Dropdown
-                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={datadropdown}
-                search
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder={!isFocus ? 'Select role' : '...'}
-                searchPlaceholder="Search..."
-                value={value}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
-                onChange={item => {
-                  setValue(item.value);
-                  setFdata({ ...fdata, role: item.value })
-                  setIsFocus(false);
-                }}
-                renderLeftIcon={() => (
-                  <AntDesign
-                    style={styles.icon}
-                    color={isFocus ? 'blue' : 'black'}
-                    name="Safety"
-                    size={20}
-                  />
-                )} />
-            </View>
+        {/* {renderLabel()} */}
+        <Dropdown
+          style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
+          placeholderStyle={styles.placeholderStyle}
+          selectedTextStyle={styles.selectedTextStyle}
+          inputSearchStyle={styles.inputSearchStyle}
+          iconStyle={styles.iconStyle}
+          data={datadropdown}
+          search
+          maxHeight={300}
+          labelField="label"
+          valueField="value"
+          placeholder={!isFocus ? 'Select role' : '...'}
+          searchPlaceholder="Search..."
+          value={fdata.role}
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
+          onChange={item => {
+            setValue(item.value);
+            setFdata({ ...fdata, role: item.value })
+            setIsFocus(false);
+          }}
+          renderLeftIcon={() => (
+            <AntDesign
+              style={styles.icon}
+              color={isFocus ? 'blue' : 'black'}
+              name="Safety"
+              size={20}
+            />
+          )} />
+      </View>
       <Text style={styles.nodetextusername}>Please enter your name</Text>
       <TextInput
-        
+
         style={styles.inputname}
         placeholder="name"
         onPressIn={() => setErrormsg(null)}
@@ -217,19 +199,33 @@ const Signup = ({ navigation }) => {
         <TextInput
           placeholder='******'
           style={styles.inputpassword}
-          secureTextEntry={true}
+          secureTextEntry={!showPassword} // Sử dụng secureTextEntry để ẩn/mở mật khẩu
           enablesReturnKeyAutomatically
           onPressIn={() => setErrormsg(null)}
-          onChangeText={(text) => { setFdata({ ...fdata, password: text }), setPassword(text) }} />
+          onChangeText={(text) => {
+            setFdata({ ...fdata, password: text });
+            setPassword(text);
+          }}
+        />
+        <TouchableOpacity
+          style={styles.showPasswordButton}
+          onPress={() => setShowPassword(!showPassword)}>
+          <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={25} />
+        </TouchableOpacity>
       </View>
       <Text style={styles.nodetextconfirm}>Please cofirm password</Text>
       <View style={styles.inputContainer}>
         <TextInput
           placeholder='******' style={styles.inputconfirm}
-          secureTextEntry={true}
+          secureTextEntry={!showConfirmPassword}
           enablesReturnKeyAutomatically
           onPressIn={() => setErrormsg(null)}
           onChangeText={(text) => { setFdata({ ...fdata, confirmpassword: text }), setPassword1(text) }} />
+           <TouchableOpacity
+          style={styles.showPasswordButton}
+          onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+          <Ionicons name={showConfirmPassword ? 'eye-off-outline' : 'eye-outline'} size={25} />
+        </TouchableOpacity>
       </View>
       {errormsg ? <Text style={styles.errmessage}>{errormsg}</Text> : null}
       <TouchableOpacity onPress={() => {
@@ -391,7 +387,7 @@ const styles = StyleSheet.create({
   },
   errmessage: {
     textAlign: 'center',
-    marginTop: 5,
+    marginTop: 40,
     color: 'red',
   },
   inputContainer: {
@@ -410,12 +406,25 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingRight: 20,
   },
-  stylesdropdown:{
-    width : '100%',
-    height : 20,
-    marginLeft : 180
+  stylesdropdown: {
+    width: '100%',
+    height: 20,
+    marginLeft: 180
   },
-  dropdown :{
-    width : '50%'
+  dropdown: {
+    width: '50%'
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  styButton: {
+    height: 45, width: 100,
+    borderWidth: 1,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })

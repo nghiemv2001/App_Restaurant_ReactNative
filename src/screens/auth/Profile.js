@@ -38,7 +38,7 @@ const Profile = ({navigation}) => {
     else if(dataAPI.role =='1'){
       navigation.navigate('HomeWaitress');
     }
-    else if (dataAPI.role =='3'){
+    else if (dataAPI.role =='2'){
       navigation.navigate('HomeChef');
     }
   }

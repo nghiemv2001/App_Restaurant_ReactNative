@@ -10,7 +10,6 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Modal from 'react-native-modal';
 const Signin = ({ navigation }) => {
-  
   //xu li data token 
   const initialState = {
     data: [],
@@ -22,12 +21,9 @@ const Signin = ({ navigation }) => {
   const CustomAlert = ({ isVisible, message, onConfirm }) => {
     return (
       <Modal isVisible={isVisible}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}> 
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
           <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
             <Text>{message}</Text>
-            {/* <TouchableOpacity onPress={onConfirm} style={{justifyContent : 'center', alignItems: 'center'}}>
-              <Text style={{ color: 'blue', marginTop: 10 }}>OK</Text>
-            </TouchableOpacity> */}
           </View>
         </View>
       </Modal>
@@ -40,76 +36,7 @@ const Signin = ({ navigation }) => {
   const handleConfirm = () => {
     setIsVisible(false);
   };
-  function dataReducer(state = initialState, action) {
-    switch (action.type) {
-      case 'FETCH_DATA_REQUEST':
-        return {
-          ...state,
-          isLoading: true,
-          error: null
-        };
-      case 'FETCH_DATA_SUCCESS':
-        return {
-          ...state,
-          isLoading: false,
-          data: action.payload
-        };
-      case 'FETCH_DATA_FAILURE':
-        return {
-          ...state,
-          isLoading: false,
-          error: action.payload
-        };
-      default:
-        return state;
-    }
-  }
-  const storeData = async (key, value) => {
-    try {
-      await AsyncStorage.setItem(key, value);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  const [state, dispatch] = useReducer(dataReducer, initialState);
   const [dataAPI, setDataAPI] = useState([]);
-  const fetchData = async () => {
-    dispatch({ type: 'FETCH_DATA_REQUEST' });
-    const token = await AsyncStorage.getItem('token');  
-    const requestOptions = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-    };
-    fetch(shareVarible.URLink + '/user/' + `${fdata.email}`)
-      .then(response => response.json())
-      .then(data => {
-        dispatch({ type: 'FETCH_DATA_SUCCESS', payload: data },setDataAPI(data),console.log("test", dataAPI));
-      })
-      .catch(error => {
-        dispatch({ type: 'FETCH_DATA_FAILURE', payload: error });
-      });
-  }
-
-
-  // const fetchData = async () => {
-  //   const token = await AsyncStorage.getItem('token');
-  //   const requestOptions = {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //   };
-  //   fetch(shareVarible.URLink + '/user/' + `${fdata.email}`, requestOptions)
-  //     .then(response => response.json())
-  //     .then(data => setDataAPI(data))
-  //     .catch(error => console.log(error));
-
-  // };
-  // take data 
   const [fdata, setFdata] = useState({
     email: '',
     password: ''
@@ -123,9 +50,9 @@ const Signin = ({ navigation }) => {
     if (fdata.email == '' || fdata.password == '') {
       setErrormsg('Email and password not null!!');
       return;
-    } 
+    }
     else {
-     
+
       fetch(shareVarible.URLink + '/signin',
         {
           method: 'POST',
@@ -137,10 +64,13 @@ const Signin = ({ navigation }) => {
           data => {
             if (data.error) {
               setErrormsg(data.error);
-              alert(data.error); console.log(1)
+              console.log(data.error);
+
             }
             else {
-              showCustomAlert('Login successfully');
+             
+              showCustomAlert('Login successfully'); 
+              setFdata({ ...fdata, email: "", password: "" })
             }
           }
         )
@@ -151,7 +81,7 @@ const Signin = ({ navigation }) => {
       setTimeout(() => {
         setIsVisible(false);
         navigation.navigate('Profile', { data: fdata });
-      }, 1000); 
+      }, 1000);
     }
   }, [isVisible, navigation]);
 
@@ -192,6 +122,7 @@ const Signin = ({ navigation }) => {
       <Text style={styles.loginText}>Login</Text>
       <Text style={styles.nodetextemail}>Please enter your email</Text>
       <TextInput
+        value={fdata.email}
         onPressIn={() => setErrormsg(null)}
         placeholder='abc123@gmail.com' style={styles.inputemail}
         onChangeText={(text) => setFdata({ ...fdata, email: text })}>
@@ -199,6 +130,7 @@ const Signin = ({ navigation }) => {
       <Text style={styles.nodetextpass}>Please enter your password</Text>
       <View style={styles.inputContainer}>
         <TextInput
+          value={fdata.password}
           placeholder='******'
           style={styles.inputpassword}
           onChangeText={(text) => { setFdata({ ...fdata, password: text }), setPassword(text) }}
@@ -226,7 +158,7 @@ const Signin = ({ navigation }) => {
         <Text style={styles.textcontinue} onPress={() => navigation.navigate('Signup')}
         >Sign in</Text>
       </View>
-      
+
     </KeyboardAwareScrollView>
 
   )

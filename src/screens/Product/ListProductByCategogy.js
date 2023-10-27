@@ -1,15 +1,15 @@
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity,Alert } from 'react-native'
+import { View, Text, Button, StyleSheet, Image, TouchableOpacity,Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import shareVarible from './../../AppContext'
 import { FlatGrid } from 'react-native-super-grid';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 const ListProductByCategogy = ({ route, navigation }) => {
-  console.log(route)
   const [dataipa, setDataIPA] = useState([{}]);
   const idCategory = route.params.item._id;
   const dataroute = route.params.route.params.route.params.data
   const idtable = route.params.route.params.route.params.data._id
+  const [showModalAlert, setShowModalAlert] = useState(false);
   useEffect(() => {
     fetchData();
   }, []);
@@ -22,6 +22,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
   })
   const [dataChef, setdataChef] = useState({
     id_product: '',
+    id_table: '',
     name: "",
     image: "",
     quantity: "",
@@ -47,14 +48,30 @@ const ListProductByCategogy = ({ route, navigation }) => {
     //Post Product cheft  
     const now = new Date();
     dataChef.id_product = item._id
+    dataChef.id_table = idtable
     dataChef.name = item.name;
     dataChef.image = item.image;
     dataChef.quantity = 1;
     dataChef.status = 0,
-      dataChef.second = now.getSeconds();
-    dataChef.minute = now.getHours();
+    dataChef.second = now.getSeconds();
+    dataChef.minute = now.getMinutes();
     dataChef.hour = now.getHours();
-    fetch(shareVarible.URLink + '/productcheft/create',
+    // Add product in BIll
+    fdata.id_product = item._id
+    fdata.ten_mon = item.name;
+    fdata.hinh_mon = item.image;
+    fdata.so_luong = 1;
+    fdata.gia = item.price
+    if (fdata.ten_mon == '' || fdata.so_luong == "") {
+      alert("Data not null")
+      return;
+    }
+    if (item.status == 1) {
+      setShowModalAlert(true)
+      return;
+    }
+    else {
+      fetch(shareVarible.URLink + '/productcheft/create',
       {
         method: 'POST',
         headers: {
@@ -70,22 +87,6 @@ const ListProductByCategogy = ({ route, navigation }) => {
           }
         }
       )
-    // Add product in BIll
-    fdata.id_product = item._id
-    fdata.ten_mon = item.name;
-    fdata.hinh_mon = item.image;
-    fdata.so_luong = 1;
-    fdata.gia = item.price
-    if (fdata.ten_mon == '' || fdata.so_luong == "") {
-      alert("Data not null")
-      return;
-    }
-    if (item.status == 1) {
-      alert("Out of sock")
-      return;
-    }
-
-    else {
       fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
         {
           method: 'POST',
@@ -109,6 +110,35 @@ const ListProductByCategogy = ({ route, navigation }) => {
   }
   return (
     <View style={styles.containerbos}>
+      <Modal
+        transparent={true}
+        visible={showModalAlert}
+        animationType='fade'
+      >
+        <View style={styles.centeredViewAlert}>
+          <View style={{
+            height: 300,
+            width: 300,
+            backgroundColor: "white",
+            borderRadius: 40,
+            justifyContent:'space-evenly',
+            alignItems: 'center',
+          }}>
+
+            <View style={{height: 100, width: 100, backgroundColor: '#84202A', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems:'center'}}>
+              <Ionicons  name='close' size={60} color={"#FFFCFF"}/>
+            </View>
+            <Text style={{fontSize:22, fontWeight: "700", color:'#84202A'}}>
+             OUT OF SOCK
+            </Text>
+            <TouchableOpacity 
+            onPress={()=>{setShowModalAlert(false)}}
+            style={{height: 40, width: 140, backgroundColor:'#84202A', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => navigation.navigate('HomeWaitress')}>
           <Ionicons name='arrow-back-sharp' size={35} />
@@ -155,13 +185,13 @@ const styles = StyleSheet.create({
   gridView: {
     flex: 1,
     backgroundColor: '#EDF6D1',
-    opacity: 0.98
+    opacity: 0.98,
+    top: -20
   },
   itemContainer: {
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,
-    padding: 10,
     height: 140,
   },
   itemName: {
@@ -193,7 +223,7 @@ const styles = StyleSheet.create({
   },
   container: {
     height: 50,
-    marginTop: 20,
+    marginTop: 40,
     width: '100%',
     backgroundColor: '#EDF6D8',
     flexDirection: 'row',
@@ -235,5 +265,18 @@ const styles = StyleSheet.create({
     alignItems:'center',
     flex:1,
     backgroundColor: '#EDF6D8',
+  },
+  centeredViewAlert: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  styButtonalert: {
+    height: 45, width: 100,
+    borderWidth: 1,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })

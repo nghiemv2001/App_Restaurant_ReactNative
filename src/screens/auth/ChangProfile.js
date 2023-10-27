@@ -137,7 +137,7 @@ const ChangProfile = ({ navigation, route }) => {
           alert(data.error);
         }
         else {
-          showCustomAlert('Login successfully');
+          showCustomAlert('Change successfully');
         }
       }
     )

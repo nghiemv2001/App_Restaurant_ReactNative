@@ -49,10 +49,15 @@ import ListProductStep2 from './src/screens/Chef/ListProductStep2';
 import ListProductStep3 from './src/screens/Chef/ListProductStep3';
 import ListProductWaitress from './src/screens/Chef/ListProductWaitress';
 import ListProductAdmin from './src/screens/Chef/ListProductAdmin';
-
+import tableChef from './src/screens/Chef/tableChef';
+import CheckProductInTable from './src/screens/Chef/checkProductInTable';
 
 //chart
 import ChartofInvoice from './src/screens/Chart/ChartofInvoice';
+
+//inventory
+import Inventory from './src/screens/inventory/inventory';
+
 const Stack = createNativeStackNavigator();
 
 import { Provider } from 'react-redux';
@@ -63,7 +68,10 @@ export default function App() {
     <Provider store={Redux.store}>
     <NavigationContainer>
       <Stack.Navigator>
-      <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
+      <Stack.Screen name="HomeChef" component={HomeChef} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
           headerShown: false
         }} />
         <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
@@ -75,11 +83,6 @@ export default function App() {
         <Stack.Screen name="Signin" component={Signin} options={{
           headerShown: false
         }} />
-        
-        <Stack.Screen name="HomeChef" component={HomeChef} options={{
-          headerShown: false
-        }} />
-        
         <Stack.Screen name="Profile" component={Profile} options={{
           headerShown: false
         }} />
@@ -168,6 +171,15 @@ export default function App() {
           headerShown: false
         }} />
         <Stack.Screen name="ListAccount" component={ListAccount} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="TableChef" component={tableChef} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="CheckProductInTable" component={CheckProductInTable} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="Inventory" component={Inventory} options={{
           headerShown: false
         }} />
       </Stack.Navigator>

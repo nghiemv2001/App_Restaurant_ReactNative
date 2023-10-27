@@ -4,8 +4,12 @@ import { FlatGrid } from 'react-native-super-grid';
 import shareVarible from './../../AppContext'
 import uploadimge2 from '../../../assets/UpLoadImage.png'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { useSelector, useDispatch } from 'react-redux';
+import { useFocusEffect } from '@react-navigation/native'
 const ListCategoryAdmin = ({navigation}) => {
   const [dataipa, setDataIPA] = useState([{}]);
+  const Categorys = useSelector(state => state.categoryReducer.categorys)
+  const dispatch = useDispatch();
   const fetchData = () => {
     fetch(shareVarible.URLink + '/category/', {
       method: 'GET',
@@ -19,20 +23,23 @@ const ListCategoryAdmin = ({navigation}) => {
       )
       .catch(error => console.log(error));
   };
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch({ type: "GET_CATEGORY" });
+      fetchData()
+    }, [])
+  );
 
   const listProductByCatgory = (item) => {
         navigation.navigate("ListProductByCategoryAdmin", {item})
   }
   return (
     <View 
-      style={{flex : 1}}
+      style={{flex : 1, paddingTop: 20}}
     >
       <FlatGrid
       itemDimension={130}
-      data={dataipa}
+      data={Categorys}
       style={styles.gridView}
       spacing={10}
       renderItem={({ item }) => (

@@ -73,7 +73,6 @@ const ListTable = ({ navigation }) => {
   // kiem tra ban do co bill chua va tao mot bill moi
   const CreateBillabdEditTable = (data) => {
     setShowModal(false)
-    console.log(shareVarible.URLink + '/table/update/' + `${dataitem._id}`)
     //edit table
     const updates = {
       name: data.name,

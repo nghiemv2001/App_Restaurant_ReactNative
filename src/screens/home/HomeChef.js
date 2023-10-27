@@ -6,12 +6,14 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import ListProductStep1 from '../Chef/ListProductStep1';
 import ListProductStep2 from '../Chef/ListProductStep2';
 import ListProductStep3 from '../Chef/ListProductStep3';
+import tableChef from '../Chef/tableChef';
+import Inventory from '../inventory/inventory';
 const Drawer = createDrawerNavigator();
 const HomeChef = () => {
   return (
     <Drawer.Navigator drawerContent={props=><CustomDrawerWaitress{...props}/>} 
     screenOptions={{
-        headerShown : true,
+        headerShown : false,
         drawerActiveTintColor:'green',
         drawerInactiveTintColor:'black',
         drawerStyle: {
@@ -25,21 +27,21 @@ const HomeChef = () => {
                 <Ionicons name='md-list' size={22}/>
             ),
         }}
-      name="List raw food" component={ListProductStep1} />
+      name="Product" component={ListProductStep1} />
       <Drawer.Screen 
         options={{
             drawerIcon: ({color})=>(
-                <Ionicons name='md-list-outline' size={22}/>
+                <Ionicons name='restaurant-sharp' size={22}/>
             ),
         }}
-      name="List cooking in progress" component={ListProductStep2} />
+      name="Table" component={tableChef} />
       <Drawer.Screen 
         options={{
             drawerIcon: ({color})=>(
-                <Ionicons name='md-list-sharp' size={22}/>
+                <Ionicons name='business' size={22}/>
             ),
         }}
-      name="List cooked dishes" component={ListProductStep3} />
+      name="inventory" component={Inventory} />
     </Drawer.Navigator>  
     
   )

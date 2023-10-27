@@ -1,12 +1,14 @@
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity,Alert } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity,Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import shareVarible from './../../AppContext'
 import { FlatGrid } from 'react-native-super-grid';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 const ListProductByCategogy = ({ route, navigation }) => {
-  console.log(route)
   const [dataipa, setDataIPA] = useState([{}]);
+  const [showAlertAdjustProduct, setShowAlertAdjustProduct] = useState(false)
+  const [showModalAlert, setShowModalAlert] = useState(false)
+  const [itemProduct, setItemProduct] = useState(null);
   const idCategory = route.params.item._id;
   useEffect(() => {
     fetchData();
@@ -41,77 +43,117 @@ const ListProductByCategogy = ({ route, navigation }) => {
       )
       .catch(error => console.log(error));
   };
-//   const sentoBackEnd = (item) => {
-//     //Post Product cheft  
-//     const now = new Date();
-//     dataChef.id_product = item._id
-//     dataChef.name = item.name;
-//     dataChef.image = item.image;
-//     dataChef.quantity = 1;
-//     dataChef.status = 0,
-//       dataChef.second = now.getSeconds();
-//     dataChef.minute = now.getHours();
-//     dataChef.hour = now.getHours();
-//     fetch(shareVarible.URLink + '/productcheft/create',
-//       {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(dataChef)
-//       }).then(res => res.json()).then(
-//         data => {
-
-//           if (data.error) {
-//             setErrormgs(data.error);
-//             alert(data.error);
-//           }
-//         }
-//       )
-//     // Add product in BIll
-//     fdata.id_product = item._id
-//     fdata.ten_mon = item.name;
-//     fdata.hinh_mon = item.image;
-//     fdata.so_luong = 1;
-//     fdata.gia = item.price
-//     if (fdata.ten_mon == '' || fdata.so_luong == "") {
-//       alert("Data not null")
-//       return;
-//     }
-//     if (item.status == 1) {
-//       alert("Out of sock")
-//       return;
-//     }
-
-//     else {
-//       fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
-//         {
-//           method: 'POST',
-//           headers: {
-//             'Content-Type': 'application/json'
-//           },
-//           body: JSON.stringify(fdata)
-//         }).then(res => res.json()).then(
-//           data => {
-//             if (data.error) {
-//               setErrormgs(data.error);
-//               alert(data.error);
-//             }
-//             else {
-//               const data = dataroute;
-//               navigation.navigate('Bill', { data })
-//             }
-//           }
-//         )
-//     }
-//   }
+  const deleteProduct = () => {
+    fetch(shareVarible.URLink + '/product/delete/' + `${itemProduct._id}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        setShowAlertAdjustProduct(false)
+        fetchData();
+        setShowModalAlert(true)
+      })
+      .catch(error => {
+        console.error('Lỗi xóa đối tượng:', error);
+      }
+      )
+  }
   return (
     <View style={styles.containerbos}>
+      <Modal
+        transparent={true}
+        visible={showModalAlert}
+        animationType='fade'
+      >
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 300,
+            width: 300,
+            backgroundColor: "white",
+            borderRadius: 40,
+            justifyContent:'space-evenly',
+            alignItems: 'center',
+          }}>
+
+            <View style={{height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems:'center'}}>
+              <Ionicons  name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"}/>
+            </View>
+            <Text style={{fontSize:22, fontWeight: "700", color:'#3564C1'}}>
+             Success
+            </Text>
+            <TouchableOpacity 
+            onPress={()=>{setShowModalAlert(false)}}
+            style={{height: 40, width: 140, backgroundColor:'#3564C1', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        transparent={true}
+        visible={showAlertAdjustProduct}
+        animationType='fade'
+      >
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 70,
+            width: 300,
+            backgroundColor: "#FDD736",
+            borderTopLeftRadius: 40,
+            borderTopRightRadius: 40,
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}>
+            
+            <Ionicons name='help' size={70} color="white" style={{ marginTop: 3, position: 'absolute' }} />
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 140 }} />
+            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 140 }} />
+            <TouchableOpacity 
+            onPress={()=>{setShowAlertAdjustProduct(false)}}
+            style={{ marginLeft: 220, top: -60 }}>
+               <Ionicons name='close' size={30} color="black"/>
+            </TouchableOpacity>
+           
+
+          </View>
+          <View style={{
+            height: 150,
+            width: 300,
+            backgroundColor: "white",
+            borderBottomLeftRadius: 40,
+            borderBottomRightRadius: 40,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>What do you want ?</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
+              <TouchableOpacity
+                onPress={() => { setShowAlertAdjustProduct(false)
+                deleteProduct()
+                }}
+                style={[styles.styButtonModal, { backgroundColor: '#D85261' }]}>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>Delete</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+              onPress={() => { 
+                setShowAlertAdjustProduct(false)
+                navigation.navigate('EditProduct', {itemProduct})}}
+                style={[styles.styButtonModal, { backgroundColor: '#038857' }]}>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>Edit</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => navigation.navigate('HomeAdmin')}>
           <Ionicons name='arrow-undo-circle-sharp' size={35} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('CreateProduct')}>
+        <TouchableOpacity onPress={() => navigation.navigate('CreateProduct', {idCategory})}>
           <Ionicons name='add' size={35} />
         </TouchableOpacity>
       </View>
@@ -123,7 +165,10 @@ const ListProductByCategogy = ({ route, navigation }) => {
           spacing={10}
           renderItem={({ item }) => (
             <TouchableOpacity 
-            // onPress={() => sentoBackEnd(item)}
+            onPress={() => {
+              setItemProduct(item)
+              setShowAlertAdjustProduct(true)
+            } }
               style={styles.styButton}>
               <View style={[styles.itemContainer]}>
                 <Image style={styles.styimage} source={{ uri: item.image }} />
@@ -239,5 +284,18 @@ const styles = StyleSheet.create({
     alignItems:'center',
     flex:1,
     backgroundColor: '#EDF6D8',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  styButtonModal: {
+    height: 45, width: 100,
+    borderWidth: 1,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })

@@ -1,4 +1,4 @@
-import { View, Text ,FlatList,TouchableOpacity,Image, Alert} from 'react-native'
+import { View, Text ,FlatList,TouchableOpacity,Image,Modal,StyleSheet} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
@@ -10,6 +10,7 @@ const BillAdmin = ({navigation, route}) => {
   const [dataipa, SetDataApi] = useState([]);
   const [data, setData] = useState(null);
   const idtable = route.params.data._id
+  const [showModalAlert, setShowModalAlert] = useState(false);
   const [datainvoice,SetDataInvoice] = useState({
     name:'',
     total : '',
@@ -47,32 +48,32 @@ const BillAdmin = ({navigation, route}) => {
     .catch(error => console.log(error));
 };
 //CheckCard
-const CheckCard=()=>{
-  Alert.alert('Check', 'Pay for this table, right?', [
-    {
-      text: 'Cancel',
-      onPress: () => console.log('Cancel Pressed'),
-      style: 'cancel',
-    },
-    {text: 'OK', onPress: () => console.log('OK Pressed')},
-  ]);
-}
+// const CheckCard=()=>{
+//   Alert.alert('Check', 'Pay for this table, right?', [
+//     {
+//       text: 'Cancel',
+//       onPress: () => console.log('Cancel Pressed'),
+//       style: 'cancel',
+//     },
+//     {text: 'OK', onPress: () => console.log('OK Pressed')},
+//   ]);
+// }
 //CheckCash
 const CheckCash=()=>{
-  Alert.alert('Check', 'Pay for this table, right?', [
-    {
-      text: 'Cancel',
-      onPress: () => console.log('Cancel Pressed'),
-      style: 'cancel',
-    },
-    {text: 'OK', onPress: () =>
-    CreateInvoice()
-    },
-  ]);
+  // Alert.alert('Check', 'Pay for this table, right?', [
+  //   {
+  //     text: 'Cancel',
+  //     onPress: () => console.log('Cancel Pressed'),
+  //     style: 'cancel',
+  //   },
+  //   {text: 'OK', onPress: () =>
+  //   CreateInvoice()
+  //   },
+  // ]);
 }
 
 ///Create Invoice 
-const CreateInvoice=async(item)=>{
+const CreateInvoice=async()=>{
   //EditTable
   const updates =  {
     name : route.params.data.name,
@@ -90,16 +91,10 @@ const CreateInvoice=async(item)=>{
     data => {
       if (data.error) {
         setErrormgs(data.error);
-        alert(data.error);
-      }
-      else {
-        console.log("ok")
       }
     }
   )
-
   //create Invoice 
-   
   const now = new Date();
   fetch(shareVarible.URLink + '/invoice/create',
     {
@@ -111,20 +106,16 @@ const CreateInvoice=async(item)=>{
         name : dataipa.ten_ban_an, 
         total :total, 
         day : now.getDate(), 
-        month : now.getMonth(), 
+        month : now.getMonth()+1, 
         minute : now.getMinutes(),
         hour : now .getHours(),
         year: now.getFullYear(), 
         product_list:dataipa.danh_sach_mon_an })
     }).then(res => res.json()).then(
       data => {
-       
         if (data.error) {
           setErrormgs(data.error);
           alert(data.error);
-        }
-        else {
-          
         }
       }
     )
@@ -139,8 +130,7 @@ const CreateInvoice=async(item)=>{
     })
     .then(response => response.json())
     .then(data => {
-      console.log('finish', data);
-      navigation.navigate('HomeAdmin')
+      setShowModalAlert(true)
     })
     .catch(error => {
       console.error('Error', error);
@@ -222,6 +212,38 @@ return (
     width: '100%',
     backgroundColor: '#EDF6D8'
   }}>
+    <Modal
+        transparent={true}
+        visible={showModalAlert}
+        animationType='fade'
+      >
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 300,
+            width: 300,
+            backgroundColor: "white",
+            borderRadius: 40,
+            justifyContent:'space-evenly',
+            alignItems: 'center',
+          }}>
+
+            <View style={{height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems:'center'}}>
+              <Ionicons  name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"}/>
+            </View>
+            <Text style={{fontSize:22, fontWeight: "700", color:'#3564C1'}}>
+             Success
+            </Text>
+            <TouchableOpacity 
+            onPress={()=>{
+              setShowModalAlert(false)
+              navigation.navigate("HomeAdmin")
+            }}
+            style={{height: 40, width: 140, backgroundColor:'#3564C1', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     <View
       style={{
         flexDirection: 'row',
@@ -264,26 +286,19 @@ return (
       paddingHorizontal: 20,
       backgroundColor:'white'
     }}>
-      <Text
+      <View
+        style={{
+          flexDirection: 'row',
+          marginTop : 10
+        }}>
+        <Text
         style={{
           fontSize: 32,
           fontWeight: 'bold'
         }}
       >{total}.00$</Text>
-      <View
-        style={{
-          flexDirection: 'row',
-          marginTop : 10
-        }}
-      >
         <TouchableOpacity
-        onPress={CheckCard}
-        >
-          <Ionicons name='card' size={50} />
-        </TouchableOpacity>
-        
-        <TouchableOpacity
-        onPress={CheckCash}
+        onPress={CreateInvoice}
         >
           <Text
           style={{
@@ -301,3 +316,18 @@ return (
 }
 
 export default BillAdmin
+const styles = StyleSheet.create({
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  styButton: {
+    height: 45, width: 100,
+    borderWidth: 1,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
+  }
+})
