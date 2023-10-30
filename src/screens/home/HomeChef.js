@@ -8,6 +8,7 @@ import ListProductStep2 from '../Chef/ListProductStep2';
 import ListProductStep3 from '../Chef/ListProductStep3';
 import tableChef from '../Chef/tableChef';
 import Inventory from '../inventory/inventory';
+import CategoryIngredient from '../inventory/categoryIngredient';
 const Drawer = createDrawerNavigator();
 const HomeChef = () => {
   return (
@@ -41,7 +42,7 @@ const HomeChef = () => {
                 <Ionicons name='business' size={22}/>
             ),
         }}
-      name="inventory" component={Inventory} />
+      name="CategoryIngredient" component={CategoryIngredient} />
     </Drawer.Navigator>  
     
   )

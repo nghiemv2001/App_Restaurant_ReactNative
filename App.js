@@ -57,6 +57,8 @@ import ChartofInvoice from './src/screens/Chart/ChartofInvoice';
 
 //inventory
 import Inventory from './src/screens/inventory/inventory';
+import categoryIngredient from './src/screens/inventory/categoryIngredient';
+import CreateCategoryIngredient from './src/screens/inventory/createCategoryIngredient';
 
 const Stack = createNativeStackNavigator();
 
@@ -180,6 +182,12 @@ export default function App() {
           headerShown: false
         }} />
         <Stack.Screen name="Inventory" component={Inventory} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="CategoryIngredient" component={categoryIngredient} options={{
+          headerShown: false
+        }} />
+        <Stack.Screen name="CreateCategoryIngredient" component={CreateCategoryIngredient} options={{
           headerShown: false
         }} />
       </Stack.Navigator>
