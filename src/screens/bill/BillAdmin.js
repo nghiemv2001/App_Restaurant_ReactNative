@@ -27,12 +27,16 @@ const BillAdmin = ({navigation, route}) => {
     }, [])
   );
   var total = 0;
-  
-  if (dataipa.length !== 0) {
+  if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0) {
     total = dataipa.danh_sach_mon_an.reduce((acc, danh_sach_mon_an) => {
-      return acc + danh_sach_mon_an.gia;
+      return acc + (danh_sach_mon_an.gia * danh_sach_mon_an.so_luong);
     }, 0);
   }
+  function formatNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  const formattedTotal = formatNumberWithCommas(total);
+  
  //get data 1 bill 
  const fetchData = () => {
   fetch(shareVarible.URLink + '/bill/' + `${idtable}`, {
@@ -165,7 +169,7 @@ const renderlist = ((item) => {
           }}
         >
           <Text style={{
-            width: '45%',
+            width: '105%',
             height: 50,
             paddingLeft: 10,
             fontSize: 23,
@@ -178,20 +182,18 @@ const renderlist = ((item) => {
 
             <Text
               style={{
-                width: '25%',
+                width: '30%',
                 fontSize: 18,
                 textAlignVertical: 'center',
                 marginLeft: 10
               }}
-            >{item.gia} $</Text>
+            >{item.gia}đ</Text>
             <Text
               style={{
-                width: '20%',
+                width: '9%',
                 fontSize: 18,
-                textAlignVertical: 'center',
-
               }}
-            >x {item.so_luong}</Text>
+            >x{item.so_luong}</Text>
             <Text
               style={{
                 width: '50%',
@@ -199,7 +201,7 @@ const renderlist = ((item) => {
                 textAlignVertical: 'center',
 
               }}
-            >=   {item.gia * item.so_luong} $</Text>
+            >= {item.gia * item.so_luong} đ</Text>
           </View>
         </View>
       </View>
@@ -231,7 +233,7 @@ return (
               <Ionicons  name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"}/>
             </View>
             <Text style={{fontSize:22, fontWeight: "700", color:'#3564C1'}}>
-             Success
+             Thành công
             </Text>
             <TouchableOpacity 
             onPress={()=>{
@@ -239,7 +241,7 @@ return (
               navigation.navigate("HomeAdmin")
             }}
             style={{height: 40, width: 140, backgroundColor:'#3564C1', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
-              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Continue</Text>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>tiếp tục</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -254,7 +256,7 @@ return (
     >
       <TouchableOpacity
         style={{ marginLeft: 10, }}
-        onPress={() => navigation.navigate('ListTableAdmin')}
+        onPress={() => navigation.navigate('HomeAdmin')}
       >
         <Ionicons name='arrow-undo-circle-outline' size={45} />
       </TouchableOpacity>
@@ -296,7 +298,7 @@ return (
           fontSize: 32,
           fontWeight: 'bold'
         }}
-      >{total}.00$</Text>
+      >{formattedTotal} </Text>
         <TouchableOpacity
         onPress={CreateInvoice}
         >

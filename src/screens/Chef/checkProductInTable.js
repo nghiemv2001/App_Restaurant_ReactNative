@@ -31,10 +31,10 @@ const CheckProductInTable = ({ navigation, route }) => {
             <View>
                 <View style={{ marginBottom: 3, backgroundColor: backgroundColor, paddingVertical: 5, paddingRight: 200, paddingLeft: 5, flexDirection: 'row', borderWidth: 1, borderRadius: 40 }}>
                     <Image style={{ height: 80, width: 80, borderRadius: 40 }} source={{ uri: item.image }} />
-                    <View style={{ flexDirection: 'column', justifyContent: 'space-between', paddingLeft: 5, width: '100%' }}>
+                    <View style={{ flexDirection: 'column', justifyContent: 'space-between', paddingLeft: 5, width: '160%' }}>
                         <Text style={{ fontSize: 22, width: '100%' }}>{item.name}</Text>
-                        <Text style={{ fontSize: 19 }}>X{item.quantity}</Text>
-                        <Text style={{ fontSize: 16 }}>Time : ( {item.hour.toString().padStart(2, '0')} : {item.minute.toString().padStart(2, '0')}':{item.second.toString().padStart(2, '0')}s )</Text>
+                        <Text style={{ fontSize: 19 }}>Số lượng: x{item.quantity}</Text>
+                        <Text style={{ fontSize: 16 }}>Thời gian: ( {item.hour.toString().padStart(2, '0')} : {item.minute.toString().padStart(2, '0')}':{item.second.toString().padStart(2, '0')}s )</Text>
                     </View>
                 </View>
             </View>

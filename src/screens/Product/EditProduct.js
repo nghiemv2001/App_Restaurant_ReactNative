@@ -181,8 +181,8 @@ const EditProduct = ({ navigation, route }) => {
           labelStyle={styles.labelStyle}
           placeholderStyle={styles.placeholderStyle}
           textErrorStyle={styles.textErrorStyle}
-          label="Name"
-          placeholder="name of food..."
+          label="Tên món ăn"
+          placeholder="Tên của món ăn..."
           placeholderTextColor="gray"
           onChangeText={e => {
             setValueName(e);
@@ -199,8 +199,8 @@ const EditProduct = ({ navigation, route }) => {
           labelStyle={styles.labelStyle}
           placeholderStyle={styles.placeholderStyle}
           textErrorStyle={styles.textErrorStyle}
-          label="Price"
-          placeholder="price of food..."
+          label="Giá món"
+          placeholder="Giá món ăn..."
           placeholderTextColor="gray"
           onChangeText={e => {
             setValuePrice(e);
@@ -220,7 +220,7 @@ const EditProduct = ({ navigation, route }) => {
           }
         }}
         isChecked={checkBox}
-        leftText={"Sold out"}
+        leftText={"Hết hàng"}
       />
       {
         fdata.image == "" ? <View style={[styles.uploadimge, { justifyContent: 'center', alignItems: 'center' }]}><Ionicons name="camera-outline" size={50} />

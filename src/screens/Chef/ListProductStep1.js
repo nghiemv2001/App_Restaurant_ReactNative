@@ -123,23 +123,23 @@ const ListProductStep1 = () => {
       <View style={{paddingHorizontal: 5}}>
         <View style={{ marginBottom: 3, backgroundColor: backgroundColor, paddingVertical: 5, paddingRight: 200, paddingLeft: 5, flexDirection: 'row', borderWidth: 1, borderRadius: 40 }}>
           <Image style={{ height: 80, width: 80, borderRadius: 40 }} source={{ uri: item.image }} />
-          <View style={{ flexDirection: 'column', justifyContent: 'space-between', paddingLeft: 5, width: '100%' }}>
+          <View style={{ flexDirection: 'column', justifyContent: 'space-between', paddingLeft: 5, width: '130%' }}>
             <Text style={{ fontSize: 22 }}>{item.name}</Text>
-            <Text style={{ fontSize: 19 }}>X{item.quantity}</Text>
-            <Text style={{ fontSize: 16 }}>Time : ( {item.hour.toString().padStart(2, '0')} : {item.minute.toString().padStart(2, '0')}':{item.second.toString().padStart(2, '0')}s )</Text>
+            <Text style={{ fontSize: 19 }}>Số lượng : x{item.quantity}</Text>
+            <Text style={{ fontSize: 16 }}>Thời gian : ( {item.hour.toString().padStart(2, '0')} : {item.minute.toString().padStart(2, '0')}':{item.second.toString().padStart(2, '0')}s )</Text>
           </View>
-          <View style={{ justifyContent: 'center', paddingLeft: 30 }}>
+          <View style={{ justifyContent: 'center', paddingLeft: 10 }}>
             {item.status === 0 || item.status === 1 ?
               <TouchableOpacity
                 onPress={() => EditProduct(item)}>
-                <Ionicons name='checkmark-circle-outline' size={55} />
+                <Ionicons name='checkmark-circle-outline' size={45} />
               </TouchableOpacity>
               :  <TouchableOpacity
               onPress={() => {
                 setItemProduct(item)
                 setModalChooseDelete(true)
               }}>
-              <Ionicons name='close' size={55} />
+              <Ionicons name='close' size={45} />
             </TouchableOpacity>
             }
           </View>
@@ -182,9 +182,7 @@ const ListProductStep1 = () => {
             justifyContent: 'center',
             alignItems: 'center'
           }}>
-            <Text style={{
-              fontFamily: ''
-            }}>You can choose to delete only one or all products?</Text>
+            <Text style={{textAlign:'center', paddingHorizontal: 10}}>Bạn chỉ muốn xóa món này hay toàn bộ món đã hoàn thành trong danh sách?</Text>
             <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
               <TouchableOpacity style={{
                 height: 40,
@@ -200,7 +198,7 @@ const ListProductStep1 = () => {
                    DeleteProduct()
                   }}
               >
-                <Text style={{ color: 'white' }}>Only one</Text>
+                <Text style={{ color: 'white' }}>chỉ một</Text>
               </TouchableOpacity>
               <TouchableOpacity style={{
                 height: 40,
@@ -215,7 +213,7 @@ const ListProductStep1 = () => {
                   DeletAll()
                 }}
               >
-                <Text style={{ color: 'white' }}>All</Text>
+                <Text style={{ color: 'white' }}>toàn bộ</Text>
               </TouchableOpacity>
             </View>
 
@@ -255,12 +253,12 @@ const ListProductStep1 = () => {
               <Ionicons name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"} />
             </View>
             <Text style={{ fontSize: 22, fontWeight: "700", color: '#3564C1' }}>
-              Success
+              Thành công
             </Text>
             <TouchableOpacity
               onPress={() => { setShowModalAlert(false) }}
               style={{ height: 40, width: 140, backgroundColor: '#3564C1', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Continue</Text>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
             </TouchableOpacity>
           </View>
         </View>

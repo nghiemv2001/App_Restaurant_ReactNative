@@ -8,6 +8,10 @@ import shareVarible from '../../AppContext'
 const ChartofInvoice = ({ navigation, route }) => {
   const hourRangesValues = Object.values(route.params.newHourRanges);
   const sum = hourRangesValues.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+  function formatNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  const formattedTotal = formatNumberWithCommas(sum);
   const hourRangesKeys = Object.keys(route.params.newHourRanges);
   const data = {
     labels: hourRangesKeys,
@@ -63,11 +67,11 @@ const ChartofInvoice = ({ navigation, route }) => {
       />
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 60}}>
         <View style={{alignItems:'center'}}>
-          <Text style={{fontSize: 22, color:"#989898", fontWeight: '500'}}>Sales</Text>
-          <Text style={{fontSize: 22, color:"#9CE6A9", fontWeight: 'bold'}}>{sum} $</Text>
+          <Text style={{fontSize: 22, color:"#989898", fontWeight: '500'}}>Doanh thu</Text>
+          <Text style={{fontSize: 22, color:"#9CE6A9", fontWeight: 'bold'}}>{formattedTotal} đ</Text>
         </View>
         <View style={{alignItems:'center'}}>
-        <Text style={{fontSize: 22, color:"#989898", fontWeight: '500', alignItems:'center'}}>Bills</Text>
+        <Text style={{fontSize: 22, color:"#989898", fontWeight: '500', alignItems:'center'}}>Số bill</Text>
           <Text style={{fontSize: 22, fontWeight : 'bold', color:'#F5504F'}}>{route.params.numberOfElements}</Text>
         </View>
       </View>

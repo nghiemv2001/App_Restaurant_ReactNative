@@ -50,35 +50,35 @@ const HomeAdmin = () => {
             <Ionicons name='restaurant' size={22} />
           ),
         }}
-        name="Table" component={ListTableAdmin} />
+        name="Bàn ăn" component={ListTableAdmin} />
       <Drawer.Screen
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name='fast-food' size={22} />
           ),
         }}
-        name="Food" component={ListCategoryAdmin} />
+        name="Món ăn" component={ListCategoryAdmin} />
       <Drawer.Screen
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name='md-grid' size={22} />
           ),
         }}
-        name="Category" component={CreateCategory} />
+        name="Loại món" component={CreateCategory} />
       <Drawer.Screen
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name='newspaper' size={22} />
           ),
         }}
-        name="Invoice" component={ListInvoice} />
+        name="Hóa đơn" component={ListInvoice} />
       <Drawer.Screen
         options={{
           drawerIcon: ({ color }) => (
             <Ionicons name='people' size={22} />
           ),
         }}
-        name="List Account" component={ListAccount} />
+        name="Tài khoản" component={ListAccount} />
     </Drawer.Navigator>
   );
 }

@@ -92,12 +92,12 @@ const TableChef = ({ navigation }) => {
                             <Ionicons name='close' size={60} color={"#FFFCFF"} />
                         </View>
                         <Text style={{ fontSize: 22, fontWeight: "700", color: '#84202A' }}>
-                            DONT HAVE BILL
+                            Chưa có bill
                         </Text>
                         <TouchableOpacity
                             onPress={() => { setModalCheckBill(false) }}
                             style={{ height: 40, width: 140, backgroundColor: '#84202A', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-                            <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Continue</Text>
+                            <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

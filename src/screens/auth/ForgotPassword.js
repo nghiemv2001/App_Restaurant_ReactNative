@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import picturemain from '../../../assets/mainpicture.png'
+import picturemain from '../../../assets/xinchao.png'
 import { buttonlogin, buttonnSend } from '../../comon/button'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import shareVarible from './../../AppContext'
@@ -41,11 +41,10 @@ const ForgotPassword = ({ navigation }) => {
 
             <Image style={styles.stylepicture} source={picturemain} />
             <View style={styles.viewcenter}>
-                <Text style={styles.textfogot}>Forgot</Text>
-                <Text style={styles.textPassword}>Password</Text>
-                <Text style={styles.textNewpass}>New password</Text>
+                <Text style={styles.textfogot}>Quên</Text>
+                <Text style={styles.textPassword}>Mật Khẩu</Text>
             </View>
-            <Text style={styles.nodetextemail}>Please enter your email</Text>
+            <Text style={styles.nodetextemail}>Vùng lòng nhập email đã đăng ký tài khoản</Text>
             <TextInput
                 onPressIn={()=> setErrormsg(null)}
                 placeholder='abc123@gmail.com' style={styles.inputemail}
@@ -77,7 +76,6 @@ const styles = StyleSheet.create({
     },
     stylepicture: {
         position: 'absolute',
-        top: -100,
         right: -120,
         width: '100%',
         height: '60%',

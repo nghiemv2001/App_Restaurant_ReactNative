@@ -28,21 +28,21 @@ const HomeChef = () => {
                 <Ionicons name='md-list' size={22}/>
             ),
         }}
-      name="Product" component={ListProductStep1} />
+      name="Món chế biến" component={ListProductStep1} />
       <Drawer.Screen 
         options={{
             drawerIcon: ({color})=>(
                 <Ionicons name='restaurant-sharp' size={22}/>
             ),
         }}
-      name="Table" component={tableChef} />
+      name="Bàn ăn" component={tableChef} />
       <Drawer.Screen 
         options={{
             drawerIcon: ({color})=>(
                 <Ionicons name='business' size={22}/>
             ),
         }}
-      name="CategoryIngredient" component={CategoryIngredient} />
+      name="Loại nguyên liệu" component={CategoryIngredient}/>
     </Drawer.Navigator>  
     
   )

@@ -24,8 +24,6 @@ const ListTableAdmin = ({navigation}) => {
       )
       .catch(error => console.log(error));
   }
-
-
      //read data
   useEffect(() => {
    fetchData(),
@@ -120,7 +118,7 @@ const ListTableAdmin = ({navigation}) => {
     )
   })
   return (
-<SafeAreaView style ={{backgroundColor:'#EDF6D8'}}>
+<SafeAreaView style ={{backgroundColor:'#EDF6D8', height: '100%'}}>
       <Modal
         transparent={true}
         visible={showModalAlert}
@@ -140,12 +138,12 @@ const ListTableAdmin = ({navigation}) => {
               <Ionicons  name='close' size={60} color={"#FFFCFF"}/>
             </View>
             <Text style={{fontSize:22, fontWeight: "700", color:'#84202A'}}>
-            UNAVAILABLE
+            Không có bill
             </Text>
             <TouchableOpacity 
             onPress={()=>{setShowModalAlert(false)}}
             style={{height: 40, width: 140, backgroundColor:'#84202A', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
-              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Continue</Text>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>tiếp tục</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -156,7 +154,7 @@ const ListTableAdmin = ({navigation}) => {
          <Ionicons name="add" size={40} color="black" />
       </TouchableOpacity>
    
-      <View style={{backgroundColor:'red'}}>
+      <View style={{backgroundColor:'#EDF6D8'}}>
         
         <FlatList
           data={tables}

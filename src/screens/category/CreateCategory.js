@@ -1,6 +1,5 @@
 import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, FlatList, Alert, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import uploadimge from '../../../assets/2.png'
 import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -250,17 +249,17 @@ const CreateCategory = ({ navigation }) => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Delete Table</Text>
+            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Xóa</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
               <TouchableOpacity
                 onPress={() => { setShowModalConfirmDeleteCategory(false) }}
                 style={[styles.styButton, { backgroundColor: '#D85261' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>Cancel</Text>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>hủy</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => { DeteleCategory() }}
                 style={[styles.styButton, { backgroundColor: '#038857' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>OK</Text>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>tiếp tục</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -295,17 +294,17 @@ const CreateCategory = ({ navigation }) => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Adjust Category</Text>
+            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Điều chỉnh</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
               <TouchableOpacity
                 onPress={() => { setShowModalConfirmAdjustCategory(false) }}
                 style={[styles.styButton, { backgroundColor: '#D85261' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>Cancel</Text>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>hủy</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => { EditCategory() }}
                 style={[styles.styButton, { backgroundColor: '#038857' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>OK</Text>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>tiếp tục</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -330,12 +329,12 @@ const CreateCategory = ({ navigation }) => {
               <Ionicons  name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"}/>
             </View>
             <Text style={{fontSize:22, fontWeight: "700", color:'#3564C1'}}>
-             Success
+             Thành công
             </Text>
             <TouchableOpacity 
             onPress={()=>{setShowModalAlert(false)}}
             style={{height: 40, width: 140, backgroundColor:'#3564C1', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
-              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Continue</Text>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Tiếp tục</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -346,14 +345,14 @@ const CreateCategory = ({ navigation }) => {
           onChangeText={(text) => setFdata({ ...fdata, name: text })}
           style={styles.inputname}
           value={fdata.name}
-          placeholder="Category name"
+          placeholder="Tên loại món"
         />
         <TextInput
           onPressIn={() => setErrormgs(null)}
           value={fdata.describe}
           onChangeText={(text) => setFdata({ ...fdata, describe: text })}
           style={styles.inputdescrition}
-          placeholder="Category describe"
+          placeholder="Mô tả"
         />
         {
           image == null ? <View style={[styles.uploadimge, { justifyContent: 'center', alignItems: 'center' }]}><Ionicons name="camera-outline" size={50} /></View> : image && <Image source={{ uri: image }} style={styles.uploadimge} />
@@ -362,9 +361,9 @@ const CreateCategory = ({ navigation }) => {
         {} */}
         <View style={styles.styView2}>
           <Text style={styles.styTextImage}
-            onPress={takeImage}>Camera</Text>
+            onPress={takeImage}>chụp ảnh</Text>
           <Text style={styles.styTextImageLibary}
-            onPress={pickImage}>Libary</Text>
+            onPress={pickImage}>Thư viện</Text>
         </View>
         <View style={{ marginTop: 40 }}>
           <TouchableOpacity onPress={SendtoBackend}

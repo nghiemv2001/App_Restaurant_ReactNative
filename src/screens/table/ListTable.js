@@ -182,10 +182,10 @@ const ListTable = ({ navigation }) => {
           }}>
             <Text style={{
               fontFamily: ''
-            }}>It seems that the table doesn't have a bill yet</Text>
+            }}>Bàn ăn vẫn chưa có bill !!!</Text>
             <Text style={{
               fontFamily: ''
-            }}>let's create a bill for the table, shall we? </Text>
+            }}>Tạo hóa đơn cho bàn này ? </Text>
             <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
               <TouchableOpacity style={{
                 height: 40,
@@ -198,7 +198,7 @@ const ListTable = ({ navigation }) => {
               }}
               onPress={() => { setShowModal(false) }}
               >
-                <Text style={{ color: 'black' }}>skip</Text>
+                <Text style={{ color: 'black' }}>không</Text>
               </TouchableOpacity>
               <TouchableOpacity style={{
                 height: 40,
@@ -210,7 +210,7 @@ const ListTable = ({ navigation }) => {
               }}
               onPress={() => {CreateBillabdEditTable(data)}}
               >
-                <Text style={{ color: 'white' }}>create</Text>
+                <Text style={{ color: 'white' }}>tạo</Text>
               </TouchableOpacity>
             </View>
 

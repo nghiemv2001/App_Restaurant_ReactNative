@@ -150,16 +150,16 @@ const Profile = ({navigation}) => {
             {dataAPI.name}
           </Text>
         </View>
-        <Text style={styles.slableemail}>Email</Text>
+        <Text style={styles.slableemail}>email</Text>
         <Text   
         style={styles.stextemail}>
         {dataAPI.email}  
         </Text>
-        <Text style={styles.slableemail}>Phone</Text>
+        <Text style={styles.slableemail}>Số điện thoại</Text>
         <Text style={styles.stextemail}>
           {dataAPI.phone}
         </Text>
-        <Text style={styles.slableemail}>Birthday</Text>
+        <Text style={styles.slableemail}>Ngày sinh</Text>
         <Text style={styles.stextemail}>
         {dataAPI.birthday}
         </Text>
@@ -182,7 +182,7 @@ const Profile = ({navigation}) => {
             }}
           >
             <Text style={styles.styleLogout}>
-              Logout
+              Đăng xuất
             </Text>
             <Image
               style={styles.ImagePassword}

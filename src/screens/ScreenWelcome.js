@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
-import mainpicture from '../../assets/mainpicture.png'
+import mainpicture from '../../assets/xinchao.png'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Welcome = ({ navigation }) => {
@@ -8,7 +8,7 @@ const Welcome = ({ navigation }) => {
     <View style={styles.boss}>
       <Image style={styles.picturemain} source={mainpicture} />
       <View style={styles.top}>
-        <Text style={styles.welcomeText}>Welcome</Text>
+        <Text style={styles.welcomeText}>Xin chào</Text>
         <View style={styles.icon}>
           <Icon.Button
           style={styles.iconarrow_right}
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   },
   picturemain: {
     position: 'absolute',
-    top: -100,
+    top: 40,
     right: -120,
     width: '100%',
     height: '60%',
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   iconarrow_right:{
     height : 60,
-    width : 60 ,
+    width : 120 ,
     alignItems : 'center',
     justifyContent: 'center',
     borderTopEndRadius : 2

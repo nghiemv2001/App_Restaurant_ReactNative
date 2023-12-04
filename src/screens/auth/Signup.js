@@ -8,13 +8,10 @@ import {
   Modal
 } from 'react-native'
 import React, { useState } from 'react'
-import mainpicture from '../../../assets/mainpicture.png'
+import mainpicture from '../../../assets/xinchao.png'
 import { buttonsignup } from '../../comon/button'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import shareVarible from './../../AppContext'
-import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 const Signup = ({ navigation }) => {
 
@@ -26,68 +23,69 @@ const Signup = ({ navigation }) => {
     phone: '',
     password: '',
     keycode: '',
-    role: ''
+    role: '1'
   })
-  const [value, setValue] = useState(null);
-  const [isFocus, setIsFocus] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState('');
   const [password1, setPassword1] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [errormsg, setErrormsg] = useState(null);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const datadropdown = [
-    { label: 'Admin', value: '0' },
-    { label: 'Waitress', value: '1' },
-    { label: 'Chef', value: '2' },
-  ];
+  const [showModalAlert, setShowModalAlert] = useState(false);
   //call API
   const SendtoBackend = () => {
     setFdata({ ...fdata, keycode: '0000' })
     if (fdata.name == '') {
-      setErrormsg('NOTE : Name are required !!!');
+      setErrormsg('Tên không hợp lệ');
+      setShowModalAlert(true)
       return;
     }
     if ((!(/\S+@\S+\.\S+/).test(fdata.email) && !(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im).test(fdata.email))) {
-      setErrormsg('NOTE : Email null or warning fotmat  !!!');
+      setErrormsg('Email không hợp lệ');
+      setShowModalAlert(true)
       return;
     }
     if (fdata.phone.length == 0) {
-      setErrormsg('NOTE : Warning fotmat phone , length phone is invalible !!!');
+      setErrormsg('Số điện thoại không hợp lệ');
+      setShowModalAlert(true)
     }
     if (fdata.phone.length != 0) {
       for (const item of fdata.phone) {
         if (item != '0' && item != '1' && item != '2' && item != '3' && item != '4' && item != '5' && item != '6' && item != '7' && item != '8' && item != '9' || (fdata.phone.length < 9 || fdata.phone.length > 11)) {
-          setErrormsg('NOTE : Warning fotmat phone , length phone is invalible !!!');
+          setErrormsg('Số điện không hợp lệ');
+      setShowModalAlert(true)
           return;
         }
       }
     }
     if (fdata.password.length < 6) {
-      setErrormsg('NOTE : 6+ characters !!!');
+      setErrormsg('Mật khẩu trên 6 kí tự');
+      setShowModalAlert(true)
       return;
     }
     if (!(/^\S+$/).test(fdata.password)) {
-      setErrormsg('NOTE : Password mustnot contain Whitespace. !!!');
+      setErrormsg('Mật khẩu không chưa khoản trắng');
+      setShowModalAlert(true)
       return;
     }
     if (!(/^(?=.*[A-Z]).*$/).test(fdata.password)) {
-      setErrormsg('NOTE : Password must have at least one Uppercase Character. !!!');
+      setErrormsg('Mật khẩu có it nhất một ký tự in hoa');
+      setShowModalAlert(true)
       return;
     }
     if (!(/^(?=.*[a-z]).*$/).test(fdata.password)) {
-      setErrormsg('NOTE : Password must have at least one Lowercase Character. !!!');
+      setErrormsg('Mật khẩu có ít nhât một ký tự in thường');
+      setShowModalAlert(true)
       return;
     }
     if (!(/^(?=.*[0-9]).*$/).test(fdata.password)) {
-      setErrormsg('NOTE : Password must have at least one Digit. !!!');
+      setErrormsg('Mật khẩu có ít nhất một số');
+      setShowModalAlert(true)
       return;
-    }
-    if (!fdata.role) {
-      setErrormsg('NOTE : Role is not null!!!')
     }
     else {
       if (fdata.password != fdata.confirmpassword) {
-        setErrormsg('Password confirm Password must be same');
+        setErrormsg('Xác nhận mật khẩu không đúng');
+        setShowModalAlert(true)
         return;
       }
       else {
@@ -102,7 +100,6 @@ const Signup = ({ navigation }) => {
             data => {
               if (data.error) {
                 console.log(data.error)
-                setErrormsg(data.error);
               }
               else {
                 setAlertSuccess(true)
@@ -114,6 +111,35 @@ const Signup = ({ navigation }) => {
   };
   return (
     <KeyboardAwareScrollView style={styles.boss}>
+      <Modal
+        transparent={true}
+        visible={showModalAlert}
+        animationType='fade'
+      >
+        <View style={styles.centeredViewAlert}>
+          <View style={{
+            height: 300,
+            width: 300,
+            backgroundColor: "white",
+            borderRadius: 40,
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+          }}>
+
+            <View style={{ height: 100, width: 100, backgroundColor: '#84202A', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='close' size={60} color={"#FFFCFF"} />
+            </View>
+            <Text style={{ fontSize: 22, fontWeight: "700", color: '#84202A' }}>
+              {errormsg}
+            </Text>
+            <TouchableOpacity
+              onPress={() => { setShowModalAlert(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#84202A', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <Modal
         transparent={true}
         visible={alertSuccess}
@@ -144,57 +170,25 @@ const Signup = ({ navigation }) => {
         </View>
       </Modal>
       <Image style={styles.picturemain} source={mainpicture} />
-      <Text style={styles.textSignup}>Create New</Text>
-      <Text style={styles.textSignup1}>Account</Text>
-      <View style={styles.stylesdropdown}>
-        {/* {renderLabel()} */}
-        <Dropdown
-          style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-          placeholderStyle={styles.placeholderStyle}
-          selectedTextStyle={styles.selectedTextStyle}
-          inputSearchStyle={styles.inputSearchStyle}
-          iconStyle={styles.iconStyle}
-          data={datadropdown}
-          search
-          maxHeight={300}
-          labelField="label"
-          valueField="value"
-          placeholder={!isFocus ? 'Select role' : '...'}
-          searchPlaceholder="Search..."
-          value={fdata.role}
-          onFocus={() => setIsFocus(true)}
-          onBlur={() => setIsFocus(false)}
-          onChange={item => {
-            setValue(item.value);
-            setFdata({ ...fdata, role: item.value })
-            setIsFocus(false);
-          }}
-          renderLeftIcon={() => (
-            <AntDesign
-              style={styles.icon}
-              color={isFocus ? 'blue' : 'black'}
-              name="Safety"
-              size={20}
-            />
-          )} />
-      </View>
-      <Text style={styles.nodetextusername}>Please enter your name</Text>
+      <Text style={styles.textSignup}>Tạo tài khoản</Text>
+      <Text style={styles.textSignup1}>Mới</Text>
+      <Text style={styles.nodetextusername}>Vui lòng nhập tên người dùng</Text>
       <TextInput
 
         style={styles.inputname}
-        placeholder="name"
+        placeholder="Tên người dùng"
         onPressIn={() => setErrormsg(null)}
         onChangeText={(text) => setFdata({ ...fdata, name: text })}
       ></TextInput>
-      <Text style={styles.nodetextemail}>Please enter your email</Text>
+      <Text style={styles.nodetextemail}>Vui lòng nhập email đăng nhập</Text>
       <TextInput placeholder='email@gmail.com' style={styles.inputemail}
         onPressIn={() => setErrormsg(null)}
         onChangeText={(text) => setFdata({ ...fdata, email: text })}></TextInput>
-      <Text style={styles.nodetextphone}>Please enter your phone</Text>
+      <Text style={styles.nodetextphone}>Vui lòng nhập số điện thoại</Text>
       <TextInput placeholder='+84....' style={styles.inputemail}
         onPressIn={() => setErrormsg(null)}
         onChangeText={(text) => setFdata({ ...fdata, phone: text })}></TextInput>
-      <Text style={styles.nodetextpassword}>Please enter your password</Text>
+      <Text style={styles.nodetextpassword}>Vui lòng nhập mật khẩu</Text>
       <View style={styles.inputContainer}>
         <TextInput
           placeholder='******'
@@ -213,7 +207,7 @@ const Signup = ({ navigation }) => {
           <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={25} />
         </TouchableOpacity>
       </View>
-      <Text style={styles.nodetextconfirm}>Please cofirm password</Text>
+      <Text style={styles.nodetextconfirm}>Xác nhận mật khẩu</Text>
       <View style={styles.inputContainer}>
         <TextInput
           placeholder='******' style={styles.inputconfirm}
@@ -232,12 +226,12 @@ const Signup = ({ navigation }) => {
         SendtoBackend();
       }}>
         <Text style={buttonsignup}
-        >Sign Up</Text>
+        >Đăng ký</Text>
       </TouchableOpacity>
       <View style={styles.Viewbottom}>
-        <Text>Already Registered?</Text>
+        <Text>Đã có tài khoản ? </Text>
         <Text style={styles.textAlready}
-          onPress={() => navigation.navigate('Signin')}>Login</Text>
+          onPress={() => navigation.navigate('Signin')}>Đăng nhập</Text>
       </View>
     </KeyboardAwareScrollView>
   )
@@ -258,7 +252,8 @@ const styles = StyleSheet.create({
   },
   picturemain: {
     zIndex: -1,
-    marginTop: -420,
+    marginTop: -150,
+    right: 50,
     justifyContent: 'center',
     alignItems: 'center',
     resizeMode: 'center',
@@ -272,6 +267,12 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     height: '40%',
     width: '40%'
+  },
+  centeredViewAlert: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
   },
   inputname: {
     marginLeft: 30,
@@ -369,7 +370,7 @@ const styles = StyleSheet.create({
     fontSize: 50,
     color: '#C29E11',
     fontWeight: '900',
-    marginTop: -390,
+    marginTop: -210,
     textAlign: 'center'
   },
   textSignup1: {

@@ -1,13 +1,8 @@
 import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity,Alert } from 'react-native'
 import Reac, { useState, useEffect } from 'react'
-import mainpicture from '../../../assets/mainpicture.png'
 import { AutoComplete } from 'react-native-element-textinput';
-import uploadimge from '../../../assets/2.png'
 import iconImage from '../../../assets/iconimage2.png'
-import iconImageupload from '../../../assets/iconimage.png'
 import iconCamera from '../../../assets/iccamera.png'
-import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import shareVarible from './../../AppContext'
 import * as ImagePicker from 'expo-image-picker';
@@ -153,8 +148,8 @@ const CreateProduct = ({navigation, route}) => {
           labelStyle={styles.labelStyle}
           placeholderStyle={styles.placeholderStyle}
           textErrorStyle={styles.textErrorStyle}
-          label="Name"
-          placeholder="name of food..."
+          label="Tên món ăn"
+          placeholder="Tên của món ăn..."
           placeholderTextColor="gray"
           onChangeText={e => {
             setValueName(e);
@@ -171,8 +166,8 @@ const CreateProduct = ({navigation, route}) => {
           labelStyle={styles.labelStyle}
           placeholderStyle={styles.placeholderStyle}
           textErrorStyle={styles.textErrorStyle}
-          label="Price"
-          placeholder="price of food..."
+          label="Giá"
+          placeholder="Giá món ăn..."
           placeholderTextColor="gray"
           onChangeText={e => {
             setValuePrice(e);

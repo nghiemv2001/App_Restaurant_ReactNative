@@ -1,14 +1,9 @@
 import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import mainpicture from '../../../assets/mainpicture.png'
-import setImagenull from '../../../assets/2.png'
-import { Button } from 'react-native-vector-icons/Feather'
-import uploadimge from '../../../assets/2.png'
+import mainpicture from '../../../assets/xinchao.png'
 import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
-import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import { LogBox } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Alert } from 'react-native'
@@ -241,17 +236,17 @@ const EditTable = ({ navigation, route }) => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Delete Table</Text>
+            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Xóa bàn</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height:'40%', alignItems:'flex-end'}}>
               <TouchableOpacity 
               onPress={()=> {SetShowMadalConfirmDeleteTable(false)}}
               style={[styles.styButton,{ backgroundColor:'#D85261'}]}>
-                <Text style={{fontSize:18 , fontWeight:'600'}}>Cancel</Text>
+                <Text style={{fontSize:18 , fontWeight:'600'}}>hủy</Text>
                 </TouchableOpacity>
               <TouchableOpacity 
               onPress={()=>{deleteTable()}}
               style={[styles.styButton, {backgroundColor:'#038857'}]}>
-                <Text style={{fontSize:18 , fontWeight:'600'}}>OK</Text>
+                <Text style={{fontSize:18 , fontWeight:'600'}}>tiếp tục</Text>
                 </TouchableOpacity>
             </View>
           </View>
@@ -286,13 +281,10 @@ const EditTable = ({ navigation, route }) => {
             }}>
             <Text
               style={styles.Tname}
-            >Table name</Text>
+            >Tên bàn</Text>
             <Text
               style={styles.Tpeoples}
-            >Peoples</Text>
-            <Text
-              style={styles.Tstatus}
-            >Status</Text>
+            >Số chỗ ngồi</Text>
           </View>
           {/*View for input */}
           <View
@@ -315,38 +307,6 @@ const EditTable = ({ navigation, route }) => {
               onChangeText={(text) => setFdata({ ...fdata, peoples: text })}
               placeholder='Enter people number'>
             </TextInput>
-            <View style={styles.container}>
-              {/* {renderLabel()} */}
-              <Dropdown
-                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={datadropdown}
-                search
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder={!isFocus ? 'Select status' : '...'}
-                searchPlaceholder="Search..."
-                value={fdata.status}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
-                onChange={item => {
-                  setValue(item.value);
-                  setFdata({ ...fdata, status: item.value })
-                  setIsFocus(false);
-                }}
-                renderLeftIcon={() => (
-                  <AntDesign
-                    style={styles.icon}
-                    color={isFocus ? 'blue' : 'black'}
-                    name="Safety"
-                    size={20}
-                  />
-                )} />
-            </View>
           </View>
         </View>
         <Image style={styles.PTtable}
@@ -362,12 +322,12 @@ const EditTable = ({ navigation, route }) => {
           <Text
             style={styles.Tcamera}
             onPress={takeImage}>
-            CAMERA
+            Chụp ảnh
           </Text>
           <Text
             style={styles.TLibary}
             onPress={pickImage}>
-            LIBARY
+            Thư viện
           </Text>
         </View>
         {
@@ -378,7 +338,7 @@ const EditTable = ({ navigation, route }) => {
         <Text
           style={styles.TAdd}
           onPress={SendtoBackend}
-        >EDIT</Text>
+        >Chỉnh sửa</Text>
       </KeyboardAwareScrollView>
     </View>
   )
@@ -443,11 +403,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   stylepicturemain: {
-    height: 200,
-    width: 200,
+    height: 150,
+    width: 150,
     borderWidth: 10,
-    marginTop: -80,
-    marginLeft: 100
+    marginTop: -60,
+    marginLeft: 130
   },
   View1: {
     height: '100%',
@@ -504,7 +464,7 @@ const styles = StyleSheet.create({
     height: 220,
     width: '70%',
     borderRadius: 50,
-    marginTop: 10,
+    marginTop: 40,
     marginLeft: 65,
     borderWidth: 1,
     borderColor: 'black'

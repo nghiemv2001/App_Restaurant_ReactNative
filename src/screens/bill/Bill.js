@@ -5,10 +5,8 @@ import shareVarible from './../../AppContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { Alert } from 'react-native'
-import { id } from 'deprecated-react-native-prop-types/DeprecatedTextPropTypes'
 const Bill = ({ navigation, route }) => {
-  
+
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
@@ -99,6 +97,21 @@ const Bill = ({ navigation, route }) => {
       return acc + (danh_sach_mon_an.gia * danh_sach_mon_an.so_luong);
     }, 0);
   }
+  function formatNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+  const [dataChef, setdataChef] = useState({
+    id_product: '',
+    id_table: '',
+    name: "",
+    image: "",
+    quantity: "",
+    status: '',
+    second: '',
+    minute: '',
+    hour: ''
+  })
+  const formattedTotal = formatNumberWithCommas(total);
   //get data 1 bill 
   const fetchData = () => {
     fetch(shareVarible.URLink + '/bill/' + `${route.params.data._id}`, {
@@ -163,53 +176,86 @@ const Bill = ({ navigation, route }) => {
   }
   //Update Product in Bill
   const updateProduct = () => {
-    if (isNumericString(price)) {
-      fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an/' + `${dataItem._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ so_luong: qty, gia: price })
-      })
-        .then(res => res.json())
-        .then(data => {
-          if (data.error) {
-            alert(data.error);
-          } else {
-            showCustomAlert('success!');
-          }
-        }).catch(error => {
-          console.error(error);
-          showCustomAlert('An error occurred while updating the product');
-        });
+    const dataproductchef1 = dataproductchef.find(p => {
+      if (p.id_product === dataItem.id_product) {
+        return p;
+      }
+    })
+    if (dataproductchef1.status != 0) {
       setShowModal(false)
+      showCustomAlert("The cooked dish cannot be update!!!");
     }
     else {
-      showCustomAlert("Enter a number")
+      if (isNumericString(price)) {
+        fetch(shareVarible.URLink + '/monan/update/' + `${dataItem.id_product}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ quantity: qty }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              console.log('Error updating quantity:', data.error);
+            }
+          }).catch(error => {
+            console.error('Error updating quantity:', error);
+          });
+        fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an/' + `${dataItem._id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ so_luong: qty, gia: price })
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) {
+              alert(data.error);
+            } else {
+              showCustomAlert('success!');
+            }
+          }).catch(error => {
+            console.error(error);
+            showCustomAlert('An error occurred while updating the product');
+          });
+        setShowModal(false)
+      }
+      else {
+        showCustomAlert("Enter a number")
+      }
     }
+
   }
-  //delete item
+  const deleteItem = (url, id, successCallback) => {
+    fetch(`${shareVarible.URLink}/${url}/${id}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        successCallback('Delete success!');
+      })
+      .catch(error => {
+        console.error('Error', error);
+      });
+  };
   const DeleteItem = (item) => {
-    const dataproductchef1 = dataproductchef.find(p => p.id_product === item.id_product);
+    const dataproductchef1 = dataproductchef.find(p => {
+      if (p.id_product === dataItem.id_product) {
+        return p;
+      }
+    })
     if (dataproductchef1.status != 0) {
       showCustomAlert("The cooked dish cannot be deleted!!!");
     }
     else {
-      fetch(shareVarible.URLink + '/monan/delete/' + `${item._id}`, {
-        method: 'DELETE',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        }
-      })
-        .then(response => response.json())
-        .then(data => {
-          showCustomAlert('Delete success!');
-        })
-        .catch(error => {
-          console.error('Error', error);
-        }
-        )
+      deleteItem('monan/delete', item._id, showCustomAlert);
+      deleteItem('productcheft/delete', item.id_product, showCustomAlert);
     }
   }
 
@@ -246,7 +292,7 @@ const Bill = ({ navigation, route }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({status: 1}),
+      body: JSON.stringify({ status: 1 }),
     }).then(res => res.json()).then(
       data => {
         if (data.error) {
@@ -259,7 +305,7 @@ const Bill = ({ navigation, route }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ten_ban_an : dataItem.ten_ban_an , danh_sach_mon_an : dataipa.danh_sach_mon_an}),
+      body: JSON.stringify({ ten_ban_an: dataItem.ten_ban_an, danh_sach_mon_an: dataipa.danh_sach_mon_an }),
     }).then(res => res.json()).then(
       data => {
         if (data.error) {
@@ -268,43 +314,43 @@ const Bill = ({ navigation, route }) => {
       }
     )
     fetch(shareVarible.URLink + '/hoa-don',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ id_ban_an: datamerge.id_ban_nhan, ten_ban_an: dataItem.name })
-    }).then(res => res.json()).then(
-      data => {
-        if (data.error) {
-          console.log(data.error)
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id_ban_an: datamerge.id_ban_nhan, ten_ban_an: dataItem.name })
+      }).then(res => res.json()).then(
+        data => {
+          if (data.error) {
+            console.log(data.error)
+          }
+          else {
+            fetch(shareVarible.URLink + '/movebill',
+              {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id_doi: datamerge.id_ban_doi, id_nhan: datamerge.id_ban_nhan })
+              }).then(res => res.json()).then(
+                data => {
+                  if (data.error) {
+                    console.log(data.error)
+                  }
+                  else {
+                    route.params.data._id = datamerge.id_ban_nhan
+                    setIDTable(datamerge.id_ban_nhan)
+                    fetchData()
+                    setNameTable(dataipa.ten_ban_an)
+
+                    setShowModalConfimMove(false)
+                  }
+                }
+              )
+          }
         }
-        else {
-          fetch(shareVarible.URLink + '/movebill',
-          {
-            method :'POST',
-            headers : {
-              'Content-Type': 'application/json'
-            },
-            body :JSON.stringify({id_doi : datamerge.id_ban_doi, id_nhan :datamerge.id_ban_nhan})
-          }).then(res =>res.json()).then(
-            data =>{
-              if(data.error){
-                console.log(data.error)
-              }
-              else{
-                route.params.data._id = datamerge.id_ban_nhan
-                setIDTable(datamerge.id_ban_nhan)
-                fetchData()
-                setNameTable(dataipa.ten_ban_an)
-        
-                setShowModalConfimMove(false)
-              }
-            }
-          )
-        }
-      }
-    )
+      )
   }
   const MergeTable = () => {
     const datamerge = {
@@ -320,7 +366,6 @@ const Bill = ({ navigation, route }) => {
     }).then(res => res.json()).then(
       data => {
         if (data.error) {
-          setErrormgs(data.error);
           alert(data.error);
         }
       }
@@ -376,8 +421,8 @@ const Bill = ({ navigation, route }) => {
               <View style={styles.container5}>
                 <Text style={styles.styleText1}
                   numberOfLines={1}
-                >{item.gia}$</Text>
-                <Text style={styles.styleText1}
+                >{item.gia} đ</Text>
+                <Text style={[styles.styleText1, { width: "15%" }]}
                   numberOfLines={1}
                 >x {item.so_luong}</Text>
                 <Text style={styles.styleText2}
@@ -422,8 +467,8 @@ const Bill = ({ navigation, route }) => {
           }}>
             <TouchableOpacity
               onPress={() => { setShowModal1(false) }}
-              style={{ right: 100, top: 10 }}>
-              <Text style={{ fontSize: 22 }}>skip&nbsp;&rarr;</Text>
+              style={{ right: 90, top: 10 }}>
+              <Text style={{ fontSize: 20 }}>Bỏ qua&nbsp;&rarr;</Text>
             </TouchableOpacity>
             <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 100 }} />
             <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 100 }} />
@@ -439,10 +484,10 @@ const Bill = ({ navigation, route }) => {
           }}>
             <Text style={{
               fontFamily: ''
-            }}>Do you want to merge a table or move a table?</Text>
+            }}>Bạn muốn dời bàn hay nhập với một bàn khác</Text>
             <Text style={{
               fontFamily: ''
-            }}>Please select the option you'd like to do.</Text>
+            }}>Vui lòng xác nhận bên dưới.</Text>
             <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
               <TouchableOpacity style={{
                 height: 40,
@@ -455,7 +500,7 @@ const Bill = ({ navigation, route }) => {
               }}
                 onPress={() => { mergeTable() }}
               >
-                <Text style={{ color: 'white' }}>merge</Text>
+                <Text style={{ color: 'white' }}>nhập bàn</Text>
               </TouchableOpacity>
               <TouchableOpacity style={{
                 height: 40,
@@ -470,7 +515,7 @@ const Bill = ({ navigation, route }) => {
                   setShowModalMove(true)
                 }}
               >
-                <Text style={{ color: 'white' }}>move</Text>
+                <Text style={{ color: 'white' }}>dời bàn</Text>
               </TouchableOpacity>
             </View>
 
@@ -534,7 +579,7 @@ const Bill = ({ navigation, route }) => {
               numColumns={3} />
             <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
               <Text style={{ textAlign: 'center' }} onPress={() => { setShowModal2(false) }}>
-                Cancel
+                hủy
               </Text>
             </TouchableOpacity>
           </View>
@@ -584,7 +629,7 @@ const Bill = ({ navigation, route }) => {
               numColumns={3} />
             <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
               <Text style={{ textAlign: 'center' }} onPress={() => { setShowModalMove(false) }}>
-                Cancel
+                hủy
               </Text>
             </TouchableOpacity>
           </View>
@@ -620,10 +665,10 @@ const Bill = ({ navigation, route }) => {
           }}>
             <Text style={{
               fontFamily: ''
-            }}>Are you sure?</Text>
+            }}>Bạn chắc chứ?</Text>
             <Text style={{
               fontFamily: ''
-            }}>Please select the option you'd like to do.</Text>
+            }}>Vui lòng xác nhận.</Text>
             <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
               <TouchableOpacity style={{
                 height: 40,
@@ -636,7 +681,7 @@ const Bill = ({ navigation, route }) => {
               }}
                 onPress={() => { setShowModal3(false) }}
               >
-                <Text style={{ color: 'white' }}>cancel</Text>
+                <Text style={{ color: 'white' }}>hủy</Text>
               </TouchableOpacity>
               <TouchableOpacity style={{
                 height: 40,
@@ -651,7 +696,7 @@ const Bill = ({ navigation, route }) => {
                   MergeTable()
                 }}
               >
-                <Text style={{ color: 'white' }}>ok</Text>
+                <Text style={{ color: 'white' }}>đồng ý</Text>
               </TouchableOpacity>
             </View>
 
@@ -702,10 +747,10 @@ const Bill = ({ navigation, route }) => {
           }}>
             <Text style={{
               fontFamily: ''
-            }}>Are you sure?</Text>
+            }}>Bạn chắc chứ?</Text>
             <Text style={{
               fontFamily: ''
-            }}>Please select the option you'd like to do.</Text>
+            }}>Vui lòng xác nhận.</Text>
             <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
               <TouchableOpacity style={{
                 height: 40,
@@ -718,7 +763,7 @@ const Bill = ({ navigation, route }) => {
               }}
                 onPress={() => { setShowModalConfimMove(false) }}
               >
-                <Text style={{ color: 'white' }}>cancel</Text>
+                <Text style={{ color: 'white' }}>hủy</Text>
               </TouchableOpacity>
               <TouchableOpacity style={{
                 height: 40,
@@ -729,11 +774,11 @@ const Bill = ({ navigation, route }) => {
                 alignItems: 'center'
               }}
                 onPress={() => {
-                    setShowModalMove(false)
-                    moveTable()
+                  setShowModalMove(false)
+                  moveTable()
                 }}
               >
-                <Text style={{ color: 'white' }}>ok</Text>
+                <Text style={{ color: 'white' }}>đồng ý</Text>
               </TouchableOpacity>
             </View>
 
@@ -762,17 +807,7 @@ const Bill = ({ navigation, route }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView1}>
-            <Text>You can adjust the price and quantity here.</Text>
-            <View style={styles.container12}>
-              <TextInput
-                style={styles.styTIextIP}
-                placeholder='price of product'
-                keyboardType='numeric'
-                enablesReturnKeyAutomatically
-                onChangeText={(text) => { setPrice(text) }}
-              />
-              <Text>$</Text>
-            </View>
+            <Text style={{ textAlign: 'center' }}>Điều chỉnh số lượng ở dưới</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
               <TouchableOpacity style={{
               }} onPress={SlowQYT}>
@@ -784,7 +819,7 @@ const Bill = ({ navigation, route }) => {
               </TouchableOpacity>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-              <TouchableOpacity style={styles.styTouch} onPress={() => { setShowModal(false) }}>
+              <TouchableOpacity style={[styles.styTouch, { marginRight: 10 }]} onPress={() => { setShowModal(false) }}>
                 <Text>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.styTouch} onPress={() => { updateProduct() }} >
@@ -855,7 +890,7 @@ const Bill = ({ navigation, route }) => {
             fontSize: 32,
             fontWeight: 'bold'
           }}
-        >{total} . 00 $</Text>
+        >{formattedTotal} đ</Text>
         <View style={styles.container11}>
         </View>
       </View>
@@ -949,17 +984,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   styleText1: {
-    width: '30%',
+    width: '40%',
     fontSize: 18,
     textAlignVertical: 'center',
 
   },
   styleText2: {
-    width: '40%',
+    width: '51%',
     fontSize: 18,
     textAlignVertical: 'center',
   },
   container6: {
+    left: 13,
     width: "10%",
     justifyContent: 'center',
     alignItems: 'center'

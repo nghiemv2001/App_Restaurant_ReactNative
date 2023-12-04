@@ -1,6 +1,6 @@
 import { View, Text, ImageBackground, TouchableOpacity } from 'react-native'
 import {useNavigation} from '@react-navigation/native';
-import mainpicture from '../../assets/mainpicture.png'
+import mainpicture from '../../assets/xinchao.png'
 import React from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
@@ -24,7 +24,7 @@ const CustomDrawerWaitress = (props) => {
                     <Text style={{
                         fontSize : 20, 
                         marginLeft : 10,
-                        }}>Logout</Text>
+                        }}>Đăng xuất</Text>
                     </View>
                 </TouchableOpacity>
             </View>

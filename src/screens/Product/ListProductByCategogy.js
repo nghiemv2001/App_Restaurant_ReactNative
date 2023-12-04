@@ -1,14 +1,17 @@
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity,Modal } from 'react-native'
+import { View, Text, Button, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import shareVarible from './../../AppContext'
 import { FlatGrid } from 'react-native-super-grid';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import 'react-native-get-random-values'
+import { v4 as uuidv4 } from 'uuid';
 const ListProductByCategogy = ({ route, navigation }) => {
   const [dataipa, setDataIPA] = useState([{}]);
   const idCategory = route.params.item._id;
   const dataroute = route.params.route.params.route.params.data
   const idtable = route.params.route.params.route.params.data._id
+  const datakey = uuidv4();
   const [showModalAlert, setShowModalAlert] = useState(false);
   useEffect(() => {
     fetchData();
@@ -47,17 +50,17 @@ const ListProductByCategogy = ({ route, navigation }) => {
   const sentoBackEnd = (item) => {
     //Post Product cheft  
     const now = new Date();
-    dataChef.id_product = item._id
+    dataChef.id_product = datakey
     dataChef.id_table = idtable
     dataChef.name = item.name;
     dataChef.image = item.image;
     dataChef.quantity = 1;
     dataChef.status = 0,
-    dataChef.second = now.getSeconds();
+      dataChef.second = now.getSeconds();
     dataChef.minute = now.getMinutes();
     dataChef.hour = now.getHours();
     // Add product in BIll
-    fdata.id_product = item._id
+    fdata.id_product = datakey
     fdata.ten_mon = item.name;
     fdata.hinh_mon = item.image;
     fdata.so_luong = 1;
@@ -72,21 +75,20 @@ const ListProductByCategogy = ({ route, navigation }) => {
     }
     else {
       fetch(shareVarible.URLink + '/productcheft/create',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(dataChef)
-      }).then(res => res.json()).then(
-        data => {
-
-          if (data.error) {
-            setErrormgs(data.error);
-            alert(data.error);
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dataChef)
+        }).then(res => res.json()).then(
+          data => {
+            if (data.error) {
+              setErrormgs(data.error);
+              alert(data.error);
+            }
           }
-        }
-      )
+        )
       fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
         {
           method: 'POST',
@@ -121,20 +123,20 @@ const ListProductByCategogy = ({ route, navigation }) => {
             width: 300,
             backgroundColor: "white",
             borderRadius: 40,
-            justifyContent:'space-evenly',
+            justifyContent: 'space-evenly',
             alignItems: 'center',
           }}>
 
-            <View style={{height: 100, width: 100, backgroundColor: '#84202A', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems:'center'}}>
-              <Ionicons  name='close' size={60} color={"#FFFCFF"}/>
+            <View style={{ height: 100, width: 100, backgroundColor: '#84202A', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='close' size={60} color={"#FFFCFF"} />
             </View>
-            <Text style={{fontSize:22, fontWeight: "700", color:'#84202A'}}>
-             OUT OF SOCK
+            <Text style={{ fontSize: 22, fontWeight: "700", color: '#84202A' }}>
+              Hết
             </Text>
-            <TouchableOpacity 
-            onPress={()=>{setShowModalAlert(false)}}
-            style={{height: 40, width: 140, backgroundColor:'#84202A', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
-              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Continue</Text>
+            <TouchableOpacity
+              onPress={() => { setShowModalAlert(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#84202A', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -159,7 +161,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
               </View>
               <View
                 style={styles.container1}>
-                <Text style={styles.styText}>{item.price} $</Text>
+                <Text style={styles.styText}>{item.price} đ</Text>
                 {
                   item.status == "0" ? <Text
                     style={[styles.styText1, { backgroundColor: "green" }]}>
@@ -171,11 +173,9 @@ const ListProductByCategogy = ({ route, navigation }) => {
             </TouchableOpacity>
           )}
         /> :
-        <View style={styles.container2}>
-         <MaterialCommunityIcons name="food-off" size={50} color="black" />
-          </View>
-      }
-
+          <View style={styles.container2}>
+            <MaterialCommunityIcons name="food-off" size={50} color="black" />
+          </View>}
     </View>
   )
 }
@@ -260,10 +260,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center'
   },
-  container2:{
-    justifyContent:'center',
-    alignItems:'center',
-    flex:1,
+  container2: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1,
     backgroundColor: '#EDF6D8',
   },
   centeredViewAlert: {

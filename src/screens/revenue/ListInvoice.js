@@ -136,10 +136,10 @@ const ListInvoice = ({ navigation }) => {
                     <TouchableOpacity style={styles.V1} onPress={() => navigation.navigate('ListProductInInvoice', { item })}>
                         <View style={styles.V11}>
                             <Text style={{ fontSize: 18 }}>
-                                Bill of day: {item.day.toString().padStart(2, '0')}/{item.month.toString().padStart(2, '0')}/{item.year}({item.minute.toString().padStart(2, '0')}:{item.hour.toString().padStart(2, '0')})
+                                Ngày lập: {item.day.toString().padStart(2, '0')}/{item.month.toString().padStart(2, '0')}/{item.year}({item.minute.toString().padStart(2, '0')}:{item.hour.toString().padStart(2, '0')})
                             </Text>
-                            <Text style={{ fontSize: 18 }}>Table name: {item.name}</Text>
-                            <Text style={{ fontSize: 18 }}>Total: {item.total}$</Text>
+                            <Text style={{ fontSize: 18 }}>Tên bàn: {item.name}</Text>
+                            <Text style={{ fontSize: 18 }}>Tổng tiền: {item.total}$</Text>
                         </View>
                         <View style={styles.V13}>
                             <TouchableOpacity onPress={() => {
@@ -160,10 +160,10 @@ const ListInvoice = ({ navigation }) => {
                         <TouchableOpacity style={styles.V1} onPress={() => navigation.navigate('ListProductInInvoice', { item })}>
                             <View style={styles.V11}>
                                 <Text style={{ fontSize: 18 }}>
-                                    Bill of day: {item.day.toString().padStart(2, '0')}/{item.month.toString().padStart(2, '0')}/{item.year}({item.minute.toString().padStart(2, '0')}:{item.hour.toString().padStart(2, '0')})
+                                    ngày lập: {item.day.toString().padStart(2, '0')}/{item.month.toString().padStart(2, '0')}/{item.year}({item.minute.toString().padStart(2, '0')}:{item.hour.toString().padStart(2, '0')})
                                 </Text>
-                                <Text style={{ fontSize: 18 }}>Table name: {item.name}</Text>
-                                <Text style={{ fontSize: 18 }}>Total: {item.total}$</Text>
+                                <Text style={{ fontSize: 18 }}>Tên Bàn: {item.name}</Text>
+                                <Text style={{ fontSize: 18 }}>Tổng tiền: {item.total}$</Text>
                             </View>
                             <View style={styles.V13}>
                                 <TouchableOpacity onPress={() => {
@@ -211,12 +211,12 @@ const ListInvoice = ({ navigation }) => {
                         justifyContent: 'center',
                         alignItems: 'center',
                     }}>
-                        <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Delete Table</Text>
+                        <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Xóa hóa đơn này?</Text>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
                             <TouchableOpacity
                                 onPress={() => { setShowConfirmDelete(false) }}
                                 style={[styles.styButton, { backgroundColor: '#D85261' }]}>
-                                <Text style={{ fontSize: 18, fontWeight: '600' }}>Cancel</Text>
+                                <Text style={{ fontSize: 18, fontWeight: '600' }}>hủy</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={() => {
@@ -224,7 +224,7 @@ const ListInvoice = ({ navigation }) => {
                                     DeteleInvoice()
                                 }}
                                 style={[styles.styButton, { backgroundColor: '#038857' }]}>
-                                <Text style={{ fontSize: 18, fontWeight: '600' }}>OK</Text>
+                                <Text style={{ fontSize: 18, fontWeight: '600' }}>đồng ý</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -237,10 +237,10 @@ const ListInvoice = ({ navigation }) => {
                     <Ionicons name='calendar-outline' size={35} />
                 </TouchableOpacity>
                 <View style={{flexDirection:'column',alignItems:'center'}}>
-                <Text style={{ fontSize: 16, fontWeight: "700" }}>INVOICES</Text>
+                <Text style={{ fontSize: 16, fontWeight: "700" }}>Danh sách hóa đơn</Text>
                 {
                     selected == "" 
-                    ? <Text style={{ fontSize: 16, fontWeight: "700" }}>ALL</Text>
+                    ? <Text style={{ fontSize: 16, fontWeight: "700" }}>toàn bộ</Text>
                     :<Text style={{ fontSize: 16, fontWeight: "700" }}>{selected.day}/{selected.month}/{selected.year}</Text>
                 }
                 </View>

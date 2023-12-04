@@ -1,26 +1,17 @@
 import { View, Text, StyleSheet, TextInput, Image,TouchableOpacity } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import mainpicture from '../../../assets/mainpicture.png'
-import setImagenull from '../../../assets/2.png'
-import { Button } from 'react-native-vector-icons/Feather'
-import uploadimge from '../../../assets/2.png'
+import mainpicture from '../../../assets/xinchao.png'
 import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
-import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 const CreateTable = ({ navigation}) => {
   const [fdata, setFdata] = useState({
     name: "",
     peoples: "",
-    status: "",
+    status: "0",
     image: ""
   })
-  const datadropdown = [
-    { label: 'emptytable', value: '0' },
-    { label: 'booking', value: '2' },
-  ];
   const [data, setData] = useState({});
   const [imagesrc, setImage] = useState(null);
   const [errormgs, setErrormgs] = useState(null)
@@ -42,10 +33,6 @@ const CreateTable = ({ navigation}) => {
     }
     if (fdata.peoples == "") {
       setErrormgs('Number people is not null or is  number');
-      return;
-    }
-    if (fdata.status == "") {
-      setErrormgs('Status not select');
       return;
     }
     if (fdata.image == '') {
@@ -161,13 +148,10 @@ const CreateTable = ({ navigation}) => {
             }}>
             <Text
               style={styles.Tname}
-            >Table name</Text>
+            >Tên bàn ăn</Text>
             <Text
               style={styles.Tpeoples}
-            >Peoples</Text>
-            <Text
-              style={styles.Tstatus}
-            >Status</Text>
+            >Số chỗ ngồi</Text>
           </View>
           {/*View for input */}
           <View
@@ -179,7 +163,7 @@ const CreateTable = ({ navigation}) => {
               style={styles.TIPname}
               onPressIn={() => setErrormgs(null)}
               onChangeText={(text) => setFdata({ ...fdata, name: text })}
-              placeholder='Enter number name of table'>
+              placeholder='Nhập tên bàn'>
             </TextInput>
             <TextInput
               value={fdata.peoples}
@@ -187,40 +171,8 @@ const CreateTable = ({ navigation}) => {
               keyboardType='number-pad'
               onPressIn={() => setErrormgs(null)}
               onChangeText={(text) => setFdata({ ...fdata, peoples: text })}
-              placeholder='Enter people number'>
+              placeholder='Nhập số chỗ ngồi'>
             </TextInput>
-            <View style={styles.container}>
-              {/* {renderLabel()} */}
-              <Dropdown
-                style={[styles.dropdown, isFocus && { borderColor: 'blue' }]}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                iconStyle={styles.iconStyle}
-                data={datadropdown}
-                search
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder={!isFocus ? 'Select status' : '...'}
-                searchPlaceholder="Search..."
-                value={value}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
-                onChange={item => {
-                  setValue(item.value);
-                  setFdata({ ...fdata, status: item.value })
-                  setIsFocus(false);
-                }}
-                renderLeftIcon={() => (
-                  <AntDesign
-                    style={styles.icon}
-                    color={isFocus ? 'blue' : 'black'}
-                    name="Safety"
-                    size={20}
-                  />
-                )} />
-            </View>
           </View>
         </View>
         {
@@ -245,12 +197,12 @@ const CreateTable = ({ navigation}) => {
           <Text
             style={styles.Tcamera}
             onPress={takeImage}>
-            CAMERA
+            Chụp ảnh
           </Text>
           <Text
             style={styles.TLibary}
             onPress={pickImage}>
-            LIBARY
+            Thư viện
           </Text>
         </View>
         {
@@ -261,7 +213,7 @@ const CreateTable = ({ navigation}) => {
         <Text
           style={styles.TAdd}
           onPress={SendtoBackend}
-        >ADD</Text>
+        >Tạo Bàn</Text>
       </KeyboardAwareScrollView>
     </View>
   )
@@ -421,14 +373,14 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontWeight: 'bold',
     borderRadius: 50,
-    marginTop: 50,
+    marginTop: 70,
     borderWidth: 1,
   },
   styleerrormgs: {
     width: '100%',
     position: 'absolute',
     fontSize: 17,
-    marginTop: 440,
+    marginTop: 400,
     textAlign: 'center',
     color: '#CD5C5C',
     fontWeight: '400'

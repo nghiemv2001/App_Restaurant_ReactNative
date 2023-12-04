@@ -45,7 +45,7 @@ const ListProductStep1 = () => {
   };
   const renderlist = ((item) => {
     return (
-      <View style={{ marginBottom: 3, borderBottomWidth: 1, borderColor: 'gray', backgroundColor: '#EDF6D8', paddingVertical: 5, paddingRight: 200, paddingLeft: 5, flexDirection: 'row' }}>
+      <View style={{ marginBottom: 3, borderWidth: 2, borderColor: 'gray', backgroundColor: '#EDF6D8', paddingVertical: 5, paddingRight: 200, paddingLeft: 5, flexDirection: 'row', borderRadius: 20 }}>
         <Image style={{ height: 100, width: 100 }} source={{ uri: item.image }} />
         <View style={{ flexDirection: 'column', justifyContent: 'space-between', paddingLeft: 5, width: '100%' }}>
           <View style={{ flexDirection: 'row' }}>
@@ -57,8 +57,8 @@ const ListProductStep1 = () => {
             }
           </View>
 
-          <Text style={{ fontSize: 19 }}>X{item.quantity}</Text>
-          <Text style={{ fontSize: 16 }}>Time : ( {item.hour.toString().padStart(2, '0')} : {item.minute.toString().padStart(2, '0')}':{item.second.toString().padStart(2, '0')}s )</Text>
+          <Text style={{ fontSize: 19 }}>Số lượng : x{item.quantity}</Text>
+          <Text style={{ fontSize: 16 }}>Thời gian đặt món : ( {item.hour.toString().padStart(2, '0')} : {item.minute.toString().padStart(2, '0')}':{item.second.toString().padStart(2, '0')}s )</Text>
         </View>
         <View style={{ justifyContent: 'center', paddingLeft: 30 }}>
           {/* <TouchableOpacity  
@@ -74,11 +74,11 @@ const ListProductStep1 = () => {
 
     )
   })
-
   return (
     <View style={{ justifyContent: "center", alignItems: 'center', backgroundColor:'#EDF6D8' }}>
-      <Text style={{fontSize: 25, fontWeight:'bold', marginTop: 20}}>FOODS</Text>
+      <Text style={{fontSize: 25, fontWeight:'bold', marginTop: 30}}>Chi Tiết Chế Biến</Text>
       <FlatList
+        style={{backgroundColor: '#EDF6D1', height:'100%', width:'100%'}}
         data={sortDataByStatus(dataproduct)}
         renderItem={({ item }) => {
           return renderlist(item)

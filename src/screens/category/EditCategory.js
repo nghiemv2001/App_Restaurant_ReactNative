@@ -1,6 +1,5 @@
 import { View, Text,StyleSheet, TextInput, Image,TouchableOpacity } from 'react-native'
 import React, {useState, useEffect} from 'react'
-import uploadimge from '../../../assets/2.png'
 import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'

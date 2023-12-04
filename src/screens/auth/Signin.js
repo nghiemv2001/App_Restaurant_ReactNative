@@ -1,13 +1,11 @@
 import { StyleSheet, Text, View, Image, TextInput, TouchableOpacity, Pressable } from 'react-native'
 import React, { useState, useEffect, useReducer } from 'react'
-import mainpicture from '../../../assets/mainpicture.png'
+import mainpicture from '../../../assets/xinchao.png'
 import { buttonlogin } from '../../comon/button'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import shareVarible from './../../AppContext'
-import { Dropdown } from 'react-native-element-dropdown';
-import AntDesign from '@expo/vector-icons/AntDesign';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import Modal from 'react-native-modal';
 const Signin = ({ navigation }) => {
   //xu li data token 
@@ -17,6 +15,7 @@ const Signin = ({ navigation }) => {
     error: null
   };
   const [isVisible, setIsVisible] = useState(false);
+  const [showModalAlert, setShowModalAlert] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const CustomAlert = ({ isVisible, message, onConfirm }) => {
     return (
@@ -48,11 +47,11 @@ const Signin = ({ navigation }) => {
   /// Call API
   const SendtoBackend = () => {
     if (fdata.email == '' || fdata.password == '') {
-      setErrormsg('Email and password not null!!');
+      setErrorMsg("Không được bỏ trống")
+              setShowModalAlert(true)
       return;
     }
     else {
-
       fetch(shareVarible.URLink + '/signin',
         {
           method: 'POST',
@@ -63,13 +62,11 @@ const Signin = ({ navigation }) => {
         }).then(res => res.json()).then(
           data => {
             if (data.error) {
-              setErrormsg(data.error);
-              console.log(data.error);
-
+              setErrorMsg(data.error)
+              setShowModalAlert(true)
             }
             else {
-             
-              showCustomAlert('Login successfully'); 
+              showCustomAlert('Login successfully');
               setFdata({ ...fdata, email: "", password: "" })
             }
           }
@@ -113,50 +110,83 @@ const Signin = ({ navigation }) => {
 
   return (
     <KeyboardAwareScrollView style={styles.boss}>
+      <Modal
+        transparent={true}
+        visible={showModalAlert}
+        animationType='fade'
+      >
+        <View style={styles.centeredViewAlert}>
+          <View style={{
+            height: 300,
+            width: 300,
+            backgroundColor: "white",
+            borderRadius: 40,
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+          }}>
+
+            <View style={{ height: 100, width: 100, backgroundColor: '#84202A', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='close' size={60} color={"#FFFCFF"} />
+            </View>
+            <Text style={{ fontSize: 22, fontWeight: "700", color: '#84202A' }}>
+              {errorMsg}
+            </Text>
+            <TouchableOpacity
+              onPress={() => { setShowModalAlert(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#84202A', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <CustomAlert
         isVisible={isVisible}
         message={errorMsg}
         onConfirm={handleConfirm}
       />
+
+      <Text style={styles.loginText}>Đăng nhập</Text>
       <Image style={styles.picturemain} source={mainpicture} />
-      <Text style={styles.loginText}>Login</Text>
-      <Text style={styles.nodetextemail}>Please enter your email</Text>
-      <TextInput
-        value={fdata.email}
-        onPressIn={() => setErrormsg(null)}
-        placeholder='abc123@gmail.com' style={styles.inputemail}
-        onChangeText={(text) => setFdata({ ...fdata, email: text })}>
-      </TextInput>
-      <Text style={styles.nodetextpass}>Please enter your password</Text>
-      <View style={styles.inputContainer}>
+      <View style={{top: -130 }}>
+        <Text style={styles.nodetextemail}>Vui lòng nhập email</Text>
         <TextInput
-          value={fdata.password}
-          placeholder='******'
-          style={styles.inputpassword}
-          onChangeText={(text) => { setFdata({ ...fdata, password: text }), setPassword(text) }}
-          secureTextEntry={passwordVisibility1}
-          enablesReturnKeyAutomatically
-        />
-        <Pressable onPress={handlePasswordVisibility}>
-          <MaterialCommunityIcons name={rightIcon} size={22} color="#232323" />
-        </Pressable>
-      </View>
-      <Text style={styles.textForgot}
-        onPress={() => navigation.navigate('ForgotPassword')}
-      >Forgot Password</Text>
-      {
-        errormgs ? <Text style={styles.errmessage}>
-          {errormgs}</Text> : null
-      }
-      <TouchableOpacity
-        onPress={() => SendtoBackend()}>
-        <Text style={buttonlogin}
-        >LOGIN</Text>
-      </TouchableOpacity>
-      <View style={styles.Viewbottom}>
-        <Text style={styles.textnormal}>Already have an account ? </Text>
-        <Text style={styles.textcontinue} onPress={() => navigation.navigate('Signup')}
-        >Sign in</Text>
+          value={fdata.email}
+          onPressIn={() => setErrormsg(null)}
+          placeholder='abc123@gmail.com' style={styles.inputemail}
+          onChangeText={(text) => setFdata({ ...fdata, email: text })}>
+        </TextInput>
+        <Text style={styles.nodetextpass}>Vui lòng nhập mật khẩu</Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            value={fdata.password}
+            placeholder='******'
+            style={styles.inputpassword}
+            onChangeText={(text) => { setFdata({ ...fdata, password: text }), setPassword(text) }}
+            secureTextEntry={passwordVisibility1}
+            enablesReturnKeyAutomatically
+          />
+          <Pressable onPress={handlePasswordVisibility}>
+            <MaterialCommunityIcons name={rightIcon} size={22} color="#232323" />
+          </Pressable>
+        </View>
+        <Text style={styles.textForgot}
+          onPress={() => navigation.navigate('ForgotPassword')}
+        >Quên mật khẩu</Text>
+        {
+          errormgs ? <Text style={styles.errmessage}>
+            {errormgs}</Text> : null
+        }
+        <TouchableOpacity
+          onPress={() => SendtoBackend()}>
+          <Text style={buttonlogin}
+          >Đăng nhập</Text>
+        </TouchableOpacity>
+        <View style={styles.Viewbottom}>
+          <Text style={styles.textnormal}>Bạn đã có tài khoản ? </Text>
+          <Text style={styles.textcontinue} onPress={() => navigation.navigate('Signup')}
+          >Đăng ký</Text>
+        </View>
+
       </View>
 
     </KeyboardAwareScrollView>
@@ -184,7 +214,7 @@ const styles = StyleSheet.create({
     fontSize: 60,
     color: '#C29E11',
     fontWeight: '900',
-    marginTop: -290,
+    marginTop: 90,
     textAlign: 'center'
   },
   inputemail: {
@@ -206,7 +236,6 @@ const styles = StyleSheet.create({
   nodetextemail: {
     marginLeft: 45,
     marginRight: 150,
-    marginTop: 30
   },
   nodetextpass: {
     marginLeft: 45,
@@ -214,19 +243,25 @@ const styles = StyleSheet.create({
     marginRight: 120,
   },
   top: {
-    position: 'absolute',
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     height: '100%',
     width: '100%',
   },
-  picturemain: {
-    zIndex: -1,
-    marginTop: -380,
+  centeredViewAlert: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    resizeMode: 'contain',
+    marginTop: 22,
+  },
+  picturemain: {
+    marginTop: -150,
+    right: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    resizeMode: 'center',
+
   },
   textForgot: {
     fontSize: 18,
@@ -266,7 +301,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row'
   },
   errmessage: {
-    marginTop: 520,
+    marginTop: 210,
     marginLeft: 120,
     color: 'red',
     position: 'absolute'

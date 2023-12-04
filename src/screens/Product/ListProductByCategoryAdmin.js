@@ -83,12 +83,12 @@ const ListProductByCategogy = ({ route, navigation }) => {
               <Ionicons  name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"}/>
             </View>
             <Text style={{fontSize:22, fontWeight: "700", color:'#3564C1'}}>
-             Success
+             Thành công
             </Text>
             <TouchableOpacity 
             onPress={()=>{setShowModalAlert(false)}}
             style={{height: 40, width: 140, backgroundColor:'#3564C1', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
-              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Continue</Text>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>tiếp tục</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -129,21 +129,21 @@ const ListProductByCategogy = ({ route, navigation }) => {
             justifyContent: 'center',
             alignItems: 'center',
           }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>What do you want ?</Text>
+            <Text style={{ fontSize: 20, fontWeight: '900', marginTop: -10, textAlign:'center' }}>Bạn muốn chỉnh sửa hay xóa món ăn này?</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
               <TouchableOpacity
                 onPress={() => { setShowAlertAdjustProduct(false)
                 deleteProduct()
                 }}
                 style={[styles.styButtonModal, { backgroundColor: '#D85261' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>Delete</Text>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>xóa</Text>
               </TouchableOpacity>
               <TouchableOpacity
               onPress={() => { 
                 setShowAlertAdjustProduct(false)
                 navigation.navigate('EditProduct', {itemProduct})}}
                 style={[styles.styButtonModal, { backgroundColor: '#038857' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>Edit</Text>
+                <Text style={{ fontSize: 18, fontWeight: '600' }}>chỉnh sửa</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -176,7 +176,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
               </View>
               <View
                 style={styles.container1}>
-                <Text style={styles.styText}>{item.price} $</Text>
+                <Text style={styles.styText}>{item.price} đ</Text>
                 {
                   item.status == "0" ? <Text
                     style={[styles.styText1, { backgroundColor: "green" }]}>

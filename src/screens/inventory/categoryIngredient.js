@@ -3,10 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { FlatGrid } from 'react-native-super-grid';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-
-const CategoryIngredient = ({navigation}) => {
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+const CategoryIngredient = ({ navigation }) => {
     const [apicategoryIngredient, setApicategoryIngredient] = useState([{}])
-
     const fetchData = () => {
         fetch(shareVarible.URLink + '/categoryIngredient/', {
             method: 'GET',
@@ -17,42 +16,44 @@ const CategoryIngredient = ({navigation}) => {
         })
             .then(response => response.json())
             .then(data => {
-                    setApicategoryIngredient(data)
+                setApicategoryIngredient(data)
+                console.log(apicategoryIngredient)
             },
             )
             .catch(error => console.log(error));
     };
     useEffect(() => {
+        console.log(apicategoryIngredient)
         fetchData();
     }, []);
     return (
         <View style={styles.containerbos}>
-            <TouchableOpacity 
-            
-            onPress={()=>{
-                navigation.navigate("CreateCategoryIngredient")
-            }}
-            style={styles.buttonPlus}>
+            <TouchableOpacity
+
+                onPress={() => {
+                    navigation.navigate("CreateCategoryIngredient")
+                }}
+                style={styles.buttonPlus}>
                 <Ionicons name="add" size={50} />
             </TouchableOpacity>
             {
-                apicategoryIngredient.length != undefined ? 
-                <FlatGrid
-                    itemDimension={130}
-                    data={apicategoryIngredient}
-                    style={styles.gridView}
-                    spacing={10}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity
-                        onPress={()=>{navigation.navigate("Inventory", {item})}}
-                            style={styles.styButton}>
-                            <View style={[styles.itemContainer]}>
-                                <Image style={styles.styimage} source={{ uri: item.image }} />
-                                <Text style={styles.itemName}>{item.name}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    )}
-                />
+                apicategoryIngredient.length != null ?
+                    <FlatGrid
+                        itemDimension={130}
+                        data={apicategoryIngredient}
+                        style={styles.gridView}
+                        spacing={10}
+                        renderItem={({ item }) => (
+                            <TouchableOpacity
+                                onPress={() => { navigation.navigate("Inventory", { item }) }}
+                                style={styles.styButton}>
+                                <View style={[styles.itemContainer]}>
+                                    <Image style={styles.styimage} source={{ uri: item.image }} />
+                                    <Text style={styles.itemName}>{item.name}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        )}
+                    />
                     : <View style={styles.container2}>
                         <MaterialCommunityIcons name="food-off" size={50} color="black" />
                     </View>
@@ -172,6 +173,6 @@ const styles = StyleSheet.create({
         top: 690,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor:'#99FF99'
+        backgroundColor: '#99FF99'
     }
 })
