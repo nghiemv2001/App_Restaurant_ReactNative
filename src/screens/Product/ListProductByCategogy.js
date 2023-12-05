@@ -230,7 +230,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   containerbos: {
-    flex: 1
+    flex: 1,
+    backgroundColor: '#EDF6D8',
   },
   styButton: {
     justifyContent: 'center',

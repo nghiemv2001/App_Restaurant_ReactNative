@@ -66,7 +66,7 @@ const Signin = ({ navigation }) => {
               setShowModalAlert(true)
             }
             else {
-              showCustomAlert('Login successfully');
+              showCustomAlert('Đăng nhập thành công');
               setFdata({ ...fdata, email: "", password: "" })
             }
           }

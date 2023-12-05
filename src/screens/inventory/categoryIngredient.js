@@ -17,13 +17,13 @@ const CategoryIngredient = ({ navigation }) => {
             .then(response => response.json())
             .then(data => {
                 setApicategoryIngredient(data)
-                console.log(apicategoryIngredient)
+            
             },
             )
             .catch(error => console.log(error));
     };
     useEffect(() => {
-        console.log(apicategoryIngredient)
+        
         fetchData();
     }, []);
     return (

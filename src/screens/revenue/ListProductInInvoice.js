@@ -85,7 +85,7 @@ const ListProductInInvoice = ({ navigation, route }) => {
         <Ionicons name='arrow-back-sharp' size={35} />
         
           </TouchableOpacity>
-          <Text style={{ fontSize: 16, fontWeight: "700" }}>Products In Invoice</Text>
+          <Text style={{ fontSize: 22, fontWeight: "700" }}>Chi Tiết Hóa Đơn</Text>
         <Text></Text> 
       </View>
       
@@ -99,8 +99,8 @@ const ListProductInInvoice = ({ navigation, route }) => {
           keyExtractor={item => item._id}
         />
         <View style={{height: 70, width:"100%" , borderWidth:1 ,alignItems:'center'}}>
-        <Text style={{fontSize: 22, color:"#989898", fontWeight: '500'}}>Total</Text>
-          <Text style={{fontSize: 22, color:"#9CE6A9", fontWeight: 'bold'}}>{total}$</Text>
+        <Text style={{fontSize: 22, color:"black", fontWeight: '500'}}>Tổng tiền</Text>
+          <Text style={{fontSize: 22, color:"green", fontWeight: 'bold'}}>{total}$</Text>
         </View>
     </View>
   )

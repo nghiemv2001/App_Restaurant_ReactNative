@@ -32,8 +32,8 @@ const ChartofInvoice = ({ navigation, route }) => {
         >
           <Ionicons name='arrow-back-sharp' size={35} />
         </TouchableOpacity>
-        <View style={{ marginLeft: 100, alignItems: 'center', marginTop: 15 }}>
-          <Text style={{ fontSize: 16, fontWeight: "700" }}>INVOICE</Text>
+        <View style={{ marginLeft: 60, alignItems: 'center', marginTop: 15 }}>
+          <Text style={{ fontSize: 16, fontWeight: "700" }}>Biểu đồ thu nhập trong ngày</Text>
           <Text style={{ fontSize: 16, fontWeight: "700" }}>{route.params.selected.day}/{route.params.selected.month}/{route.params.selected.year}</Text>
         </View>
       </View>
@@ -65,13 +65,13 @@ const ChartofInvoice = ({ navigation, route }) => {
           borderRadius: 16,
         }}
       />
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 60}}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 40}}>
         <View style={{alignItems:'center'}}>
           <Text style={{fontSize: 22, color:"#989898", fontWeight: '500'}}>Doanh thu</Text>
           <Text style={{fontSize: 22, color:"#9CE6A9", fontWeight: 'bold'}}>{formattedTotal} đ</Text>
         </View>
         <View style={{alignItems:'center'}}>
-        <Text style={{fontSize: 22, color:"#989898", fontWeight: '500', alignItems:'center'}}>Số bill</Text>
+        <Text style={{fontSize: 22, color:"#989898", fontWeight: '500', alignItems:'center'}}>Tổng số hóa đơn</Text>
           <Text style={{fontSize: 22, fontWeight : 'bold', color:'#F5504F'}}>{route.params.numberOfElements}</Text>
         </View>
       </View>

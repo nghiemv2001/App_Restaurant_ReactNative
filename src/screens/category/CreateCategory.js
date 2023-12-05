@@ -62,7 +62,7 @@ const CreateCategory = ({ navigation }) => {
   const SendtoBackend = () => {
     if (statusButton) {
       if (fdata.name === '' || fdata.describe === '') {
-        setErrormgs('All fields are required!!!');
+        setErrormgs('Thiếu thông tin!!!');
         return;
       }
       
@@ -98,11 +98,11 @@ const CreateCategory = ({ navigation }) => {
     }
     else {
       if (fdata.name === '' || fdata.describe === '') {
-        setErrormgs('All fields are required!!!');
+        setErrormgs('Thiếu thông tin!!!');
         return;
       }
       if (fdata.image === '') {
-        setErrormgs('Image not found!!!');
+        setErrormgs('Hình ảnh chưa được tải lên!!!');
         return;
       }
       fetch(shareVarible.URLink + '/category/creat', {

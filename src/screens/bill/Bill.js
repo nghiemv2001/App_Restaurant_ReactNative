@@ -214,16 +214,16 @@ const Bill = ({ navigation, route }) => {
             if (data.error) {
               alert(data.error);
             } else {
-              showCustomAlert('success!');
+              showCustomAlert('Thành công!');
             }
           }).catch(error => {
             console.error(error);
-            showCustomAlert('An error occurred while updating the product');
+            showCustomAlert('Lỗi trong quá tình tải ảnh');
           });
         setShowModal(false)
       }
       else {
-        showCustomAlert("Enter a number")
+        showCustomAlert("Cần nhập số")
       }
     }
 
@@ -251,7 +251,7 @@ const Bill = ({ navigation, route }) => {
       }
     })
     if (dataproductchef1.status != 0) {
-      showCustomAlert("The cooked dish cannot be deleted!!!");
+      showCustomAlert("Món ăn đã được chế biến không thể xóa!!!");
     }
     else {
       deleteItem('monan/delete', item._id, showCustomAlert);
@@ -820,10 +820,10 @@ const Bill = ({ navigation, route }) => {
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
               <TouchableOpacity style={[styles.styTouch, { marginRight: 10 }]} onPress={() => { setShowModal(false) }}>
-                <Text>Cancel</Text>
+                <Text>Hủy</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.styTouch} onPress={() => { updateProduct() }} >
-                <Text>Save</Text>
+                <Text>Lưu</Text>
               </TouchableOpacity>
             </View>
 

@@ -179,12 +179,12 @@ const ListAccount = ({navigation}) => {
               <Ionicons name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"} />
             </View>
             <Text style={{ fontSize: 22, fontWeight: "700", color: '#3564C1' }}>
-              Success
+              Thành công
             </Text>
             <TouchableOpacity
               onPress={() => { setAlertSuccess(false) }}
               style={{ height: 40, width: 140, backgroundColor: '#3564C1', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Continue</Text>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -109,7 +109,7 @@ const CreateProduct = ({navigation, route}) => {
   //call ipa 
   const SendtoBackend=()=>{
     if (fdata.name == '' || fdata.price == '' ||fdata.image == '') {
-      setErrormgs('All filed are required!!!!');
+      setErrormgs('Thiếu thông tin!!!');
       return;
     }
     fetch(shareVarible.URLink + '/product/create',

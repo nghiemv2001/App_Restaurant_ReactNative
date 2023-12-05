@@ -72,7 +72,7 @@ const ListInvoice = ({ navigation }) => {
         })
             .then(response => response.json())
             .then(data => {
-                fetchData()
+                dispatch({ type: "GET_INVOICES" });
             })
             .catch(error => {
                 console.error('Error', error);
