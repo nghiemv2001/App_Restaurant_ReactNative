@@ -23,7 +23,8 @@ const Signup = ({ navigation }) => {
     phone: '',
     password: '',
     keycode: '',
-    role: '1'
+    role: '1',
+    confirmpassword:""
   })
   const [password1, setPassword1] = useState('');
   const [password, setPassword] = useState('');

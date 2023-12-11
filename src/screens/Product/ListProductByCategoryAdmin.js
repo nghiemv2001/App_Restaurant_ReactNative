@@ -100,55 +100,43 @@ const ListProductByCategogy = ({ route, navigation }) => {
       >
         <View style={styles.centeredView}>
           <View style={{
-            height: 70,
-            width: 300,
-            backgroundColor: "#FDD736",
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            
-            <Ionicons name='help' size={70} color="white" style={{ marginTop: 3, position: 'absolute' }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 140 }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 140 }} />
-            <TouchableOpacity 
-            onPress={()=>{setShowAlertAdjustProduct(false)}}
-            style={{ marginLeft: 220, top: -60 }}>
-               <Ionicons name='close' size={30} color="black"/>
-            </TouchableOpacity>
-           
-
-          </View>
-          <View style={{
-            height: 150,
+            height: 350,
             width: 300,
             backgroundColor: "white",
-            borderBottomLeftRadius: 40,
-            borderBottomRightRadius: 40,
-            justifyContent: 'center',
+            borderRadius: 40,
+            justifyContent:'space-evenly',
             alignItems: 'center',
           }}>
-            <Text style={{ fontSize: 20, fontWeight: '900', marginTop: -10, textAlign:'center' }}>Bạn muốn chỉnh sửa hay xóa món ăn này?</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
-              <TouchableOpacity
-                onPress={() => { setShowAlertAdjustProduct(false)
-                deleteProduct()
-                }}
-                style={[styles.styButtonModal, { backgroundColor: '#D85261' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>xóa</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-              onPress={() => { 
-                setShowAlertAdjustProduct(false)
-                navigation.navigate('EditProduct', {itemProduct})}}
-                style={[styles.styButtonModal, { backgroundColor: '#038857' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>chỉnh sửa</Text>
-              </TouchableOpacity>
+
+            <View style={{height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems:'center'}}>
+              <Ionicons  name='alert' size={60} color={"#FFFCFF"}/>
             </View>
+            <Text style={{fontSize:22, fontWeight: "700", color:'black'}}>
+             ĐIỀU CHỈNH
+            </Text>
+            <TouchableOpacity 
+         onPress={() => { 
+          setShowAlertAdjustProduct(false)
+          navigation.navigate('EditProduct', {itemProduct})}}
+            style={{height: 40, width: 140, backgroundColor:'#3085D6', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Chỉnh Sửa</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+         onPress={() => { setShowAlertAdjustProduct(false)
+          deleteProduct()
+          }}
+            style={{height: 40, width: 140, backgroundColor:'#3085D6', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Xóa</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+                     onPress={()=>{setShowAlertAdjustProduct(false)}}
+            style={{height: 40, width: 140, backgroundColor:'#D03737', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Hủy</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
+      
       <View style={styles.container}>
         <TouchableOpacity onPress={() => navigation.navigate('HomeAdmin')}>
           <Ionicons name='arrow-undo-circle-sharp' size={35} />

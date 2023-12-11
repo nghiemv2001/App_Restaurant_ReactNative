@@ -1,12 +1,14 @@
-import { View, Text, Button, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native'
+import React, { useState, useEffect,useContext } from 'react'
 import shareVarible from './../../AppContext'
 import { FlatGrid } from 'react-native-super-grid';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
+import {SateContext} from './../../component/sateContext'
 const ListProductByCategogy = ({ route, navigation }) => {
+  const {currentName} = useContext(SateContext);
   const [dataipa, setDataIPA] = useState([{}]);
   const idCategory = route.params.item._id;
   const dataroute = route.params.route.params.route.params.data
@@ -18,6 +20,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
   }, []);
   const [fdata, setFdata] = useState({
     id_product: "",
+    nhan_vien_goi: "",
     ten_mon: "",
     hinh_mon: "",
     so_luong: "",
@@ -26,6 +29,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
   const [dataChef, setdataChef] = useState({
     id_product: '',
     id_table: '',
+    ten_nhan_vien:"",
     name: "",
     image: "",
     quantity: "",
@@ -52,15 +56,17 @@ const ListProductByCategogy = ({ route, navigation }) => {
     const now = new Date();
     dataChef.id_product = datakey
     dataChef.id_table = idtable
+    dataChef.ten_nhan_vien = currentName
     dataChef.name = item.name;
     dataChef.image = item.image;
     dataChef.quantity = 1;
     dataChef.status = 0,
-      dataChef.second = now.getSeconds();
+    dataChef.second = now.getSeconds();
     dataChef.minute = now.getMinutes();
     dataChef.hour = now.getHours();
     // Add product in BIll
     fdata.id_product = datakey
+    fdata.nhan_vien_goi = currentName
     fdata.ten_mon = item.name;
     fdata.hinh_mon = item.image;
     fdata.so_luong = 1;
@@ -89,6 +95,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
             }
           }
         )
+      
       fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
         {
           method: 'POST',
@@ -105,6 +112,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
             else {
               const data = dataroute;
               navigation.navigate('Bill', { data })
+              
             }
           }
         )

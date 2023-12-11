@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useContext} from 'react'
 import 'react-native-gesture-handler';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -7,11 +7,6 @@ import ListTable from '../table/ListTable'
 import ListProductWaitress from '../Chef/ListProductWaitress';
 const Drawer = createDrawerNavigator();
 const HomeWaitress = () => {
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     console.log("loai lai")
-  //   }, [])
-  // )
     return (
         <Drawer.Navigator drawerContent={props=><CustomDrawerWaitress{...props}/>} 
         screenOptions={{

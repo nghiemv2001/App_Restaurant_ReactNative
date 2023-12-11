@@ -61,19 +61,18 @@ const ListAccount = ({navigation}) => {
   const renderlist = ((item) => {
     return (
       <TouchableOpacity
-
         onPress={() => {
           setModalAdjust(true)
           setFItem(item)
         }}
-        style={{ backgroundColor: 'black' }}>
+        style={{borderWidth:1, borderColor: 'black', borderRadius:15, paddingHorizontal:10,marginTop: 5, marginHorizontal: 10}}>
         {
           item.role === '0' ? null : <View style={{ marginBottom: 3, backgroundColor: '#EDF6D8', paddingVertical: 5, paddingRight: 20, paddingLeft: 5, flexDirection: 'row', alignItems: 'center' }}>
             <Image
-              style={{ height: 70, width: 70, borderRadius: 50 }}
+              style={{ height: 70, width: 70, borderRadius: 50, }}
               source={{ uri: item.image }} />
             <View style={{ flexDirection: 'column', paddingLeft: 5, width: '75%' }}>
-              <Text style={{ fontSize: 18, }}>Tên người dùng : {item.name}</Text>
+              <Text style={{ fontSize: 18, }}>Tên : {item.name}</Text>
 
               {item.role == 1 ? (
                 <Text style={{ fontSize: 18 }}>Vai trò: Phục vụ</Text>
@@ -91,7 +90,7 @@ const ListAccount = ({navigation}) => {
                 setIdUser(item._id)
                 setConfirmDelete(true)
               }}>
-              <Ionicons name='remove-circle-sharp' size={35} />
+              <Ionicons name='remove-circle-sharp' size={35} color={"#940000"} />
             </TouchableOpacity>
           </View>
         }
@@ -99,7 +98,44 @@ const ListAccount = ({navigation}) => {
     )
   })
   return (
-    <View style={{ height: '100%', backgroundColor: '#EDF6D8', paddingTop: 40 }}>
+    <View style={{ backgroundColor: '#EDF6D8', paddingTop: 40, alignItems:'center' }}>
+      
+      <Modal
+        transparent={true}
+        visible={confirmDelete}
+        animationType='fade'
+      >
+        <View style={styles.centeredView}>
+          <View style={{
+            height: 300,
+            width: 300,
+            backgroundColor: "white",
+            borderRadius: 40,
+            justifyContent:'space-evenly',
+            alignItems: 'center',
+          }}>
+
+            <View style={{height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems:'center'}}>
+              <Ionicons  name='alert' size={60} color={"#FFFCFF"}/>
+            </View>
+            <Text style={{fontSize:22, fontWeight: "700", color:'black'}}>
+             XÓA 
+            </Text>
+            <TouchableOpacity 
+        onPress={() => {
+          setConfirmDelete(false)
+          DeteleUser()}}
+            style={{height: 40, width: 140, backgroundColor:'#3085D6', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Chấp nhận</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+               onPress={() => { setConfirmDelete(false) }}
+            style={{height: 40, width: 140, backgroundColor:'#D03737', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Hủy</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       <Modal
         transparent={true}
         visible={modalAjust}
@@ -107,7 +143,7 @@ const ListAccount = ({navigation}) => {
       >
         <View style={styles.centeredView}>
           <View style={{
-            height: 250,
+            height: 270,
             width: 300,
             backgroundColor: "white",
             borderRadius: 40,
@@ -145,15 +181,15 @@ const ListAccount = ({navigation}) => {
 
             </View>
             <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity style={{ top: 30, right: 10, height: 40, width: 100, backgroundColor: '#FF6666', borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}
+              <TouchableOpacity style={{ top: 30, right: 10, height: 40, width: 100, backgroundColor: '#37B207', borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}
               onPress={() => { editUser() }}
               >
-                <Text>Sửa</Text>
+                <Text>Chấp nhận</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ top: 30, height: 40, width: 100, backgroundColor: 'green', borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}
+              <TouchableOpacity style={{ top: 30, height: 40, width: 100, backgroundColor: '#940000', borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}
               onPress={() => { setModalAdjust(false) }}
               >
-                <Text>cancel</Text>
+                <Text>Hủy</Text>
               </TouchableOpacity>
             </View>
 
@@ -189,56 +225,10 @@ const ListAccount = ({navigation}) => {
           </View>
         </View>
       </Modal>
-      <Modal
-        transparent={true}
-        visible={confirmDelete}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 70,
-            width: 300,
-            backgroundColor: "#FDD736",
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <Ionicons name='help' size={70} color="white" style={{ marginTop: 3, position: 'absolute' }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 140 }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 140 }} />
-          </View>
-          <View style={{
-            height: 150,
-            width: 300,
-            backgroundColor: "white",
-            borderBottomLeftRadius: 40,
-            borderBottomRightRadius: 40,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Xóa tài khoản</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
-              <TouchableOpacity
-                onPress={() => { setConfirmDelete(false) }}
-                style={[styles.styButton, { backgroundColor: '#D85261' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>hủy</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  setConfirmDelete(false)
-                  DeteleUser()
-                }}
-                style={[styles.styButton, { backgroundColor: '#038857' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>tiếp tục</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+     
+      <Text style={{fontSize:25, fontWeight: '600'}}>Danh Sách Tài Khoản</Text>
       <View >
         <FlatList
-          style={{ backgroundColor: 'black' }}
           data={users}
           renderItem={({ item }) => {
             return renderlist(item)

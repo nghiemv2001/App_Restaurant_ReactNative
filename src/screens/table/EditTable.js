@@ -38,18 +38,18 @@ const EditTable = ({ navigation, route }) => {
     fetchData();
   }, []);
   const deleteTable = () => {
-    fetch( shareVarible.URLink + '/table/delete/'+ `${fdata.id}`,{
-      method : 'DELETE', 
-      headers:{
+    fetch(shareVarible.URLink + '/table/delete/' + `${fdata.id}`, {
+      method: 'DELETE',
+      headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       }
     }).then(response => response.json())
-    .then(data=> {
+      .then(data => {
         navigation.navigate("HomeAdmin")
-    }).catch(error=>{
-      console.log("Error : ", error);
-    })
+      }).catch(error => {
+        console.log("Error : ", error);
+      })
   }
   // read data object table form screen listable
   const datadropdown = [
@@ -215,43 +215,34 @@ const EditTable = ({ navigation, route }) => {
       >
         <View style={styles.centeredView}>
           <View style={{
-            height: 70,
-            width: 300,
-            backgroundColor: "#FDD736",
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <Ionicons name='help' size={70} color="white" style={{ marginTop: 3, position: 'absolute' }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 140 }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 140 }} />
-          </View>
-          <View style={{
-            height: 150,
+            height: 300,
             width: 300,
             backgroundColor: "white",
-            borderBottomLeftRadius: 40,
-            borderBottomRightRadius: 40,
-            justifyContent: 'center',
+            borderRadius: 40,
+            justifyContent: 'space-evenly',
             alignItems: 'center',
           }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Xóa bàn</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height:'40%', alignItems:'flex-end'}}>
-              <TouchableOpacity 
-              onPress={()=> {SetShowMadalConfirmDeleteTable(false)}}
-              style={[styles.styButton,{ backgroundColor:'#D85261'}]}>
-                <Text style={{fontSize:18 , fontWeight:'600'}}>hủy</Text>
-                </TouchableOpacity>
-              <TouchableOpacity 
-              onPress={()=>{deleteTable()}}
-              style={[styles.styButton, {backgroundColor:'#038857'}]}>
-                <Text style={{fontSize:18 , fontWeight:'600'}}>tiếp tục</Text>
-                </TouchableOpacity>
+
+            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
             </View>
+            <Text style={{ fontSize: 22, fontWeight: "700", color: 'black' }}>
+              XÓA
+            </Text>
+            <TouchableOpacity
+              onPress={() => { deleteTable() }}
+              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chấp nhận</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => { SetShowMadalConfirmDeleteTable(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: "100%", paddingHorizontal: 15 }}>
         <TouchableOpacity
           style={{ marginLeft: 10, marginTop: 30 }}
@@ -518,12 +509,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 22,
   },
-  styButton:{
-    height : 45, width: 100, 
-    borderWidth: 1, 
-    borderRadius: 30, 
-    justifyContent:'center', 
-    alignItems:'center'
+  styButton: {
+    height: 45, width: 100,
+    borderWidth: 1,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 
 })

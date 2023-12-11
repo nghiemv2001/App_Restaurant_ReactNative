@@ -5,8 +5,14 @@ import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 const ListProductInInvoice = ({ navigation, route }) => {
+  const currentHour = route.params.item.hour;
+  const hour12Format = currentHour >= 12 ? ' PM' : ' AM';
+  const hourIn12HourFormat = currentHour % 12 || 12;
+  const formattedHour = `${hourIn12HourFormat.toString().padStart(2, '0')}${hour12Format}`;
   const dataFaglist = route.params.item.product_list
-  const total = dataFaglist.reduce((acc, item) => acc + item.gia*item.so_luong, 0);
+  const itemFlagList = route.params.item;
+
+  const total = dataFaglist.reduce((acc, item) => acc + item.gia * item.so_luong, 0);
   //Design FatList
   const renderlist = ((item) => {
     return (
@@ -77,31 +83,43 @@ const ListProductInInvoice = ({ navigation, route }) => {
     )
   })
   return (
+
     <View style={styles.V1}>
       <View style={{ marginTop: 30, justifyContent: 'space-between', paddingHorizontal: 10, flexDirection: 'row', alignItems: 'center' }}>
         <TouchableOpacity
-        onPress={() => navigation.navigate('HomeAdmin')}
-      >
-        <Ionicons name='arrow-back-sharp' size={35} />
-        
-          </TouchableOpacity>
-          <Text style={{ fontSize: 22, fontWeight: "700" }}>Chi Tiết Hóa Đơn</Text>
-        <Text></Text> 
+          onPress={() => navigation.navigate('HomeAdmin')}>
+          <Ionicons name='arrow-back-sharp' size={35} />
+        </TouchableOpacity>
+        <Text style={{ fontSize: 22, fontWeight: "700" }}>Chi Tiết Hóa Đơn</Text>
+        <Text></Text>
       </View>
-      
-   
-        <FlatList
-          style={{ height: 100 }}
-          data={dataFaglist}
-          renderItem={({ item }) => {
-            return renderlist(item)
-          }}
-          keyExtractor={item => item._id}
-        />
-        <View style={{height: 70, width:"100%" , borderWidth:1 ,alignItems:'center'}}>
-        <Text style={{fontSize: 22, color:"black", fontWeight: '500'}}>Tổng tiền</Text>
-          <Text style={{fontSize: 22, color:"green", fontWeight: 'bold'}}>{total}$</Text>
+      <View style={{ marginTop: 10, paddingLeft: 10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 5 }}>
+          <Ionicons name='fast-food-sharp' size={35} />
+          <Text style={{ fontSize: 22, color: "black", fontWeight: '500' }}> {itemFlagList.name}</Text>
         </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 5 }}>
+          <Ionicons name='time-outline' size={35} />
+          <Text style={{ fontSize: 22, color: "black", fontWeight: '500' }}> {formattedHour} : {itemFlagList.minute} - {itemFlagList.day}/{itemFlagList.month}/{itemFlagList.year}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 5 }}>
+          <Ionicons name='person-outline' size={35} />
+          <Text style={{ fontSize: 22, color: "black", fontWeight: '500' }}> {itemFlagList.nhan_vien}</Text>
+        </View>
+      </View>
+      <Text style={{ fontSize: 22, color: "black", fontWeight: '700', marginTop: 20, paddingLeft: 10 }}>Danh Sách món</Text>
+      <FlatList
+        style={{ flex: 1, color: 'red' }}
+        data={dataFaglist}
+        renderItem={({ item }) => {
+          return renderlist(item)
+        }}
+        keyExtractor={item => item._id}
+      />
+      <View style={{ height: 50, justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 32, color: "black", fontWeight:'bold', color:'#37B207' }}> Tổng : {total}đ</Text>
+      </View>
+
     </View>
   )
 }
@@ -109,11 +127,8 @@ const ListProductInInvoice = ({ navigation, route }) => {
 export default ListProductInInvoice
 const styles = StyleSheet.create({
   V1: {
-    width: '100%',
-    height: '100%',
-    marginBottom: 10,
+    flex: 1,
     flexDirection: 'column',
-    justifyContent: 'space-between',
     paddingRight: 20,
     backgroundColor: '#EDF6D8',
   },

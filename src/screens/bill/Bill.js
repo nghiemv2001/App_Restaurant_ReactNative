@@ -1,12 +1,13 @@
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, TextInput, FlatList } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { SateContext } from './../../component/sateContext'
 const Bill = ({ navigation, route }) => {
-
+  const { currentName, currentID } = useContext(SateContext);
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
@@ -246,7 +247,7 @@ const Bill = ({ navigation, route }) => {
   };
   const DeleteItem = (item) => {
     const dataproductchef1 = dataproductchef.find(p => {
-      if (p.id_product === dataItem.id_product) {
+      if (p.id_product === item.id_product) {
         return p;
       }
     })
@@ -305,7 +306,7 @@ const Bill = ({ navigation, route }) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ ten_ban_an: dataItem.ten_ban_an, danh_sach_mon_an: dataipa.danh_sach_mon_an }),
+      body: JSON.stringify({ ten_ban_an: dataItem.ten_ban_an, ten_nhan_vien: currentName, danh_sach_mon_an: dataipa.danh_sach_mon_an }),
     }).then(res => res.json()).then(
       data => {
         if (data.error) {
@@ -319,7 +320,7 @@ const Bill = ({ navigation, route }) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id_ban_an: datamerge.id_ban_nhan, ten_ban_an: dataItem.name })
+        body: JSON.stringify({ id_ban_an: datamerge.id_ban_nhan, ten_ban_an: dataItem.name, id_nhan_vien: currentID, ten_nhan_vien: currentName })
       }).then(res => res.json()).then(
         data => {
           if (data.error) {
@@ -343,7 +344,6 @@ const Bill = ({ navigation, route }) => {
                     setIDTable(datamerge.id_ban_nhan)
                     fetchData()
                     setNameTable(dataipa.ten_ban_an)
-
                     setShowModalConfimMove(false)
                   }
                 }
@@ -370,7 +370,6 @@ const Bill = ({ navigation, route }) => {
         }
       }
     )
-    // // Thực hiện fetch và các hành động khác ở đây
     fetch(shareVarible.URLink + '/merge', {
       method: 'POST',
       headers: {
@@ -392,10 +391,7 @@ const Bill = ({ navigation, route }) => {
       }
     );
   }
-  const mergeTable = () => {
-    setShowModal2(true)
-    setShowModal1(false)
-  }
+
   useEffect(() => {
     fetchData();
   }, [idtable, qty]);
@@ -427,7 +423,7 @@ const Bill = ({ navigation, route }) => {
                 >x {item.so_luong}</Text>
                 <Text style={styles.styleText2}
                   numberOfLines={1}
-                >= {item.gia * item.so_luong} $</Text>
+                >= {item.gia * item.so_luong} đ</Text>
               </View>
             </View>
             <View style={styles.container6}>
@@ -453,90 +449,48 @@ const Bill = ({ navigation, route }) => {
       <Modal
         transparent={true}
         visible={showModel1}
-        animationType='slide'
+        animationType='fade'
       >
         <View style={styles.centeredView}>
           <View style={{
-            height: 100,
+            height: 350,
             width: 300,
-            backgroundColor: "#FDD736",
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            justifyContent: 'space-around',
-            alignItems: 'center'
+            backgroundColor: "white",
+            borderRadius: 40,
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
           }}>
+
+            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
+            </View>
+            <TouchableOpacity
+              onPress={() => {
+                setShowModal1(false)
+                setShowModalMove(true)
+              }}
+              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chuyển bàn</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setShowModal1(false)
+                setShowModal2(true)
+              }}
+              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Nhập bàn</Text>
+            </TouchableOpacity>
             <TouchableOpacity
               onPress={() => { setShowModal1(false) }}
-              style={{ right: 90, top: 10 }}>
-              <Text style={{ fontSize: 20 }}>Bỏ qua&nbsp;&rarr;</Text>
+              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
             </TouchableOpacity>
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 100 }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 100 }} />
-          </View>
-          <View style={{
-            height: 200,
-            width: 300,
-            backgroundColor: "white",
-            borderBottomLeftRadius: 40,
-            borderBottomRightRadius: 40,
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            <Text style={{
-              fontFamily: ''
-            }}>Bạn muốn dời bàn hay nhập với một bàn khác</Text>
-            <Text style={{
-              fontFamily: ''
-            }}>Vui lòng xác nhận bên dưới.</Text>
-            <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
-              <TouchableOpacity style={{
-                height: 40,
-                width: 70,
-                borderRadius: 40,
-                backgroundColor: '#566FA5',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderWidth: 1
-              }}
-                onPress={() => { mergeTable() }}
-              >
-                <Text style={{ color: 'white' }}>nhập bàn</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={{
-                height: 40,
-                width: 70,
-                borderRadius: 40,
-                backgroundColor: '#566FA5',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-                onPress={() => {
-                  setShowModal1(false)
-                  setShowModalMove(true)
-                }}
-              >
-                <Text style={{ color: 'white' }}>dời bàn</Text>
-              </TouchableOpacity>
-            </View>
-
-          </View>
-          <View style={{
-            height: 60,
-            width: 60,
-            position: "absolute",
-            backgroundColor: "white",
-            borderWidth: 1,
-            borderColor: "gray",
-            borderRadius: 100,
-            justifyContent: 'center',
-            alignItems: 'center',
-            top: 270
-          }}>
-            <Ionicons name='at-sharp' size={30} />
           </View>
         </View>
       </Modal>
+
       {/*FlaList merge */}
+
       <Modal
         transparent={true}
         visible={showModel2}
@@ -555,6 +509,7 @@ const Bill = ({ navigation, route }) => {
                     onPress={() => {
                       setShowModal3(true)
                       setDataItem(item)
+                      setShowModal2(false)
                     }}
                     style={
                       {
@@ -577,10 +532,10 @@ const Bill = ({ navigation, route }) => {
                 alignItems: 'center',
               }}
               numColumns={3} />
-            <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
-              <Text style={{ textAlign: 'center' }} onPress={() => { setShowModal2(false) }}>
-                hủy
-              </Text>
+            <TouchableOpacity
+              onPress={() => { setShowModal2(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -627,10 +582,10 @@ const Bill = ({ navigation, route }) => {
                 alignItems: 'center',
               }}
               numColumns={3} />
-            <TouchableOpacity style={[styles.styTouch, { marginTop: 10 }]}>
-              <Text style={{ textAlign: 'center' }} onPress={() => { setShowModalMove(false) }}>
-                hủy
-              </Text>
+            <TouchableOpacity
+              onPress={() => { setShowModalMove(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20, marginTop: 30 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -639,163 +594,76 @@ const Bill = ({ navigation, route }) => {
       <Modal
         transparent={true}
         visible={showModel3}
-        animationType='slide'
+        animationType='fade'
       >
         <View style={styles.centeredView}>
           <View style={{
-            height: 100,
-            width: 300,
-            backgroundColor: "#FDD736",
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            justifyContent: 'space-around',
-            alignItems: 'center'
-          }}>
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 100 }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 100 }} />
-          </View>
-          <View style={{
-            height: 200,
+            height: 300,
             width: 300,
             backgroundColor: "white",
-            borderBottomLeftRadius: 40,
-            borderBottomRightRadius: 40,
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            <Text style={{
-              fontFamily: ''
-            }}>Bạn chắc chứ?</Text>
-            <Text style={{
-              fontFamily: ''
-            }}>Vui lòng xác nhận.</Text>
-            <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
-              <TouchableOpacity style={{
-                height: 40,
-                width: 70,
-                borderRadius: 40,
-                backgroundColor: '#566FA5',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderWidth: 1
-              }}
-                onPress={() => { setShowModal3(false) }}
-              >
-                <Text style={{ color: 'white' }}>hủy</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={{
-                height: 40,
-                width: 70,
-                borderRadius: 40,
-                backgroundColor: '#566FA5',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-                onPress={() => {
-                  setShowModal3(false)
-                  MergeTable()
-                }}
-              >
-                <Text style={{ color: 'white' }}>đồng ý</Text>
-              </TouchableOpacity>
-            </View>
-
-          </View>
-          <View style={{
-            height: 60,
-            width: 60,
-            position: "absolute",
-            backgroundColor: "white",
-            borderWidth: 1,
-            borderColor: "gray",
-            borderRadius: 100,
-            justifyContent: 'center',
+            borderRadius: 40,
+            justifyContent: 'space-evenly',
             alignItems: 'center',
-            top: 270
           }}>
-            <Ionicons name='at-sharp' size={30} />
+
+            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
+            </View>
+            <Text style={{ fontSize: 22, fontWeight: "700", color: 'black' }}>
+              NHẬP BÀN
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setShowModal3(false)
+                MergeTable()
+              }}
+              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chấp nhận</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => { setShowModal3(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
       {/* confirm move */}
       <Modal
         transparent={true}
         visible={showModelCofirmMove}
-        animationType='slide'
+        animationType='fade'
       >
         <View style={styles.centeredView}>
           <View style={{
-            height: 100,
-            width: 300,
-            backgroundColor: "#FDD736",
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            justifyContent: 'space-around',
-            alignItems: 'center'
-          }}>
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 100 }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 100 }} />
-          </View>
-          <View style={{
-            height: 200,
+            height: 300,
             width: 300,
             backgroundColor: "white",
-            borderBottomLeftRadius: 40,
-            borderBottomRightRadius: 40,
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            <Text style={{
-              fontFamily: ''
-            }}>Bạn chắc chứ?</Text>
-            <Text style={{
-              fontFamily: ''
-            }}>Vui lòng xác nhận.</Text>
-            <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
-              <TouchableOpacity style={{
-                height: 40,
-                width: 70,
-                borderRadius: 40,
-                backgroundColor: '#566FA5',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderWidth: 1
-              }}
-                onPress={() => { setShowModalConfimMove(false) }}
-              >
-                <Text style={{ color: 'white' }}>hủy</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={{
-                height: 40,
-                width: 70,
-                borderRadius: 40,
-                backgroundColor: '#566FA5',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-                onPress={() => {
-                  setShowModalMove(false)
-                  moveTable()
-                }}
-              >
-                <Text style={{ color: 'white' }}>đồng ý</Text>
-              </TouchableOpacity>
-            </View>
-
-          </View>
-          <View style={{
-            height: 60,
-            width: 60,
-            position: "absolute",
-            backgroundColor: "white",
-            borderWidth: 1,
-            borderColor: "gray",
-            borderRadius: 100,
-            justifyContent: 'center',
+            borderRadius: 40,
+            justifyContent: 'space-evenly',
             alignItems: 'center',
-            top: 270
           }}>
-            <Ionicons name='at-sharp' size={30} />
+
+            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
+            </View>
+            <Text style={{ fontSize: 22, fontWeight: "700", color: 'black' }}>
+              CHUYỂN BÀN
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                setShowModalMove(false)
+                moveTable()
+              }}
+              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chấp nhận</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+             onPress={() => { setShowModalConfimMove(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -807,23 +675,27 @@ const Bill = ({ navigation, route }) => {
       >
         <View style={styles.centeredView}>
           <View style={styles.modalView1}>
-            <Text style={{ textAlign: 'center' }}>Điều chỉnh số lượng ở dưới</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+
+            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
+            </View>
+            <Text style={{ textAlign: 'center', fontSize: 19, fontWeight: '700' }}>Điều Chỉnh Số Lượng</Text>
+            <View style={{ flexDirection: 'row' }}>
               <TouchableOpacity style={{
               }} onPress={SlowQYT}>
                 <Text style={{ fontSize: 32, }}>-</Text>
               </TouchableOpacity>
-              <Text style={{ fontSize: 32, }}>{qty}</Text>
+              <Text style={{ fontSize: 32, paddingHorizontal: 40 }}>{qty}</Text>
               <TouchableOpacity onPress={IncreasQYT}>
                 <Text style={{ fontSize: 32, }}>+</Text>
               </TouchableOpacity>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
-              <TouchableOpacity style={[styles.styTouch, { marginRight: 10 }]} onPress={() => { setShowModal(false) }}>
-                <Text>Hủy</Text>
+              <TouchableOpacity style={[styles.styTouch, { backgroundColor: "#3085D5", marginRight: 10 }]} onPress={() => { updateProduct() }} >
+                <Text style={{ fontSize: 18, fontWeight: '700' }}>Xác Nhận</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.styTouch} onPress={() => { updateProduct() }} >
-                <Text>Lưu</Text>
+              <TouchableOpacity style={[styles.styTouch, { backgroundColor: "#D03737" }]} onPress={() => { setShowModal(false) }}>
+                <Text style={{ fontSize: 18, fontWeight: '700' }}>Hủy</Text>
               </TouchableOpacity>
             </View>
 
@@ -1086,6 +958,7 @@ const styles = StyleSheet.create({
     shadowColor: 'blue',
     elevation: 5,
     justifyContent: 'space-evenly',
+    alignItems: 'center'
 
   },
   modelText: {
@@ -1122,7 +995,6 @@ const styles = StyleSheet.create({
     height: 45,
     width: 120,
     borderRadius: 40,
-    backgroundColor: '#566FA5',
     justifyContent: 'center',
     alignItems: 'center'
   },

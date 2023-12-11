@@ -1,22 +1,22 @@
-import { View, Text, Image, TouchableOpacity, Alert, Modal } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { View, Text, Image, TouchableOpacity, Modal } from 'react-native'
+import React, { useState , useContext} from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import img_food_ic from '../../../assets/foods.png'
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { createDrawerNavigator } from '@react-navigation/drawer';
 import { StyleSheet } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native'
+import {SateContext} from './../../component/sateContext'
 import { useSelector, useDispatch } from 'react-redux';
-const Drawer = createDrawerNavigator();
 const ListTable = ({ navigation }) => {
-  const darkMode = useSelector(state=>state.tableReducer.darkMode);
+  const {currentName, currentID} = useContext(SateContext);
   useFocusEffect(
-    React.useCallback(() => {
-      fetchData();
-    }, [])
+    React.useCallback(() => {fetchData();}, [])
   );
+  const tables = useSelector(state => state.tableReducer.tableList);
+  const bills = useSelector(state=> state.billReducer.bills)
+  const dispatch = useDispatch();
   const [datatenban, setDataTEnBan] = useState({
     id_ban_an: "",
     ten_ban_an: ''
@@ -25,11 +25,6 @@ const ListTable = ({ navigation }) => {
   const [dataitem, setDataItem] = useState(null);
   const [showModel, setShowModal] = useState(false);
   const [databills, setDataBills] = useState(null);
-  const [nameTable, setNameTable] = useState(null)
-  const [valueTable, setValueTable] = useState(null)
-  const [statusAdjustTable, setStatusAdjustTable] = useState(false);
-  
-  //read data
   const fetchData = () => {
     fetch(shareVarible.URLink + '/tables/', {
       method: 'GET',
@@ -42,8 +37,6 @@ const ListTable = ({ navigation }) => {
       .then(data => setData(data),
       )
       .catch(error => console.log(error));
-
-    //lấy toàn bộ bills
     fetch(shareVarible.URLink + '/bills/', {
       method: 'GET',
       headers: {
@@ -103,7 +96,7 @@ const ListTable = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ id_ban_an: dataitem._id, ten_ban_an: dataitem.name })
+        body: JSON.stringify({ id_ban_an: dataitem._id, ten_ban_an: dataitem.name, ten_nhan_vien: currentName, id_nhan_vien: currentID })
       }).then(res => res.json()).then(
         data => {
           if (data.error) {
@@ -153,81 +146,39 @@ const ListTable = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.containner3}>
+      
       <Modal
         transparent={true}
         visible={showModel}
-        animationType='slide'
+        animationType='fade'
       >
         <View style={styles.centeredView}>
           <View style={{
-            height: 100,
-            width: 300,
-            backgroundColor: "#FDD736",
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            justifyContent: 'space-around',
-            alignItems: 'center'
-          }}>
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 100 }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 100 }} />
-          </View>
-          <View style={{
-            height: 200,
+            height: 300,
             width: 300,
             backgroundColor: "white",
-            borderBottomLeftRadius: 40,
-            borderBottomRightRadius: 40,
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
-            <Text style={{
-              fontFamily: ''
-            }}>Bàn ăn vẫn chưa có bill !!!</Text>
-            <Text style={{
-              fontFamily: ''
-            }}>Tạo hóa đơn cho bàn này ? </Text>
-            <View style={{ width: '100%', flexDirection: 'row', justifyContent: 'space-evenly', marginTop: 40 }}>
-              <TouchableOpacity style={{
-                height: 40,
-                width: 70,
-                borderRadius: 40,
-                backgroundColor: 'white',
-                justifyContent: 'center',
-                alignItems: 'center',
-                borderWidth: 1
-              }}
-              onPress={() => { setShowModal(false) }}
-              >
-                <Text style={{ color: 'black' }}>không</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={{
-                height: 40,
-                width: 70,
-                borderRadius: 40,
-                backgroundColor: '#566FA5',
-                justifyContent: 'center',
-                alignItems: 'center'
-              }}
-              onPress={() => {CreateBillabdEditTable(data)}}
-              >
-                <Text style={{ color: 'white' }}>tạo</Text>
-              </TouchableOpacity>
-            </View>
-
-          </View>
-          <View style={{
-            height: 60,
-            width: 60,
-            position: "absolute",
-            backgroundColor: "white",
-            borderWidth: 1,
-            borderColor: "gray",
-            borderRadius: 100,
-            justifyContent: 'center',
+            borderRadius: 40,
+            justifyContent:'space-evenly',
             alignItems: 'center',
-            top: 270
           }}>
-            <Ionicons name='at-sharp' size={30} />
+
+            <View style={{height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems:'center'}}>
+              <Ionicons  name='alert' size={60} color={"#FFFCFF"}/>
+            </View>
+            <Text style={{fontSize:22, fontWeight: "700", color:'black'}}>
+             TẠO HÓA ĐƠN
+            </Text>
+            <TouchableOpacity 
+          onPress={() => {CreateBillabdEditTable(data)}}
+            style={{height: 40, width: 140, backgroundColor:'#3085D6', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Chấp nhận</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+            onPress={()=>{setShowModal(false) 
+            }}
+            style={{height: 40, width: 140, backgroundColor:'#D03737', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
+              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Hủy</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

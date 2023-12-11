@@ -65,7 +65,7 @@ const CreateCategory = ({ navigation }) => {
         setErrormgs('Thiếu thông tin!!!');
         return;
       }
-      
+
       else {
         setErrormgs(null);
       }
@@ -221,6 +221,7 @@ const CreateCategory = ({ navigation }) => {
   })
   return (
     <View style={styles.v1}>
+
       <Modal
         transparent={true}
         visible={showModalConfirmDeleteCategory}
@@ -228,44 +229,33 @@ const CreateCategory = ({ navigation }) => {
       >
         <View style={styles.centeredView}>
           <View style={{
-            height: 70,
-            width: 300,
-            backgroundColor: "#FDD736",
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <Ionicons name='help' size={70} color="white" style={{ marginTop: 3, position: 'absolute' }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 140 }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 140 }} />
-          </View>
-          <View style={{
-            height: 150,
+            height: 300,
             width: 300,
             backgroundColor: "white",
-            borderBottomLeftRadius: 40,
-            borderBottomRightRadius: 40,
-            justifyContent: 'center',
+            borderRadius: 40,
+            justifyContent: 'space-evenly',
             alignItems: 'center',
           }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Xóa</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
-              <TouchableOpacity
-                onPress={() => { setShowModalConfirmDeleteCategory(false) }}
-                style={[styles.styButton, { backgroundColor: '#D85261' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>hủy</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => { DeteleCategory() }}
-                style={[styles.styButton, { backgroundColor: '#038857' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>tiếp tục</Text>
-              </TouchableOpacity>
+
+            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
             </View>
+            <Text style={{ fontSize: 22, fontWeight: "700", color: 'black' }}>
+              XÓA
+            </Text>
+            <TouchableOpacity
+              onPress={() => { DeteleCategory() }}
+              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chấp nhận</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => { setShowModalConfirmDeleteCategory(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
-
       <Modal
         transparent={true}
         visible={showModalConfirmAdjustCategory}
@@ -273,43 +263,34 @@ const CreateCategory = ({ navigation }) => {
       >
         <View style={styles.centeredView}>
           <View style={{
-            height: 70,
-            width: 300,
-            backgroundColor: "#FDD736",
-            borderTopLeftRadius: 40,
-            borderTopRightRadius: 40,
-            justifyContent: 'space-between',
-            alignItems: 'center'
-          }}>
-            <Ionicons name='help' size={70} color="white" style={{ marginTop: 3, position: 'absolute' }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 140 }} />
-            <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 140 }} />
-          </View>
-          <View style={{
-            height: 150,
+            height: 300,
             width: 300,
             backgroundColor: "white",
-            borderBottomLeftRadius: 40,
-            borderBottomRightRadius: 40,
-            justifyContent: 'center',
+            borderRadius: 40,
+            justifyContent: 'space-evenly',
             alignItems: 'center',
           }}>
-            <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Điều chỉnh</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
-              <TouchableOpacity
-                onPress={() => { setShowModalConfirmAdjustCategory(false) }}
-                style={[styles.styButton, { backgroundColor: '#D85261' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>hủy</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => { EditCategory() }}
-                style={[styles.styButton, { backgroundColor: '#038857' }]}>
-                <Text style={{ fontSize: 18, fontWeight: '600' }}>tiếp tục</Text>
-              </TouchableOpacity>
+
+            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
             </View>
+            <Text style={{ fontSize: 22, fontWeight: "700", color: 'black' }}>
+              ĐIỀU CHỈNH
+            </Text>
+            <TouchableOpacity
+              onPress={() => { EditCategory() }}
+              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chấp nhận</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => { setShowModalConfirmAdjustCategory(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
       <Modal
         transparent={true}
         visible={showModalAlert}
@@ -321,20 +302,20 @@ const CreateCategory = ({ navigation }) => {
             width: 300,
             backgroundColor: "white",
             borderRadius: 40,
-            justifyContent:'space-evenly',
+            justifyContent: 'space-evenly',
             alignItems: 'center',
           }}>
 
-            <View style={{height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems:'center'}}>
-              <Ionicons  name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"}/>
+            <View style={{ height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems: 'center' }}>
+              <Ionicons name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"} />
             </View>
-            <Text style={{fontSize:22, fontWeight: "700", color:'#3564C1'}}>
-             Thành công
+            <Text style={{ fontSize: 22, fontWeight: "700", color: '#3564C1' }}>
+              Thành công
             </Text>
-            <TouchableOpacity 
-            onPress={()=>{setShowModalAlert(false)}}
-            style={{height: 40, width: 140, backgroundColor:'#3564C1', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
-              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>Tiếp tục</Text>
+            <TouchableOpacity
+              onPress={() => { setShowModalAlert(false) }}
+              style={{ height: 40, width: 140, backgroundColor: '#3564C1', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
+              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
             </TouchableOpacity>
           </View>
         </View>

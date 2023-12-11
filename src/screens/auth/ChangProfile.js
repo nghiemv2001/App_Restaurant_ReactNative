@@ -103,13 +103,13 @@ const ChangProfile = ({ navigation, route }) => {
   const [ipemail, SetIpEmail] = useState(null);
   const SentoBackend = async () => {
     if (fdata.name == "") {
-      alert('Khong duoc bo trong name')
+      alert('Không được để thiếu')
       return;
     }
     if (fdata.phone.length != 0) {
       for (const item of fdata.phone) {
         if (item != '0' && item != '1' && item != '2' && item != '3' && item != '4' && item != '5' && item != '6' && item != '7' && item != '8' && item != '9' || (fdata.phone.length < 9 || fdata.phone.length > 11)) {
-          alert('Khong duoc bo trong phone')
+          alert('Không được để thiếu')
           return;
         }
       }
@@ -137,7 +137,7 @@ const ChangProfile = ({ navigation, route }) => {
           alert(data.error);
         }
         else {
-          showCustomAlert('Change successfully');
+          showCustomAlert('Thành công');
         }
       }
     )

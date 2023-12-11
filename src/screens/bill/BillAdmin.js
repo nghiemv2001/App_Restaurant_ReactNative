@@ -1,11 +1,11 @@
 import { View, Text ,FlatList,TouchableOpacity,Image,Modal,StyleSheet} from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useContext } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Ionicons from 'react-native-vector-icons/Ionicons'
-
+import {SateContext} from './../../component/sateContext'
 const BillAdmin = ({navigation, route}) => {
   const [dataipa, SetDataApi] = useState([]);
   const [data, setData] = useState(null);
@@ -109,6 +109,8 @@ const CreateInvoice=async()=>{
       body: JSON.stringify({ 
         name : dataipa.ten_ban_an, 
         total :total, 
+        nhan_vien: dataipa.ten_nhan_vien,
+        id_nhan_vien: dataipa.id_nhan_vien,
         day : now.getDate(), 
         month : now.getMonth()+1, 
         minute : now.getMinutes(),
@@ -254,12 +256,11 @@ return (
         marginBottom: 10
       }}
     >
-      <TouchableOpacity
-        style={{ marginLeft: 10, }}
-        onPress={() => navigation.navigate('HomeAdmin')}
-      >
+      <TouchableOpacity onPress={() => navigation.navigate('HomeAdmin')}>
         <Ionicons name='arrow-undo-circle-outline' size={45} />
       </TouchableOpacity>
+      <Text style={{fontSize: 32, fontWeight: '700'}}>{route.params.data.name}</Text>
+      <Text></Text>
     </View>
 
     {

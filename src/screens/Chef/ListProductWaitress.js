@@ -47,7 +47,7 @@ const ListProductStep1 = () => {
     return (
       <View style={{ marginBottom: 3, borderWidth: 2, borderColor: 'gray', backgroundColor: '#EDF6D8', paddingVertical: 5, paddingRight: 200, paddingLeft: 5, flexDirection: 'row', borderRadius: 20 }}>
         <Image style={{ height: 100, width: 100 }} source={{ uri: item.image }} />
-        <View style={{ flexDirection: 'column', justifyContent: 'space-between', paddingLeft: 5, width: '100%' }}>
+        <View style={{ flexDirection: 'column', justifyContent: 'space-between', paddingLeft: 5, width: '150%'}}>
           <View style={{ flexDirection: 'row' }}>
             <Text style={{ fontSize: 22 }}>{item.name}</Text>
             {
@@ -56,7 +56,6 @@ const ListProductStep1 = () => {
                   : <Text style={{ height: 15, width: 15, backgroundColor: 'green', marginTop: 10, marginLeft: 10, borderRadius: 20 }}></Text>
             }
           </View>
-
           <Text style={{ fontSize: 19 }}>Số lượng : x{item.quantity}</Text>
           <Text style={{ fontSize: 16 }}>Thời gian đặt món : ( {item.hour.toString().padStart(2, '0')} : {item.minute.toString().padStart(2, '0')}':{item.second.toString().padStart(2, '0')}s )</Text>
         </View>

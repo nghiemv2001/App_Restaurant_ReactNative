@@ -168,7 +168,6 @@ const Inventory = ({ route, navigation }) => {
     }
   }
   const editInventory = () => {
-    console.log(fitem)
      fetch(shareVarible.URLink + '/inventory/update/' + `${fitem._id}`, {
       method: 'PUT',
       headers: {

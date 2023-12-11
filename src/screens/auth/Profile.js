@@ -1,5 +1,5 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import imagetop from '../../../assets/login1.png'
 import penimage from '../../../assets/pen.png'
 import user_profile from '../../../assets/user_profile.png'
@@ -8,7 +8,10 @@ import imageHome from '../../../assets/imghome.png'
 import { useRoute } from '@react-navigation/native';
 import shareVarible from './../../AppContext'
 import { useFocusEffect } from '@react-navigation/native'
+import {SateContext} from './../../component/sateContext'
 const Profile = ({navigation}) => {
+  const {currentName, setName, setID} = useContext(SateContext);
+
   const route = useRoute();
   const data = route.params.data.email;
   const [dataAPI, setDataAPI] = useState([]);
@@ -21,7 +24,11 @@ const Profile = ({navigation}) => {
       }
     })
       .then(response => response.json())
-      .then(data => setDataAPI(data),
+      .then(data => {
+        setName(data.name)
+        setID(data._id)
+        setDataAPI(data)
+      }
       )
       .catch(error => console.log(error));
   };
@@ -150,7 +157,7 @@ const Profile = ({navigation}) => {
             {dataAPI.name}
           </Text>
         </View>
-        <Text style={styles.slableemail}>email</Text>
+        <Text style={styles.slableemail}>Email</Text>
         <Text   
         style={styles.stextemail}>
         {dataAPI.email}  
