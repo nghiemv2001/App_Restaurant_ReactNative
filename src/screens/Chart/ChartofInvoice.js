@@ -4,10 +4,13 @@ import React, { useState, useEffect } from 'react'
 import { Dimensions } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 const ChartofInvoice = ({ navigation, route }) => {
-
-  const month = route.params.selected.month
+  const invoices = route.params.invoices
   const invoiceMonth = route.params.data
-  const billCountByEmployeeId = {};
+  //thong ke theo ngay 
+  const month = route.params.selected.month
+ const billCountByEmployeeId = {}
+ const billCountByEmployeeIdofMonth = {}
+
   invoiceMonth.forEach((bill) => {
     const employeeName = bill.nhan_vien;
     const employeeId = bill.id_nhan_vien;
@@ -18,6 +21,22 @@ const ChartofInvoice = ({ navigation, route }) => {
       };
     } else {
       billCountByEmployeeId[employeeId].count++;
+    }
+  }); 
+   //thong ke theo thang
+  const filteredInvoices = invoices.filter(invoice => {
+    return invoice.month === route.params.selected.month && invoice.year === route.params.selected.year;
+  });
+  filteredInvoices.forEach((bill) => {
+    const employeeName = bill.nhan_vien;
+    const employeeId = bill.id_nhan_vien;
+    if (!billCountByEmployeeIdofMonth[employeeId]) {
+      billCountByEmployeeIdofMonth[employeeId] = {
+        name: employeeName,
+        count: 1,
+      };
+    } else {
+      billCountByEmployeeIdofMonth[employeeId].count++;
     }
   });
   const hourRangesValues = Object.values(route.params.newHourRanges);
@@ -127,7 +146,7 @@ const ChartofInvoice = ({ navigation, route }) => {
           <Text style={{ fontSize: 16, fontWeight: "700" }}>{route.params.selected.day}/{route.params.selected.month}/{route.params.selected.year}</Text>
         </View>
         <TouchableOpacity
-          onPress={() => navigation.navigate('ChartStaff', { billCountByEmployeeId , month})}
+          onPress={() => navigation.navigate('ChartStaff', { billCountByEmployeeId, billCountByEmployeeIdofMonth, month})}
         >
           <Ionicons name='bar-chart-outline' size={35} color={"#EF8F1C"} />
         </TouchableOpacity>

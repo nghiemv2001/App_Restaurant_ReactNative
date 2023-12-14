@@ -11,7 +11,6 @@ import { useFocusEffect } from '@react-navigation/native'
 import {SateContext} from './../../component/sateContext'
 const Profile = ({navigation}) => {
   const {currentName, setName, setID} = useContext(SateContext);
-
   const route = useRoute();
   const data = route.params.data.email;
   const [dataAPI, setDataAPI] = useState([]);

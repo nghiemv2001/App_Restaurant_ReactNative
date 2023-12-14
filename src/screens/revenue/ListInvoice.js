@@ -79,7 +79,7 @@ const ListInvoice = ({ navigation }) => {
                         newHourRanges["21-24"] += element.total;
                     }
                 });
-                navigation.navigate("ChartofInvoice", { selected, newHourRanges, numberOfElements, totalPriceByMonthArray, data })
+                navigation.navigate("ChartofInvoice", { selected, newHourRanges, numberOfElements, totalPriceByMonthArray, data, invoices })
             })
             .catch(error => console.log(error));
     }

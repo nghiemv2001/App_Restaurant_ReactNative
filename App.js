@@ -73,16 +73,15 @@ export default function App() {
       <NavigationContainer>
         <SateProvider >
           <Stack.Navigator>
-           <Stack.Screen name="Wellcome" component={Welcome} options={{
+          <Stack.Screen name="Wellcome" component={Welcome} options={{
               headerShown: false
-            }} />
+            }} /> 
             <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
               headerShown: false
             }} />
             <Stack.Screen name="Signin" component={Signin} options={{
               headerShown: false
             }} />
-
             <Stack.Screen name="HomeChef" component={HomeChef} options={{
               headerShown: false
             }} />

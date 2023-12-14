@@ -42,7 +42,7 @@ const HomeChef = () => {
                 <Ionicons name='business' size={22}/>
             ),
         }}
-      name="Loại nguyên liệu" component={CategoryIngredient}/>
+      name="Hàng tồn kho" component={CategoryIngredient}/>
     </Drawer.Navigator>  
     
   )
