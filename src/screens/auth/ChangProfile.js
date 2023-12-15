@@ -1,49 +1,29 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, Button } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import imagetop from '../../../assets/login1.png'
-import penimage from '../../../assets/pen.png'
 import user_profile from '../../../assets/user_profile.png'
-import changepassword from '../../../assets/changpassword.png'
 import imagechangeprofile from '../../../assets/changeProfile.png'
 import imageLogout from '../../../assets/imagelogout.png'
-import imageHome from '../../../assets/imghome.png'
 import { TextInput } from 'react-native-element-textinput';
-import { useRoute } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import DateTimePicker from '@react-native-community/datetimepicker';
-import Modal from 'react-native-modal';
+import { SuccessDialog, ErrorDialog } from '../../component/CustomerAlert'
 import * as ImagePicker from 'expo-image-picker';
+import { upLoadImageCloundinary } from '../../component/Cloudinary'
 const ChangProfile = ({ navigation, route }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const CustomAlert = ({ isVisible, message, onConfirm }) => {
-    return (
-      <Modal isVisible={isVisible}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}> 
-          <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-            <Text>{message}</Text>
-          </View>
-        </View>
-      </Modal>
-    );
-  };
-  useEffect(() => {
-    if (isVisible) {
-      setTimeout(() => {
-        setIsVisible(false);
-        navigation.navigate('Profile', { data: route.params.dataAPI });
-      }, 1000); 
-    }
-  }, [isVisible, navigation]);
-  const showCustomAlert = (message) => {
-    setErrorMsg(message);
-    setIsVisible(true);
-  };
-
+  const [isVisibleErr, setIsVisibleErr] = useState(false);
+  const [date, setDate] = useState(new Date());
+  const [message, setMesage] = useState("")
+  const [show, setShow] = useState(false);
+  const [image, setImage] = useState(null);
   const handleConfirm = () => {
     setIsVisible(false);
+    navigation.navigate('Profile', { data: route.params.dataAPI });
+  };
+  const handleConfirmErr = () => {
+    setIsVisibleErr(false)
   };
   const getDetails = (type) => {
     if (route.params.dataAPI) {
@@ -81,12 +61,7 @@ const ChangProfile = ({ navigation, route }) => {
     role: getDetails("role"),
     password: getDetails("password")
   })
-
-
-  const [date, setDate] = useState(new Date());
-  const [show, setShow] = useState(false);
-  const [image, setImage] = useState(null);
-  const onChange = (event, selectedDate) => {
+  const onChange = (selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
@@ -94,22 +69,17 @@ const ChangProfile = ({ navigation, route }) => {
     setFdata({ ...fdata, birthday: dateStr })
 
   };
-  const formattedDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
-  const showDatepicker = () => {
-    setShow(true);
-  };
-
-  //changeprofile
-  const [ipemail, SetIpEmail] = useState(null);
-  const SentoBackend = async () => {
+  const ChangeProfile = async () => {
     if (fdata.name == "") {
-      alert('Không được để thiếu')
+      setMesage('Không được để thiếu')
+      setIsVisibleErr(true)
       return;
     }
     if (fdata.phone.length != 0) {
       for (const item of fdata.phone) {
         if (item != '0' && item != '1' && item != '2' && item != '3' && item != '4' && item != '5' && item != '6' && item != '7' && item != '8' && item != '9' || (fdata.phone.length < 9 || fdata.phone.length > 11)) {
-          alert('Không được để thiếu')
+          setMesage('Xem lại số điện thoại')
+          setIsVisibleErr(true)
           return;
         }
       }
@@ -124,7 +94,7 @@ const ChangProfile = ({ navigation, route }) => {
       image: fdata.image,
       birthday: fdata.birthday
     };
-    const response = await fetch(shareVarible.URLink + '/user/update/' + `${fdata.id}`, {
+    fetch(shareVarible.URLink + '/user/update/' + `${fdata.id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -137,7 +107,7 @@ const ChangProfile = ({ navigation, route }) => {
           alert(data.error);
         }
         else {
-          showCustomAlert('Thành công');
+          setIsVisible(true)
         }
       }
     )
@@ -174,19 +144,31 @@ const ChangProfile = ({ navigation, route }) => {
         type: `test/${result.assets[0].uri.split(".")[1]}`,
         name: `test.${result.assets[0].uri.split(".")[1]}`
       }
-      handleUpload(newfile)
+      upLoadImageCloundinary({ image: newfile })
+        .then(result => {
+          setImage(result.secure_url)
+          setFdata({ ...fdata, image: result.secure_url })
+        })
+        .catch(error => {
+          console.error('Upload error:', error);
+        });
       setImage(result.assets[0].uri);
     }
     else {
-      setImage(null);
+      setImage("");
     }
   };
   return (
     <View style={styles.V1}>
-       <CustomAlert
+      <SuccessDialog
         isVisible={isVisible}
-        message={errorMsg}
-        onConfirm={handleConfirm}
+        message={"Thay đổi thông tin thành công!!!"}
+        onClose={handleConfirm}
+      />
+      <ErrorDialog
+        isVisible={isVisibleErr}
+        message={message}
+        onClose={handleConfirmErr}
       />
       <TouchableOpacity onPress={pickImage} style={{ zIndex: 1 }}>
         {
@@ -255,7 +237,9 @@ const ChangProfile = ({ navigation, route }) => {
             {fdata.birthday}
           </Text>
           <Ionicons
-            onPress={showDatepicker}
+            onPress={() => {
+              setShow(true);
+            }}
             name='calendar-sharp' size={52} style={{ marginLeft: 30 }}
           />
           {show && (
@@ -273,7 +257,7 @@ const ChangProfile = ({ navigation, route }) => {
         </View>
 
         <TouchableOpacity
-          onPress={() => SentoBackend()}
+          onPress={() => ChangeProfile()}
           style={{
             zIndex: 1,
             marginTop: 150,
