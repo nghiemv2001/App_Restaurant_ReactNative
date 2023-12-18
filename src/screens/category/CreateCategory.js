@@ -1,20 +1,24 @@
-import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, FlatList, Alert, Modal } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, FlatList} from 'react-native'
 import React, { useState, useEffect } from 'react'
-import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { useSelector, useDispatch } from 'react-redux';
 import { DeteleAPI } from '../../component/callAPI';
-import { SuccessDialog, ErrorDialog } from '../../component/CustomerAlert';
+import { SuccessDialog, ErrorDialog , ConfirmDialog} from '../../component/CustomerAlert';
 import { pickImage, takeImage } from '../../component/Cloudinary';
+import { editAPI, createAPI} from '../../component/callAPI';
 const CreateCategory = () => {
   const categorys = useSelector(state => state.categoryReducer.categorys)
   const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState(false)
   const [isVisibleErr, setIsVisibleErr] = useState(false)
+  const [isVisibleConfirm, setIsVisibleConfirm] = useState(false)
+  const [isVisibleConfirmEdit, setIsVisibleConfirmEdit] = useState(false)
   const handleAlret = () => {
     setIsVisible(false)
     setIsVisibleErr(false)
+    setIsVisibleConfirm(false)
+    setIsVisibleConfirmEdit(false)
   }
   useEffect(() => {
     dispatch({ type: "GET_CATEGORY" })
@@ -28,9 +32,6 @@ const CreateCategory = () => {
   const [image, setImage] = useState(null);
   const [message, setMesage] = useState("")
   const [item, setItem] = useState(null)
-  const [showModalConfirmDeleteCategory, setShowModalConfirmDeleteCategory] = useState(false)
-  const [showModalConfirmAdjustCategory, setShowModalConfirmAdjustCategory] = useState(false)
-  const [showModalAlert, setShowModalAlert] = useState(false);
   const EditCategory = () => {
     setFdata({ ...fdata, name: item.name, describe: item.describe })
     setImage(item.image)
@@ -55,24 +56,16 @@ const CreateCategory = () => {
         describe: fdata.describe,
         image: image
       };
-      fetch(shareVarible.URLink + '/category/update/' + `${item._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
-      }).then(res => res.json()).then(
-        data => {
-          if (data.error) {
-            console.log(data.error);
-          }
-          else {
-            setFdata({ ...fdata, name: "", describe: "" })
-            setImage(null);
-            setIsVisible(true)
-          }
-        }
-      )
+      editAPI({ URLink: shareVarible.URLink + '/category/update/' + `${item._id}`, updates: updates })
+        .then(data => {
+          setFdata({ ...fdata, name: "", describe: "" })
+          setImage(null);
+          setIsVisible(true)
+          dispatch({ type: "GET_CATEGORY" })
+        })
+        .catch(error => {
+          console.error('Lỗi khi cập nhật loại món :', error);
+        });
       setStatusButton(false)
     }
     else {
@@ -86,25 +79,15 @@ const CreateCategory = () => {
         setIsVisibleErr(true)
         return;
       }
-      fetch(shareVarible.URLink + '/category/creat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(fdata),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            console.log(data.error);
-          } else {
-            setFdata({ ...fdata, name: "", describe: "" })
+      createAPI({ URLink: shareVarible.URLink + '/category/creat', fdata: fdata })
+        .then(data => {
+          setFdata({ ...fdata, name: "", describe: "" })
             setImage(null);
-            setShowModalAlert(true)
-          }
+            setIsVisible(true)
+            dispatch({ type: "GET_CATEGORY" })
         })
-        .catch((error) => {
-          console.error('Lỗi :', error);
+        .catch(error => {
+          console.error('Lỗi tạo loại món:', error);
         });
     }
   };
@@ -139,14 +122,14 @@ const CreateCategory = () => {
         </View>
         <View style={styles.styView1}>
           <TouchableOpacity onPress={() => {
-            setShowModalConfirmAdjustCategory(true)
+           setIsVisibleConfirmEdit(true)
             setItem(item)
             setStatusButton(true)
           }}>
             <Ionicons name='pencil' size={35} />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => {
-            setShowModalConfirmDeleteCategory(true)
+            setIsVisibleConfirm(true)
             setItem(item)
           }}>
             <Ionicons name='remove-circle-sharp' size={35} />
@@ -165,119 +148,28 @@ const CreateCategory = () => {
         isVisible={isVisibleErr}
         message={message}
         onClose={handleAlret} />
-      <Modal
-        transparent={true}
-        visible={showModalConfirmDeleteCategory}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 300,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
-            </View>
-            <Text style={{ fontSize: 22, fontWeight: "700", color: 'black' }}>
-              XÓA
-            </Text>
-            <TouchableOpacity
-              onPress={() => { DeteleCategory() }}
-              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chấp nhận</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => { setShowModalConfirmDeleteCategory(false) }}
-              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      <Modal
-        transparent={true}
-        visible={showModalConfirmAdjustCategory}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 300,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
-            </View>
-            <Text style={{ fontSize: 22, fontWeight: "700", color: 'black' }}>
-              ĐIỀU CHỈNH
-            </Text>
-            <TouchableOpacity
-              onPress={() => { EditCategory() }}
-              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chấp nhận</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => { setShowModalConfirmAdjustCategory(false) }}
-              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      <Modal
-        transparent={true}
-        visible={showModalAlert}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 300,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{ height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"} />
-            </View>
-            <Text style={{ fontSize: 22, fontWeight: "700", color: '#3564C1' }}>
-              Thành công
-            </Text>
-            <TouchableOpacity
-              onPress={() => { setShowModalAlert(false) }}
-              style={{ height: 40, width: 140, backgroundColor: '#3564C1', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+        <ConfirmDialog
+        isVisible={isVisibleConfirm}
+        message={"XÓA"}
+        onClose={handleAlret}
+        funtionHandle={DeteleCategory}/>
+        <ConfirmDialog
+        isVisible={isVisibleConfirmEdit}
+        message={"ĐIỀU CHỈNH"}
+        onClose={handleAlret}
+        funtionHandle={EditCategory}/>
       <View style={styles.V11}>
         <TextInput
           onChangeText={(text) => setFdata({ ...fdata, name: text })}
           style={styles.inputname}
           value={fdata.name}
-          placeholder="Tên loại món"
-        />
+          placeholder="Tên loại món"/>
         <TextInput
           value={fdata.describe}
           onChangeText={(text) => setFdata({ ...fdata, describe: text })}
           style={styles.inputdescrition}
-          placeholder="Mô tả"
-        />
-        {
-          image == null ? <View style={[styles.uploadimge, { justifyContent: 'center', alignItems: 'center' }]}><Ionicons name="camera-outline" size={50} /></View> : image && <Image source={{ uri: image }} style={styles.uploadimge} />
-        }
+          placeholder="Mô tả"/>
+        {image == null ? <View style={[styles.uploadimge, { justifyContent: 'center', alignItems: 'center' }]}><Ionicons name="camera-outline" size={50} /></View> : image && <Image source={{ uri: image }} style={styles.uploadimge} />}
         <View style={styles.styView2}>
           <Text style={styles.styTextImage}
             onPress={handleTakeImage}>chụp ảnh</Text>
@@ -302,7 +194,6 @@ const CreateCategory = () => {
     </View>
   )
 }
-
 export default CreateCategory
 const styles = StyleSheet.create({
   v1: {

@@ -1,61 +1,33 @@
 import { View, Text, StyleSheet,Image, TouchableOpacity } from 'react-native'
 import React , {useEffect, useState}from 'react'
 import { FlatGrid } from 'react-native-super-grid';
-import shareVarible from './../../AppContext'
-import uploadimge2 from '../../../assets/UpLoadImage.png'
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import { useSelector, useDispatch } from 'react-redux';
 const ListCategory = ({navigation, route}) => {
-  const idtable  = route.params.route.params.data._id
-  const [dataipa, setDataIPA] = useState([{}]);
-  const [items, setItems] = useState([
-    { name: 'TURQUOISE', code: '#1abc9c' },
-  ]);
-  const fetchData = () => {
-    fetch(shareVarible.URLink + '/category/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => setDataIPA(data),
-      )
-      .catch(error => console.log(error));
-  };
+  const categorys = useSelector(state => state.categoryReducer.categorys)
+  const dispatch = useDispatch();
   useEffect(() => {
-    fetchData();
+    dispatch({type: "GET_CATEGORY"})
   }, []);
-
-  const sendtoBackEnd=(item)=>{
-  navigation.navigate('ListProductByCategory', {item,route });
-  }
   return (
     <View 
-      style={{flex : 1}}
-    >
+      style={{flex : 1}}>
       <FlatGrid
       itemDimension={130}
-      data={dataipa}
+      data={categorys}
       style={styles.gridView}
       spacing={10}
       renderItem={({ item }) => (
         <TouchableOpacity 
-        onPress={() => sendtoBackEnd(item)}
-        >
+        onPress={() => {navigation.navigate('ListProductByCategory', {item,route });}}>
           <View style={[styles.itemContainer]}>
           <Image style={styles.styimage} source={{uri: item.image}}/>
           <Text style={styles.itemName}>{item.name}</Text>
         </View>
-        </TouchableOpacity>
-        
-      )}
-    />
+        </TouchableOpacity> 
+      )}/>
     </View>
-    
   )
 }
-
 export default ListCategory
 const styles = StyleSheet.create({
   gridView: {

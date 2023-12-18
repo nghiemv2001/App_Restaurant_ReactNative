@@ -1,3 +1,28 @@
+export const createAPI = ({ URLink,fdata}) => {
+  return new Promise((resolve, reject) => {
+    fetch(URLink, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(fdata),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          console.log(data.error);
+          reject(data.error);
+        } else {
+          resolve(data);
+        }
+      })
+      .catch(error => {
+        console.error('Lỗi :', error);
+        reject(error);
+      });
+  });
+};
+
 export const getAPI = ({ linkURL }) => {
   return fetch(linkURL, {
     method: 'GET',
