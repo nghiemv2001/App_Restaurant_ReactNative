@@ -28,8 +28,6 @@ const HomeAdmin = () => {
       dispatch({ type: "GET_USER" });
     }, [])
   );
-  // Sử dụng useMemo để kiểm tra sự thay đổi của tables
-  const memoizedTables = useMemo(() => tables, [tables]);
   return (
     <Drawer.Navigator drawerContent={props => <CustomDrawerWaitress{...props} />}
       screenOptions={{

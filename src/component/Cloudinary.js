@@ -34,7 +34,6 @@ export const pickImage = async () => {
       aspect: [4, 3],
       quality: 1,
     });
-
     if (!result.canceled) {
       let newfile = {
         uri: result.assets[0].uri,
@@ -50,5 +49,26 @@ export const pickImage = async () => {
   } catch (error) {
     console.error('Lỗi chọn hình ảnh:', error);
     throw error;
+  }
+};
+
+export const takeImage = async () => {
+  let result = await ImagePicker.launchCameraAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.All,
+    allowsEditing: true,
+    aspect: [4, 3],
+    quality: 1,
+  });
+  if (!result.canceled) {
+    let newfile = {
+      uri: result.assets[0].uri,
+      type: `test/${result.assets[0].uri.split('.')[1]}`,
+      name: `test.${result.assets[0].uri.split('.')[1]}`,
+    };
+    const uploadedImageUrl = await upLoadImageCloundinary({ image: newfile });
+    return uploadedImageUrl.url;
+  } else {
+    console.log('Bỏ chọn ảnh:');
+    return '';
   }
 };

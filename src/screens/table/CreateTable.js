@@ -1,42 +1,48 @@
 import { View, Text, StyleSheet, TextInput, Image,TouchableOpacity } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState} from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import mainpicture from '../../../assets/xinchao.png'
-import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { takeImage,pickImage} from '../../component/Cloudinary';
+import { ErrorDialog } from '../../component/CustomerAlert'
 const CreateTable = ({ navigation}) => {
+  const [isVisible, setIsVisible] = useState(false)
+  const [message, setMesage] = useState("")
+  const handleAlret = () =>{
+    setIsVisible(false)
+  }
   const [fdata, setFdata] = useState({
     name: "",
     peoples: "",
     status: "0",
     image: ""
   })
-  const [data, setData] = useState({});
   const [imagesrc, setImage] = useState(null);
-  const [errormgs, setErrormgs] = useState(null)
-  const [value, setValue] = useState(null);
-  const [isFocus, setIsFocus] = useState(false);
-  //create table
   const SendtoBackend = () => {
     if (fdata.name == "") {
-      setErrormgs('Name table is not null');
+      setMesage('Tên bàn không được bỏ trống');
+      setIsVisible(true)
       return;
     }
     if ((/^(?=.*[A-Z]).*$/).test(fdata.peoples)) {
-      setErrormgs('NOTE : Peoples is number !!!');
+      setMesage('Vui lòng nhập số !!!');
+      setIsVisible(true)
       return;
     }
     if ((/^(?=.*[a-z]).*$/).test(fdata.peoples)) {
-      setErrormgs('NOTE : Peoples is number !!!');
+      setMesage('Vui lòng nhập số !!!');
+      setIsVisible(true)
       return;
     }
     if (fdata.peoples == "") {
-      setErrormgs('Number people is not null or is  number');
+      setMesage('Không được bỏ trống');
+      setIsVisible(true)
       return;
     }
     if (fdata.image == '') {
-      setErrormgs('Image not foud!!!')
+      setMesage('Chưa tải ảnh xong!!!')
+      setIsVisible(true)
       return;
     }
     fetch(shareVarible.URLink + '/table/create',
@@ -49,8 +55,7 @@ const CreateTable = ({ navigation}) => {
       }).then(res => res.json()).then(
         data => {
           if (data.error) {
-            setErrormgs(data.error);
-            alert(data.error);
+            console.log(data.error);
           }
           else {
             navigation.navigate("HomeAdmin")
@@ -58,67 +63,22 @@ const CreateTable = ({ navigation}) => {
         }
       )
   }
-  //upload image from drive to cloudinary 
-  const handleUpload = (image) => {
-    const data = new FormData()
-    data.append('file', image)
-    data.append('upload_preset', 'restaurant')
-    data.append("cloud_name", "dmsgfvp0y")
-    fetch("https://api.cloudinary.com/v1_1/dmsgfvp0y/upload", {
-      method: "post",
-      body: data
-    }).then(res => res.json()).
-      then(data => {
-        setImage(data.secure_url)
-        setFdata({ ...fdata, image: data.secure_url })
-      }).catch(err => {
-        Alert.alert("An Error Occured While Uploading")
-        console.log(err)
-      })
-  }
-  //take image from camera
-  const takeImage = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-      setErrormgs(null)
-
-    }
-    else {
-      setImage(null);
+  const handlePickImage = async () => {
+    try {
+      const imageUrl =await pickImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
-  //take image from libary
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-      setErrormgs(null)
-    }
-    else {
-      setImage(null);
+  const handleTakeImage = async () => {
+    try {
+      const imageUrl =await takeImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
   return (
@@ -136,6 +96,10 @@ const CreateTable = ({ navigation}) => {
             source={mainpicture} />
       </View>
       <KeyboardAwareScrollView >
+        <ErrorDialog
+        isVisible={isVisible}
+        message={message}
+        onClose={handleAlret}/>
         <View
           style={{
             flexDirection: 'row',
@@ -153,7 +117,6 @@ const CreateTable = ({ navigation}) => {
               style={styles.Tpeoples}
             >Số chỗ ngồi</Text>
           </View>
-          {/*View for input */}
           <View
             style={{
               flexDirection: 'column',
@@ -161,7 +124,6 @@ const CreateTable = ({ navigation}) => {
             }}>
             <TextInput
               style={styles.TIPname}
-              onPressIn={() => setErrormgs(null)}
               onChangeText={(text) => setFdata({ ...fdata, name: text })}
               placeholder='Nhập tên bàn'>
             </TextInput>
@@ -169,7 +131,6 @@ const CreateTable = ({ navigation}) => {
               value={fdata.peoples}
               style={styles.TIPpeoples}
               keyboardType='number-pad'
-              onPressIn={() => setErrormgs(null)}
               onChangeText={(text) => setFdata({ ...fdata, peoples: text })}
               placeholder='Nhập số chỗ ngồi'>
             </TextInput>
@@ -196,20 +157,15 @@ const CreateTable = ({ navigation}) => {
           }}>
           <Text
             style={styles.Tcamera}
-            onPress={takeImage}>
+            onPress={handleTakeImage}>
             Chụp ảnh
           </Text>
           <Text
             style={styles.TLibary}
-            onPress={pickImage}>
+            onPress={handlePickImage}>
             Thư viện
           </Text>
         </View>
-        {
-          errormgs ? <Text
-            style={styles.styleerrormgs}>
-            {errormgs} !!!</Text> : null
-        }
         <Text
           style={styles.TAdd}
           onPress={SendtoBackend}
@@ -218,63 +174,9 @@ const CreateTable = ({ navigation}) => {
     </View>
   )
 }
-
 export default CreateTable
 
 const styles = StyleSheet.create({
-  v1: {
-    height: '100%',
-    width: '100%',
-  },
-  V11: {
-    height: '55%',
-    width: '100%',
-    backgroundColor: '#EDF6D8'
-  },
-  V12: {
-    height: '45%',
-    width: '100%',
-    backgroundColor: 'white'
-  },
-  container: {
-    backgroundColor: 'white',
-    marginTop: 0,
-    width: 250,
-    height: 50,
-    borderRadius: 40,
-  },
-  dropdown: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 40,
-    paddingLeft: 10,
-  },
-  icon: {
-    marginRight: 5,
-  },
-  label: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    left: 22,
-    top: 8,
-    paddingHorizontal: 8,
-    fontSize: 14,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
-  },
   stylepicturemain: {
     height: 200,
     width: 200,
@@ -330,9 +232,6 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     borderWidth: 1,
   },
-  TIPstatus: {
-
-  },
   PTtable: {
     height: 170,
     width: '50%',
@@ -376,15 +275,4 @@ const styles = StyleSheet.create({
     marginTop: 70,
     borderWidth: 1,
   },
-  styleerrormgs: {
-    width: '100%',
-    position: 'absolute',
-    fontSize: 17,
-    marginTop: 400,
-    textAlign: 'center',
-    color: '#CD5C5C',
-    fontWeight: '400'
-  }
-
-
 })

@@ -51,30 +51,6 @@ const BillAdmin = ({navigation, route}) => {
     )
     .catch(error => console.log(error));
 };
-//CheckCard
-// const CheckCard=()=>{
-//   Alert.alert('Check', 'Pay for this table, right?', [
-//     {
-//       text: 'Cancel',
-//       onPress: () => console.log('Cancel Pressed'),
-//       style: 'cancel',
-//     },
-//     {text: 'OK', onPress: () => console.log('OK Pressed')},
-//   ]);
-// }
-//CheckCash
-const CheckCash=()=>{
-  // Alert.alert('Check', 'Pay for this table, right?', [
-  //   {
-  //     text: 'Cancel',
-  //     onPress: () => console.log('Cancel Pressed'),
-  //     style: 'cancel',
-  //   },
-  //   {text: 'OK', onPress: () =>
-  //   CreateInvoice()
-  //   },
-  // ]);
-}
 
 ///Create Invoice 
 const CreateInvoice=async()=>{

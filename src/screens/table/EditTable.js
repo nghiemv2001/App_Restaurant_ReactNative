@@ -1,62 +1,24 @@
 import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Modal } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useState} from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import mainpicture from '../../../assets/xinchao.png'
-import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
 import { LogBox } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { Alert } from 'react-native'
+import { takeImage, pickImage } from '../../component/Cloudinary';
+import { ErrorDialog, ConfirmDialog } from '../../component/CustomerAlert'
+import { DeteleAPI,editAPI } from '../../component/callAPI'
 LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
-
 const EditTable = ({ navigation, route }) => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [dataApiTable, setAtaAPITable] = useState(null)
-  const [data, setData] = useState({});
-  const [imagesrc, setImage] = useState(null);
-  const [errormgs, setErrormgs] = useState(null)
-  const [value, setValue] = useState(null);
-  const [isFocus, setIsFocus] = useState(false);
-  const [showModalConfirmDeleteTable, SetShowMadalConfirmDeleteTable] = useState(false)
-  //get list table 
-  const fetchData = () => {
-    fetch(shareVarible.URLink + '/tables/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => setAtaAPITable(data),
-      )
-      .catch(error => console.log(error));
+  const [message, setMesage] = useState("")
+  const [isVisible, setIsVisible] = useState(false)
+  const [isVisibleConfirm, setIsVisibleConfirm] = useState(false)
+  const handleAlret = () =>{
+    setIsVisible(false)
+    setIsVisibleConfirm(false)
   }
-  useEffect(() => {
-    fetchData();
-  }, []);
-  const deleteTable = () => {
-    fetch(shareVarible.URLink + '/table/delete/' + `${fdata.id}`, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    }).then(response => response.json())
-      .then(data => {
-        navigation.navigate("HomeAdmin")
-      }).catch(error => {
-        console.log("Error : ", error);
-      })
-  }
-  // read data object table form screen listable
-  const datadropdown = [
-    { label: 'emptytable', value: '0' },
-    { label: 'occupied', value: '1' },
-    { label: 'booking', value: '2' },
-  ];
   const getDetails = (type) => {
     if (route.params.item) {
       switch (type) {
@@ -81,34 +43,31 @@ const EditTable = ({ navigation, route }) => {
     status: getDetails("status"),
     image: getDetails("image")
   })
-  //create table
   const SendtoBackend = async () => {
     if (fdata.name == "") {
-      setErrormgs('Name table is not null');
+      setMesage('Tên bàn không được bỏ trống');
+      setIsVisible(true)
       return;
     }
     if ((/^(?=.*[A-Z]).*$/).test(fdata.peoples)) {
-      setErrormgs('NOTE : Peoples is number !!!');
+      setMesage('Vui lòng nhập số !!!');
+      setIsVisible(true)
       return;
     }
     if ((/^(?=.*[a-z]).*$/).test(fdata.peoples)) {
-      setErrormgs('NOTE : Peoples is number !!!');
+      setMesage('Vui lòng nhập số !!!');
+      setIsVisible(true)
       return;
     }
     if (fdata.peoples == "") {
-      setErrormgs('Number people is not null or is  number');
-      return;
-    }
-    if (fdata.status == "") {
-      setErrormgs('Status not select');
+      setMesage('Không được bỏ trống');
+      setIsVisible(true)
       return;
     }
     if (fdata.image == '') {
-      setErrormgs('Image not foud!!!')
+      setMesage('Chưa tải ảnh xong!!!')
+      setIsVisible(true)
       return;
-    }
-    else {
-      setErrormgs(null);
     }
     const updates = {
       name: fdata.name,
@@ -116,144 +75,56 @@ const EditTable = ({ navigation, route }) => {
       status: fdata.status,
       image: fdata.image
     };
-    const response = await fetch(shareVarible.URLink + '/table/update/' + `${fdata.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updates),
-    }).then(res => res.json()).then(
-      data => {
-        if (data.error) {
-          setErrormgs(data.error);
-          alert(data.error);
-        }
-        else {
-          <Modal
-            animationType="fade"
-            transparent={true}
-            visible={true}
-            onRequestClose={() => {
-              setModalVisible(true);
-            }} />
-          fetchData()
-          navigation.navigate('HomeAdmin');
-        }
-      }
-    )
-  }
-  //upload image from drive to cloudinary 
-  const handleUpload = (image) => {
-    const data = new FormData()
-    data.append('file', image)
-    data.append('upload_preset', 'restaurant')
-    data.append("cloud_name", "dmsgfvp0y")
-    fetch("https://api.cloudinary.com/v1_1/dmsgfvp0y/upload", {
-      method: "post",
-      body: data
-    }).then(res => res.json()).
-      then(data => {
-        setImage(data.secure_url)
-        setFdata({ ...fdata, image: data.secure_url })
-      }).catch(err => {
-        Alert.alert("An Error Occured While Uploading")
-        console.log(err)
+    editAPI({ URLink:shareVarible.URLink + '/table/update/' + `${fdata.id}`, updates: updates })
+      .then(data => {
+        navigation.navigate('HomeAdmin');
       })
+      .catch(error => {
+        console.error('Lỗi khi cập nhật người dùng:', error);
+      });
   }
-  //take image from camera
-  const takeImage = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-      setErrormgs(null)
-
-    }
-    else {
-      setImage(null);
+  const deleteTable = () => {
+    DeteleAPI({ URLink: shareVarible.URLink + '/table/delete/' + `${fdata.id}`}).then(data => {
+      navigation.navigate("HomeAdmin")
+    })
+  }
+  const handlePickImage = async () => {
+    try {
+      const imageUrl =await pickImage();
+      setFdata({ ...fdata, image: imageUrl })
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
-  //take image from libary
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-      setErrormgs(null)
-    }
-    else {
-      setImage(null);
+  const handleTakeImage = async () => {
+    try {
+      const imageUrl =await takeImage();
+      setFdata({ ...fdata, image: imageUrl })
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
   return (
     <View
       style={styles.View1}>
-      <Modal
-        transparent={true}
-        visible={showModalConfirmDeleteTable}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 300,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
-            </View>
-            <Text style={{ fontSize: 22, fontWeight: "700", color: 'black' }}>
-              XÓA
-            </Text>
-            <TouchableOpacity
-              onPress={() => { deleteTable() }}
-              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chấp nhận</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => { SetShowMadalConfirmDeleteTable(false) }}
-              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: "100%", paddingHorizontal: 15 }}>
+        <ErrorDialog
+        isVisible={isVisible}
+        message={message}
+        onClose={handleAlret}/>
+        <ConfirmDialog
+        isVisible={isVisibleConfirm}
+        message={"XÓA"}
+        onClose={handleAlret}
+        funtionHandle={deleteTable}/>
+      <View style={styles.styViewBoss}>
         <TouchableOpacity
           style={{ marginLeft: 10, marginTop: 30 }}
-          onPress={() => navigation.navigate('HomeAdmin')}
-        >
+          onPress={() => navigation.navigate('HomeAdmin')}>
           <Ionicons name='arrow-undo-circle-outline' size={35} />
         </TouchableOpacity>
         <TouchableOpacity
           style={{ marginLeft: 10, marginTop: 30 }}
-          onPress={() => SetShowMadalConfirmDeleteTable(true)}
-        >
+          onPress={() => setIsVisibleConfirm(true)}>
           <Ionicons name='close' size={35} />
         </TouchableOpacity>
       </View>
@@ -261,32 +132,18 @@ const EditTable = ({ navigation, route }) => {
         style={styles.stylepicturemain}
         source={mainpicture} />
       <KeyboardAwareScrollView >
-        <View
-          style={{
-            flexDirection: 'row',
-          }}>
+        <View style={{flexDirection: 'row',}}>
           <View
             style={{
               flexDirection: 'column',
-              marginRight: 10
-            }}>
-            <Text
-              style={styles.Tname}
-            >Tên bàn</Text>
-            <Text
-              style={styles.Tpeoples}
-            >Số chỗ ngồi</Text>
+              marginRight: 10}}>
+            <Text style={styles.Tname}>Tên bàn</Text>
+            <Text style={styles.Tpeoples}>Số chỗ ngồi</Text>
           </View>
-          {/*View for input */}
-          <View
-            style={{
-              flexDirection: 'column',
-              marginTop: 10,
-            }}>
+          <View style={{flexDirection: 'column',marginTop: 10,}}>
             <TextInput
               value={fdata.name}
               style={styles.TIPname}
-              onPressIn={() => setErrormgs(null)}
               onChangeText={(text) => setFdata({ ...fdata, name: text })}
               placeholder='Enter number name of table'>
             </TextInput>
@@ -294,7 +151,6 @@ const EditTable = ({ navigation, route }) => {
               value={`${fdata.peoples}`}
               style={styles.TIPpeoples}
               keyboardType='number-pad'
-              onPressIn={() => setErrormgs(null)}
               onChangeText={(text) => setFdata({ ...fdata, peoples: text })}
               placeholder='Enter people number'>
             </TextInput>
@@ -302,30 +158,18 @@ const EditTable = ({ navigation, route }) => {
         </View>
         <Image style={styles.PTtable}
           source={{ uri: fdata.image }}></Image>
-        <View
-          style={{
-            flexDirection: 'row',
-            height: 50,
-            width: '100%',
-            justifyContent: 'space-evenly',
-            marginTop: 10
-          }}>
+        <View style={styles.styGroupButtonView}>
           <Text
             style={styles.Tcamera}
-            onPress={takeImage}>
+            onPress={handleTakeImage}>
             Chụp ảnh
           </Text>
           <Text
             style={styles.TLibary}
-            onPress={pickImage}>
+            onPress={handlePickImage}>
             Thư viện
           </Text>
         </View>
-        {
-          errormgs ? <Text
-            style={styles.styleerrormgs}>
-            {errormgs} !!!</Text> : null
-        }
         <Text
           style={styles.TAdd}
           onPress={SendtoBackend}
@@ -334,65 +178,8 @@ const EditTable = ({ navigation, route }) => {
     </View>
   )
 }
-
 export default EditTable
-
 const styles = StyleSheet.create({
-  v1: {
-    height: '100%',
-    width: '100%',
-  },
-  V11: {
-    height: '55%',
-    width: '100%',
-    backgroundColor: '#EDF6D8'
-  },
-  V12: {
-    height: '45%',
-    width: '100%',
-    backgroundColor: 'white'
-  },
-  container: {
-    backgroundColor: 'white',
-    marginTop: -15,
-    width: 250,
-    height: 40,
-    borderRadius: 40,
-  },
-  dropdown: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    borderRadius: 40,
-    paddingLeft: 10
-
-  },
-  icon: {
-    marginRight: 5,
-  },
-  label: {
-    position: 'absolute',
-    backgroundColor: 'white',
-    left: 22,
-    top: 8,
-    zIndex: 999,
-    paddingHorizontal: 8,
-    fontSize: 14,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
-  },
-  inputSearchStyle: {
-    height: 40,
-    fontSize: 16,
-  },
   stylepicturemain: {
     height: 150,
     width: 150,
@@ -494,15 +281,6 @@ const styles = StyleSheet.create({
     marginTop: 25,
     borderWidth: 1,
   },
-  styleerrormgs: {
-    width: '100%',
-    position: 'absolute',
-    fontSize: 17,
-    marginTop: 420,
-    textAlign: 'center',
-    color: '#CD5C5C',
-    fontWeight: '400'
-  },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -515,6 +293,13 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  styViewBoss:{ flexDirection: 'row', justifyContent: 'space-between', width: "100%", paddingHorizontal: 15 },
+  styGroupButtonView:{
+    flexDirection: 'row',
+    height: 50,
+    width: '100%',
+    justifyContent: 'space-evenly',
+    marginTop: 10
   }
-
 })

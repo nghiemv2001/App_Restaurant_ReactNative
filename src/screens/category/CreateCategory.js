@@ -3,78 +3,59 @@ import React, { useState, useEffect } from 'react'
 import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-const CreateCategory = ({ navigation }) => {
+import { useSelector, useDispatch } from 'react-redux';
+import { DeteleAPI } from '../../component/callAPI';
+import { SuccessDialog, ErrorDialog } from '../../component/CustomerAlert';
+import { pickImage, takeImage } from '../../component/Cloudinary';
+const CreateCategory = () => {
+  const categorys = useSelector(state => state.categoryReducer.categorys)
+  const dispatch = useDispatch();
+  const [isVisible, setIsVisible] = useState(false)
+  const [isVisibleErr, setIsVisibleErr] = useState(false)
+  const handleAlret = () => {
+    setIsVisible(false)
+    setIsVisibleErr(false)
+  }
+  useEffect(() => {
+    dispatch({ type: "GET_CATEGORY" })
+  }, [])
   const [fdata, setFdata] = useState({
     name: "",
     describe: "",
     image: ""
   })
   const [statusButton, setStatusButton] = useState(false)
-  const [data, setData] = useState({});
   const [image, setImage] = useState(null);
-  const [errormgs, setErrormgs] = useState(null)
+  const [message, setMesage] = useState("")
   const [item, setItem] = useState(null)
   const [showModalConfirmDeleteCategory, setShowModalConfirmDeleteCategory] = useState(false)
   const [showModalConfirmAdjustCategory, setShowModalConfirmAdjustCategory] = useState(false)
   const [showModalAlert, setShowModalAlert] = useState(false);
-  //test data 
-  const fetchData = () => {
-    fetch(shareVarible.URLink + '/category/ ', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => setData(data),
-      )
-      .catch(error => console.log(error));
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
   const EditCategory = () => {
     setFdata({ ...fdata, name: item.name, describe: item.describe })
     setImage(item.image)
     setShowModalConfirmAdjustCategory(false)
   }
   const DeteleCategory = () => {
-    fetch(shareVarible.URLink + '/category/delete/' + `${item._id}`, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
+    DeteleAPI({ URLink: shareVarible.URLink + '/category/delete/' + `${item._id}` }).then(data => {
+      setShowModalConfirmDeleteCategory(false)
+      setIsVisible(true)
+      dispatch({ type: "GET_CATEGORY" })
     })
-      .then(response => response.json())
-      .then(data => {
-        setShowModalConfirmDeleteCategory(false)
-        fetchData();
-        setShowModalAlert(true)
-      })
-      .catch(error => {
-        console.error('Lỗi xóa đối tượng:', error);
-      }
-      )
   }
-  //create category
   const SendtoBackend = () => {
     if (statusButton) {
       if (fdata.name === '' || fdata.describe === '') {
-        setErrormgs('Thiếu thông tin!!!');
+        setMesage('Thiếu thông tin!!!');
+        setIsVisibleErr(true)
         return;
-      }
-
-      else {
-        setErrormgs(null);
       }
       const updates = {
         name: fdata.name,
         describe: fdata.describe,
         image: image
       };
-      const response = fetch(shareVarible.URLink + '/category/update/' + `${item._id}`, {
+      fetch(shareVarible.URLink + '/category/update/' + `${item._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -83,14 +64,12 @@ const CreateCategory = ({ navigation }) => {
       }).then(res => res.json()).then(
         data => {
           if (data.error) {
-            setErrormgs(data.error);
-            alert(data.error);
+            console.log(data.error);
           }
           else {
             setFdata({ ...fdata, name: "", describe: "" })
             setImage(null);
-            fetchData()
-            setShowModalAlert(true)
+            setIsVisible(true)
           }
         }
       )
@@ -98,11 +77,13 @@ const CreateCategory = ({ navigation }) => {
     }
     else {
       if (fdata.name === '' || fdata.describe === '') {
-        setErrormgs('Thiếu thông tin!!!');
+        setMesage('Thiếu thông tin!!!');
+        setIsVisibleErr(true)
         return;
       }
       if (fdata.image === '') {
-        setErrormgs('Hình ảnh chưa được tải lên!!!');
+        setMesage('Ảnh chưa tải lên xong!!!');
+        setIsVisibleErr(true)
         return;
       }
       fetch(shareVarible.URLink + '/category/creat', {
@@ -115,79 +96,34 @@ const CreateCategory = ({ navigation }) => {
         .then((res) => res.json())
         .then((data) => {
           if (data.error) {
-            setErrormgs(data.error);
-            alert(data.error);
+            console.log(data.error);
           } else {
             setFdata({ ...fdata, name: "", describe: "" })
             setImage(null);
-            fetchData();
             setShowModalAlert(true)
           }
         })
         .catch((error) => {
-          console.error('Error sending data:', error);
+          console.error('Lỗi :', error);
         });
     }
   };
-  //upload image from drive to cloudinary 
-  const handleUpload = (image) => {
-    const data = new FormData()
-    data.append('file', image)
-    data.append('upload_preset', 'restaurant')
-    data.append("cloud_name", "dmsgfvp0y")
-    fetch("https://api.cloudinary.com/v1_1/dmsgfvp0y/upload", {
-      method: "post",
-      body: data
-    }).then(res => res.json()).
-      then(data => {
-        setImage(data.secure_url)
-        setFdata({ ...fdata, image: data.secure_url })
-      }).catch(err => {
-        Alert.alert("An Error Occured While Uploading")
-      })
-  }
-
-  //take image from camera
-  const takeImage = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-    }
-    else {
-      setImage(null);
+  const handlePickImage = async () => {
+    try {
+      const imageUrl = await pickImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
-
-  //take image from libary
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-    }
-    else {
-      setImage(null);
+  const handleTakeImage = async () => {
+    try {
+      const imageUrl = await takeImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
   //design and show list category
@@ -221,7 +157,14 @@ const CreateCategory = ({ navigation }) => {
   })
   return (
     <View style={styles.v1}>
-
+      <SuccessDialog
+        isVisible={isVisible}
+        message={"Thành Công"}
+        onClose={handleAlret} />
+      <ErrorDialog
+        isVisible={isVisibleErr}
+        message={message}
+        onClose={handleAlret} />
       <Modal
         transparent={true}
         visible={showModalConfirmDeleteCategory}
@@ -290,7 +233,6 @@ const CreateCategory = ({ navigation }) => {
           </View>
         </View>
       </Modal>
-
       <Modal
         transparent={true}
         visible={showModalAlert}
@@ -322,14 +264,12 @@ const CreateCategory = ({ navigation }) => {
       </Modal>
       <View style={styles.V11}>
         <TextInput
-          onPressIn={() => setErrormgs(null)}
           onChangeText={(text) => setFdata({ ...fdata, name: text })}
           style={styles.inputname}
           value={fdata.name}
           placeholder="Tên loại món"
         />
         <TextInput
-          onPressIn={() => setErrormgs(null)}
           value={fdata.describe}
           onChangeText={(text) => setFdata({ ...fdata, describe: text })}
           style={styles.inputdescrition}
@@ -338,13 +278,11 @@ const CreateCategory = ({ navigation }) => {
         {
           image == null ? <View style={[styles.uploadimge, { justifyContent: 'center', alignItems: 'center' }]}><Ionicons name="camera-outline" size={50} /></View> : image && <Image source={{ uri: image }} style={styles.uploadimge} />
         }
-        {/* <Image source={{ uploadimge }} style={styles.uploadimge} />
-        {} */}
         <View style={styles.styView2}>
           <Text style={styles.styTextImage}
-            onPress={takeImage}>chụp ảnh</Text>
+            onPress={handleTakeImage}>chụp ảnh</Text>
           <Text style={styles.styTextImageLibary}
-            onPress={pickImage}>Thư viện</Text>
+            onPress={handlePickImage}>Thư viện</Text>
         </View>
         <View style={{ marginTop: 40 }}>
           <TouchableOpacity onPress={SendtoBackend}
@@ -352,14 +290,10 @@ const CreateCategory = ({ navigation }) => {
             <Ionicons name='md-checkmark-sharp' size={31} />
           </TouchableOpacity>
         </View>
-        {
-          errormgs ? <Text style={styles.styTextError}>
-            {errormgs}</Text> : null}
       </View>
-      {/* View List catefory food */}
       <View style={styles.V12}>
         <FlatList
-          data={data}
+          data={categorys}
           renderItem={({ item }) => {
             return renderlist(item)
           }}
@@ -450,12 +384,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '900',
     paddingTop: 10
-  },
-  styTextError: {
-    position: 'absolute',
-    marginTop: 20,
-    marginLeft: 150,
-    color: 'red'
   },
   styView2: {
     flexDirection: 'row',

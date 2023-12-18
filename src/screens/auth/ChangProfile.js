@@ -111,7 +111,7 @@ const ChangProfile = ({ navigation, route }) => {
       }
     )
   }
-  //take image from libary
+  
   const handlePickImage = async () => {
     try {
       const imageUrl =await  pickImage();
