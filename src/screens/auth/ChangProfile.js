@@ -9,8 +9,7 @@ import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { SuccessDialog, ErrorDialog } from '../../component/CustomerAlert'
-import * as ImagePicker from 'expo-image-picker';
-import { upLoadImageCloundinary } from '../../component/Cloudinary'
+import { pickImage } from '../../component/Cloudinary'
 const ChangProfile = ({ navigation, route }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [isVisibleErr, setIsVisibleErr] = useState(false);
@@ -112,54 +111,18 @@ const ChangProfile = ({ navigation, route }) => {
       }
     )
   }
-  //upload image from drive to cloudinary 
-  const handleUpload = (image) => {
-    const data = new FormData()
-    data.append('file', image)
-    data.append('upload_preset', 'restaurant')
-    data.append("cloud_name", "dmsgfvp0y")
-    fetch("https://api.cloudinary.com/v1_1/dmsgfvp0y/upload", {
-      method: "post",
-      body: data
-    }).then(res => res.json()).
-      then(data => {
-        setImage(data.secure_url)
-        setFdata({ ...fdata, image: data.secure_url })
-      }).catch(err => {
-        Alert.alert("An Error Occured While Uploading")
-        console.log(err)
-      })
-  }
   //take image from libary
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      upLoadImageCloundinary({ image: newfile })
-        .then(result => {
-          setImage(result.secure_url)
-          setFdata({ ...fdata, image: result.secure_url })
-        })
-        .catch(error => {
-          console.error('Upload error:', error);
-        });
-      setImage(result.assets[0].uri);
-    }
-    else {
-      setImage("");
+  const handlePickImage = async () => {
+    try {
+      const imageUrl =await  pickImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
   return (
-    <View style={styles.V1}>
+    <View>
       <SuccessDialog
         isVisible={isVisible}
         message={"Thay đổi thông tin thành công!!!"}
@@ -170,52 +133,24 @@ const ChangProfile = ({ navigation, route }) => {
         message={message}
         onClose={handleConfirmErr}
       />
-      <TouchableOpacity onPress={pickImage} style={{ zIndex: 1 }}>
+      <TouchableOpacity onPress={handlePickImage} style={{ zIndex: 1 }}>
         {
           fdata.image == "" ?
             <Image
-              style={{
-                position: 'absolute',
-                height: 150,
-                width: 150,
-                zIndex: 1,
-                backgroundColor: 'gray',
-                marginLeft: 120,
-                borderRadius: 100,
-                marginTop: 40
-              }}
-              source={user_profile}
-            /> :
+              style={styles.styTopImage}
+              source={user_profile}/>:
             <Image
-              style={{
-                position: 'absolute',
-                height: 150,
-                width: 150,
-                zIndex: 1,
-                backgroundColor: 'gray',
-                marginLeft: 120,
-                borderRadius: 100,
-                marginTop: 40
-              }}
-              source={{ uri: fdata.image }}
-            />
+              style={styles.styTopImage}
+              source={{ uri: fdata.image }}/>
         }
       </TouchableOpacity>
-
       <View style={styles.V11}>
         <Image
-          style={{
-            marginLeft: -90,
-            marginTop: -70
-          }}
-          source={imagetop}
-        />
+          style={styles.styBackGroundImage}
+          source={imagetop}/>
       </View>
-
       <View style={styles.V12}>
-        <View style={{
-          alignItems: 'center'
-        }}>
+        <View>
           <Text style={styles.stextname}>
           </Text>
         </View>
@@ -224,7 +159,6 @@ const ChangProfile = ({ navigation, route }) => {
           onChangeText={(text) => setFdata({ ...fdata, name: text })}
           value={fdata.name}
           style={styles.stextemail}>
-
         </TextInput>
         <Text style={styles.slableemail}>Phone</Text>
         <TextInput style={styles.stextemail}
@@ -237,11 +171,8 @@ const ChangProfile = ({ navigation, route }) => {
             {fdata.birthday}
           </Text>
           <Ionicons
-            onPress={() => {
-              setShow(true);
-            }}
-            name='calendar-sharp' size={52} style={{ marginLeft: 30 }}
-          />
+            onPress={() => {setShow(true);}}
+            name='calendar-sharp' size={52} style={{ marginLeft: 30 }}/>
           {show && (
             <DateTimePicker
               testID="dateTimePicker"
@@ -249,66 +180,29 @@ const ChangProfile = ({ navigation, route }) => {
               mode="date"
               is24Hour={true}
               display="default"
-              onChange={onChange}
-
-            />
-          )}
-
+              onChange={onChange}/>)}
         </View>
-
         <TouchableOpacity
           onPress={() => ChangeProfile()}
-          style={{
-            zIndex: 1,
-            marginTop: 150,
-          }}>
+          style={styles.styButtonChangeProfile}>
           <View
-            style={{
-              flexDirection: 'row',
-
-              borderWidth: 3,
-              borderRadius: 30,
-              justifyContent: 'center',
-              width: '80%',
-              marginLeft: 35,
-              backgroundColor: 'white',
-
-            }}
-          >
+            style={styles.styBottomView}>
             <Text style={styles.styleChangPassword}>
               ChangeProfile
             </Text>
             <Image
               style={styles.ImagePassword}
-              source={imagechangeprofile}
-            />
+              source={imagechangeprofile}/>
           </View>
         </TouchableOpacity>
-
         <TouchableOpacity
-          onPress={() => navigation.navigate('Profile', { data: route.params.dataAPI })}
-          style={{
-            zIndex: 1,
-          }}>
+          onPress={() => navigation.navigate('Profile', { data: route.params.dataAPI })}>
           <View
-            style={{
-              flexDirection: 'row',
-              marginTop: 20,
-              borderWidth: 3,
-              borderRadius: 30,
-              justifyContent: 'center',
-              width: '80%',
-              marginLeft: 35,
-              backgroundColor: '#fff'
-            }}
-          >
-
+            style={styles.styViewLogout}>
             <Image
               style={styles.ImagePassword}
-              source={imageLogout}
-            />
+              source={imageLogout}/>
           </View>
-
         </TouchableOpacity>
       </View>
     </View>
@@ -316,15 +210,7 @@ const ChangProfile = ({ navigation, route }) => {
 }
 export default ChangProfile
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  v1: {
-    height: '100%',
-    width: '100%',
-  },
+
   V11: {
     height: '15%',
     width: '100%',
@@ -382,15 +268,42 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 40,
-
   },
-  styleLogout: {
-    height: 50,
-    width: "80%",
-    textAlignVertical: 'center',
-    paddingLeft: 10,
-    fontSize: 25,
-    fontWeight: 'bold',
+  styTopImage:{
+    position: 'absolute',
+    height: 150,
+    width: 150,
+    zIndex: 1,
+    backgroundColor: 'gray',
+    marginLeft: 120,
+    borderRadius: 100,
+    marginTop: 40
+  },
+  styBackGroundImage:{
+    marginLeft: -90,
+    marginTop: -70
+  }, 
+  styBottomView:{
+    flexDirection: 'row',
+    borderWidth: 3,
+    borderRadius: 30,
+    justifyContent: 'center',
+    width: '80%',
+    marginLeft: 35,
+    backgroundColor: 'white',
+  },
+  styButtonChangeProfile:{
+    zIndex: 1,
+    marginTop: 150,
+  },
+  styViewLogout:{
+    flexDirection: 'row',
+    marginTop: 20,
+    borderWidth: 3,
+    borderRadius: 30,
+    justifyContent: 'center',
+    width: '80%',
+    marginLeft: 35,
+    backgroundColor: '#fff'
   }
-
 })

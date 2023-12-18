@@ -6,13 +6,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import shareVarible from './../../AppContext'
 
 const ForgotPassword = ({ navigation }) => {
-
     const [fdata, setFdata] = useState({
         email: '',
     })
-
     const [errormgs, setErrormsg] = useState(null);
-
     const SendtoBackendfogot = () => {
         if ((!(/\S+@\S+\.\S+/).test(fdata.email) && !(/^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im).test(fdata.email))) {
             setErrormsg('NOTE : Email null or warning fotmat  !!!');
@@ -38,7 +35,6 @@ const ForgotPassword = ({ navigation }) => {
     }
     return (
         <KeyboardAwareScrollView style={styles.boss}>
-
             <Image style={styles.stylepicture} source={picturemain} />
             <View style={styles.viewcenter}>
                 <Text style={styles.textfogot}>Quên</Text>
@@ -55,12 +51,9 @@ const ForgotPassword = ({ navigation }) => {
                 {errormgs}</Text> : null
             }
             <TouchableOpacity
-                onPress={() => { SendtoBackendfogot(); }}
-            >
+                onPress={() => { SendtoBackendfogot(); }}>
                 <Text style={buttonnSend}>SEND </Text>
             </TouchableOpacity>
-
-
         </KeyboardAwareScrollView>
     )
 }

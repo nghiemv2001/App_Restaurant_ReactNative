@@ -5,14 +5,12 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 //system
 import Welcome from './src/screens/ScreenWelcome';
-import TestScreen from './src/TestScreen'
 //home  
 import Home from './src/screens/home/Home'
 import HomeWaitress from './src/screens/home/HomeWaitress'
 import HomeAdmin from './src/screens/home/HomeAdmin'
 import HomeChef from './src/screens/home/HomeChef'
 //auth
-import ReceiverPassword from './src/screens/auth/ReceiverPassword';
 import ForgotPassword from './src/screens/auth/ForgotPassword';
 import Signin from './src/screens/auth/Signin';
 import Signup from './src/screens/auth/Signup';
@@ -73,12 +71,12 @@ export default function App() {
       <NavigationContainer>
         <SateProvider >
           <Stack.Navigator>
-          <Stack.Screen name="Wellcome" component={Welcome} options={{
+          <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
               headerShown: false
             }} /> 
-            <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
+            <Stack.Screen name="Wellcome" component={Welcome} options={{
               headerShown: false
-            }} />
+            }} /> 
             <Stack.Screen name="Signin" component={Signin} options={{
               headerShown: false
             }} />
@@ -99,9 +97,6 @@ export default function App() {
               headerShown: false
             }} />
             <Stack.Screen name="Home" component={Home} options={{
-              headerShown: false
-            }} />
-            <Stack.Screen name="ReceiverPassword" component={ReceiverPassword} options={{
               headerShown: false
             }} />
             <Stack.Screen name="ChangProfile" component={ChangProfile} options={{
