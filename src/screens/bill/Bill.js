@@ -6,11 +6,34 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { SateContext } from './../../component/sateContext'
+import { DialogMoveAdjust, ErrorDialog, SuccessDialog , ConfirmDialog} from '../../component/CustomerAlert'
+import { useSelector, useDispatch } from 'react-redux'
+import { getAPI, editAPI, createAPI } from '../../component/callAPI'
 const Bill = ({ navigation, route }) => {
+  const [isVisibleErr, setIsVisibleErr] = useState(false)
+  const [isVisibleSucc, setIsVisibleSucc] = useState(false)
+  const [isVisibleConfirm, setIsVisibleConfirm] = useState(false)
+  const [isVisibleConfirmMerger, setIsVisibleConfirmMerger] = useState(false)
+  const [isVisibleMoveAdjust, setIsVisibleMovAndAjust] = useState(false)
+  const [message, setMesage] = useState("")
+  const tables = useSelector(state => state.tableReducer.tableList);
+  const dispatch = useDispatch();
+  const handleAlret = () => {
+    setIsVisibleErr(false)
+    setIsVisibleSucc(false)
+    setIsVisibleMovAndAjust(false)
+    setIsVisibleConfirm(false)
+    setIsVisibleConfirmMerger(false)
+  }
   const { currentName, currentID } = useContext(SateContext);
+  useEffect(() => {
+    fetchData();
+  }, [idtable, qty]);
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
+      dispatch({ type: 'GET_BILLS' })
+      dispatch({ type: "GET_TABLE_LIST" });
     }, [])
   );
   const getDetails = (type) => {
@@ -37,19 +60,10 @@ const Bill = ({ navigation, route }) => {
     status: getDetails("status"),
     image: getDetails("image")
   })
-  const [dataTableMove, setdataTableMove] = useState({
-    id: getDetails("id"),
-    name: getDetails("name"),
-    peoples: getDetails("peoples"),
-    status: "1",
-    image: getDetails("image")
-  })
-  const [data, setData] = useState(null);
   const [dataipa, SetDataApi] = useState([]);
   const [dataproductchef, SetDataProductChef] = useState(null)
   const [idtable, setIDTable] = useState(route.params.data._id)
   const [nameTable, setNameTable] = useState(route.params.data.name)
-  const [errorMsg, setErrorMsg] = useState('');
   const [isVisible, setIsVisible] = useState(false);
   const [qty, setQyt] = useState(1);
   const [price, setPrice] = useState(0);
@@ -60,38 +74,6 @@ const Bill = ({ navigation, route }) => {
   const [showModel3, setShowModal3] = useState(false);
   const [showModelMove, setShowModalMove] = useState(false);
   const [showModelCofirmMove, setShowModalConfimMove] = useState(false);
-  const [databills, setDataBills] = useState(null);
-  const [datamerge, setDataMerge] = useState({
-    id_ban_doi: "",
-    id_ban_nhan: ""
-  })
-  const CustomAlert = ({ isVisible, message, onConfirm }) => {
-    return (
-      <Modal
-        transparent
-        animationType="fade"
-        visible={isVisible}
-        onRequestClose={onConfirm}
-      >
-        <View style={styles.modalBackground}>
-          <View style={styles.alertContainer}>
-            <Text style={styles.messageText}>{message}</Text>
-          </View>
-        </View>
-      </Modal>
-    );
-  };
-  const showCustomAlert = (message) => {
-    setErrorMsg(message);
-    setIsVisible(true);
-    setTimeout(() => {
-      setIsVisible(false);
-      fetchData()
-    }, 500);
-  };
-  const handleConfirm = () => {
-    setIsVisible(false);
-  };
   var total = 0;
   if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0) {
     total = dataipa.danh_sach_mon_an.reduce((acc, danh_sach_mon_an) => {
@@ -101,81 +83,26 @@ const Bill = ({ navigation, route }) => {
   function formatNumberWithCommas(number) {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   }
-  const [dataChef, setdataChef] = useState({
-    id_product: '',
-    id_table: '',
-    name: "",
-    image: "",
-    quantity: "",
-    status: '',
-    second: '',
-    minute: '',
-    hour: ''
-  })
   const formattedTotal = formatNumberWithCommas(total);
-  //get data 1 bill 
   const fetchData = () => {
-    fetch(shareVarible.URLink + '/bill/' + `${route.params.data._id}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+    getAPI({ linkURL: shareVarible.URLink + '/bill/' + `${route.params.data._id}` }).then(data => {
+      SetDataApi(data);
+      if (data.ten_ban_an) {
+        setNameTable(data.ten_ban_an);
       }
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data) {
-          SetDataApi(data);
-          if (data.ten_ban_an) {
-            setNameTable(data.ten_ban_an);
-          }
-        }
-      },
-      )
-      .catch(error => console.log(error));
-
-    //lay danh sach ban
-    fetch(shareVarible.URLink + '/tables/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => setData(data),
-      )
-      .catch(error => console.log(error));
-    //lấy toàn bộ bills
-    fetch(shareVarible.URLink + '/bills/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => setDataBills(data),
-      )
-      .catch(error => console.log(error));
-    //get list product chef
-    fetch(shareVarible.URLink + '/productchef/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => SetDataProductChef(data),
-      )
-      .catch(error => console.log(error));
+    }).catch(error => {
+      console.log("Lỗi get API bill: ", error)
+    });
+    getAPI({ linkURL: shareVarible.URLink + '/productchef/' }).then(data => {
+      SetDataProductChef(data)
+    }).catch(error => {
+      console.log("Lỗi get API sản phẩm bếp: ", error)
+    });
   };
   function isNumericString(value) {
     const regex = /^[0-9]+$/;
     return regex.test(value);
   }
-  //Update Product in Bill
   const updateProduct = () => {
     const dataproductchef1 = dataproductchef.find(p => {
       if (p.id_product === dataItem.id_product) {
@@ -184,52 +111,33 @@ const Bill = ({ navigation, route }) => {
     })
     if (dataproductchef1.status != 0) {
       setShowModal(false)
-      showCustomAlert("The cooked dish cannot be update!!!");
+      setMesage("Món ăn không thể điều chỉnh do đã chế biến!!!");
+      setIsVisibleErr(true)
     }
     else {
       if (isNumericString(price)) {
-        fetch(shareVarible.URLink + '/monan/update/' + `${dataItem.id_product}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ quantity: qty }),
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data.error) {
-              console.log('Error updating quantity:', data.error);
-            }
-          }).catch(error => {
-            console.error('Error updating quantity:', error);
+        editAPI({ URLink: shareVarible.URLink + '/monan/update/' + `${dataItem.id_product}`, updates: { quantity: qty } })
+          .catch(error => {
+            console.error('Lỗi khi cập nhật món ăn :', error);
           });
-        fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an/' + `${dataItem._id}`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ so_luong: qty, gia: price })
-        })
-          .then(res => res.json())
+        editAPI({ URLink: shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an/' + `${dataItem._id}`, updates: { so_luong: qty, gia: price } })
           .then(data => {
-            if (data.error) {
-              alert(data.error);
-            } else {
-              showCustomAlert('Thành công!');
-            }
-          }).catch(error => {
-            console.error(error);
-            showCustomAlert('Lỗi trong quá tình tải ảnh');
+            setMesage('Thành công!');
+            setIsVisibleSucc(true)
+          })
+          .catch(error => {
+            console.error('Lỗi khi cập nhật loại món trong bếp :', error);
           });
         setShowModal(false)
       }
       else {
-        showCustomAlert("Cần nhập số")
+        setMesage("Cần nhập số")
+        setIsVisible(true)
       }
     }
 
   }
-  const deleteItem = (url, id, successCallback) => {
+  const deleteItem = (url, id) => {
     fetch(`${shareVarible.URLink}/${url}/${id}`, {
       method: 'DELETE',
       headers: {
@@ -239,7 +147,9 @@ const Bill = ({ navigation, route }) => {
     })
       .then(response => response.json())
       .then(data => {
-        successCallback('Delete success!');
+        fetchData()
+        setMesage('Xóa thành công!');
+        setIsVisibleSucc(true)
       })
       .catch(error => {
         console.error('Error', error);
@@ -251,15 +161,15 @@ const Bill = ({ navigation, route }) => {
         return p;
       }
     })
-    if (dataproductchef1.status != 0) {
-      showCustomAlert("Món ăn đã được chế biến không thể xóa!!!");
+    if (dataproductchef1 && dataproductchef1.status !== 0) {
+      setMesage("Món ăn đã được chế biến không thể xóa!!!");
+      setIsVisibleErr(true)
     }
     else {
-      deleteItem('monan/delete', item._id, showCustomAlert);
-      deleteItem('productcheft/delete', item.id_product, showCustomAlert);
+      deleteItem('monan/delete', item._id);
+      deleteItem('productcheft/delete', item.id_product);
     }
   }
-
   const SlowQYT = () => {
     if (qty > 1) {
       setQyt(qty - 1)
@@ -269,38 +179,19 @@ const Bill = ({ navigation, route }) => {
     setQyt(qty + 1);
 
   }
-
   const moveTable = () => {
     const datamerge = {
       id_ban_nhan: dataItem._id,
       id_ban_doi: route.params.data._id,
     };
-    fetch(shareVarible.URLink + '/table/update/' + `${datamerge.id_ban_doi}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dataTable),
-    }).then(res => res.json()).then(
-      data => {
-        if (data.error) {
-          console.log(data.error)
-        }
-      }
-    )
-    fetch(shareVarible.URLink + '/table/update/' + `${datamerge.id_ban_nhan}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ status: 1 }),
-    }).then(res => res.json()).then(
-      data => {
-        if (data.error) {
-          console.log(data.error)
-        }
-      }
-    )
+    editAPI({ URLink: shareVarible.URLink + '/table/update/' + `${datamerge.id_ban_doi}`, updates: dataTable })
+      .catch(error => {
+        console.error('Lỗi khi cập nhật bàn:', error);
+      });
+    editAPI({ URLink: shareVarible.URLink + '/table/update/' + `${datamerge.id_ban_nhan}`, updates: { status: 1 } })
+      .catch(error => {
+        console.error('Lỗi khi cập nhật bàn:', error);
+      });
     fetch(shareVarible.URLink + '/bill/update/' + `${dataipa._id}`, {
       method: 'PUT',
       headers: {
@@ -314,88 +205,50 @@ const Bill = ({ navigation, route }) => {
         }
       }
     )
-    fetch(shareVarible.URLink + '/hoa-don',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ id_ban_an: datamerge.id_ban_nhan, ten_ban_an: dataItem.name, id_nhan_vien: currentID, ten_nhan_vien: currentName })
-      }).then(res => res.json()).then(
-        data => {
-          if (data.error) {
-            console.log(data.error)
-          }
-          else {
-            fetch(shareVarible.URLink + '/movebill',
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id_doi: datamerge.id_ban_doi, id_nhan: datamerge.id_ban_nhan })
-              }).then(res => res.json()).then(
-                data => {
-                  if (data.error) {
-                    console.log(data.error)
-                  }
-                  else {
-                    route.params.data._id = datamerge.id_ban_nhan
-                    setIDTable(datamerge.id_ban_nhan)
-                    fetchData()
-                    setNameTable(dataipa.ten_ban_an)
-                    setShowModalConfimMove(false)
-                  }
-                }
-              )
-          }
+    createAPI({ URLink: shareVarible.URLink + '/hoa-don', fdata: { id_ban_an: datamerge.id_ban_nhan, ten_ban_an: dataItem.name, id_nhan_vien: currentID, ten_nhan_vien: currentName } })
+      .then(data => {
+        if (data.error) {
+          console.log(data.error)
         }
-      )
+        else {
+          createAPI({ URLink: shareVarible.URLink + '/movebill', fdata: { id_doi: datamerge.id_ban_doi, id_nhan: datamerge.id_ban_nhan } })
+            .then(data => {
+              route.params.data._id = datamerge.id_ban_nhan
+              setIDTable(datamerge.id_ban_nhan)
+              fetchData()
+              setNameTable(dataipa.ten_ban_an)
+              setShowModalConfimMove(false)
+            })
+            .catch(error => {
+              console.error('Lỗi tạo chuyển hóa đơn:', error);
+            });
+        }
+      })
+      .catch(error => {
+        console.error('Lỗi tạo hóa đơn:', error);
+      });
   }
   const MergeTable = () => {
     const datamerge = {
       id_ban_nhan: dataItem._id,
       id_ban_doi: route.params.data._id,
     };
-    const response = fetch(shareVarible.URLink + '/table/update/' + `${datamerge.id_ban_doi}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dataTable),
-    }).then(res => res.json()).then(
-      data => {
-        if (data.error) {
-          alert(data.error);
-        }
-      }
-    )
-    fetch(shareVarible.URLink + '/merge', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(datamerge)
-    }).then(res => res.json()).then(
-      data => {
-        if (data.error) {
-          setErrormgs(data.error);
-          alert(data.error);
-        } else {
-          route.params.data._id = datamerge.id_ban_nhan
-          setIDTable(datamerge.id_ban_nhan)
-          fetchData()
-          setNameTable(dataipa.ten_ban_an)
-          setShowModal2(false)
-        }
-      }
-    );
+    editAPI({ URLink: shareVarible.URLink + '/table/update/' + `${datamerge.id_ban_doi}`, updates: dataTable })
+      .catch(error => {
+        console.error('Lỗi khi cập nhật bàn dời:', error);
+      });
+    createAPI({ URLink: shareVarible.URLink + '/merge', fdata: datamerge })
+      .then(data => {
+        route.params.data._id = datamerge.id_ban_nhan
+        setIDTable(datamerge.id_ban_nhan)
+        fetchData()
+        setNameTable(dataipa.ten_ban_an)
+        setShowModal2(false)
+      })
+      .catch(error => {
+        console.error('Lỗi nhập bàn:', error);
+      });
   }
-
-  useEffect(() => {
-    fetchData();
-  }, [idtable, qty]);
-  //dieu chinh san pham
   const DialogAdjustProduct = (item, soluongProduct, priceproduct) => {
     setDataItem(item)
     const valueqty = Number(soluongProduct);
@@ -405,6 +258,12 @@ const Bill = ({ navigation, route }) => {
     setShowModal(true)
   }
 
+  const OpenMove = () =>{
+    setShowModalMove(true)
+  }
+  const OpenMerger = () =>{
+    setShowModal2(true)
+  }
   const renderlist = ((item) => {
     return (
       <View style={styles.container1}>
@@ -438,59 +297,19 @@ const Bill = ({ navigation, route }) => {
   })
   return (
     <SafeAreaView style={styles.styAreaView}>
-      {
-        isVisible ? <CustomAlert
-          isVisible={isVisible}
-          message={errorMsg}
-          onConfirm={handleConfirm}
-        /> : null
-      }
-      {/* confirm merge or move*/}
-      <Modal
-        transparent={true}
-        visible={showModel1}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 350,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
-            </View>
-            <TouchableOpacity
-              onPress={() => {
-                setShowModal1(false)
-                setShowModalMove(true)
-              }}
-              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chuyển bàn</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                setShowModal1(false)
-                setShowModal2(true)
-              }}
-              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Nhập bàn</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => { setShowModal1(false) }}
-              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/*FlaList merge */}
-
+      <ErrorDialog
+        isVisible={isVisibleErr}
+        message={message}
+        onClose={handleAlret} />
+      <SuccessDialog
+        isVisible={isVisibleSucc}
+        message={message}
+        onClose={handleAlret} />
+        <DialogMoveAdjust
+        isVisible={isVisibleMoveAdjust}
+        onClose={handleAlret}
+        funtionHandle1={OpenMove}
+        funtionHandle2={OpenMerger}/>
       <Modal
         transparent={true}
         visible={showModel2}
@@ -501,13 +320,13 @@ const Bill = ({ navigation, route }) => {
             <Text style={styles.styText1}>--{nameTable}--</Text>
             <FlatList
               style={{ height: 100, width: 300, }}
-              data={data}
+              data={tables}
               keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 (item.status == "1" && item._id != dataTable.id) ?
                   <TouchableOpacity
                     onPress={() => {
-                      setShowModal3(true)
+                      setIsVisibleConfirmMerger(true)
                       setDataItem(item)
                       setShowModal2(false)
                     }}
@@ -551,13 +370,13 @@ const Bill = ({ navigation, route }) => {
             <Text style={styles.styText1}>--{nameTable}--</Text>
             <FlatList
               style={{ height: 100, width: 300, }}
-              data={data}
+              data={tables}
               keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 (item.status == "0" && item._id != dataTable.id) ?
                   <TouchableOpacity
                     onPress={() => {
-                      setShowModalConfimMove(true)
+                      setIsVisibleConfirm(true)
                       setShowModalMove(false)
                       setDataItem(item)
                     }}
@@ -590,84 +409,16 @@ const Bill = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
-      {/* confirm merge */}
-      <Modal
-        transparent={true}
-        visible={showModel3}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 300,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
-            </View>
-            <Text style={{ fontSize: 22, fontWeight: "700", color: 'black' }}>
-              NHẬP BÀN
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setShowModal3(false)
-                MergeTable()
-              }}
-              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chấp nhận</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => { setShowModal3(false) }}
-              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
-      {/* confirm move */}
-      <Modal
-        transparent={true}
-        visible={showModelCofirmMove}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 300,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='alert' size={60} color={"#FFFCFF"} />
-            </View>
-            <Text style={{ fontSize: 22, fontWeight: "700", color: 'black' }}>
-              CHUYỂN BÀN
-            </Text>
-            <TouchableOpacity
-              onPress={() => {
-                setShowModalMove(false)
-                moveTable()
-              }}
-              style={{ height: 40, width: 140, backgroundColor: '#3085D6', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Chấp nhận</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-             onPress={() => { setShowModalConfimMove(false) }}
-              style={{ height: 40, width: 140, backgroundColor: '#D03737', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Hủy</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      {/* adjust product item in flalist */}
+      <ConfirmDialog
+      isVisible={isVisibleConfirmMerger}
+      message={"Nhập bàn"}
+      onClose={handleAlret}
+      funtionHandle={MergeTable}/>
+      <ConfirmDialog
+      isVisible={isVisibleConfirm}
+      message={"Chuyển bàn"}
+      onClose={handleAlret}
+      funtionHandle={moveTable}/>
       <Modal
         transparent={true}
         visible={showModel}
@@ -710,7 +461,7 @@ const Bill = ({ navigation, route }) => {
         </TouchableOpacity>
         <View style={{ height: 50, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
           <Text style={{ fontSize: 22, fontWeight: '700' }}>{nameTable}</Text>
-          <TouchableOpacity onPress={() => { setShowModal1(true) }}>
+          <TouchableOpacity onPress={() => { setIsVisibleMovAndAjust(true) }}>
             <Ionicons name="caret-down-sharp" size={30} />
           </TouchableOpacity>
 
@@ -815,14 +566,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
   },
-  buttonClose: {
-    marginBottom: 10
-  },
-  textStyle: {
-    color: 'black',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
@@ -859,7 +602,6 @@ const styles = StyleSheet.create({
     width: '40%',
     fontSize: 18,
     textAlignVertical: 'center',
-
   },
   styleText2: {
     width: '51%',
@@ -917,32 +659,6 @@ const styles = StyleSheet.create({
   container11: {
     flexDirection: 'row',
     marginTop: 10,
-
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  alertContainer: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-  },
-  messageText: {
-    fontSize: 18,
-    marginBottom: 20,
-  },
-  okButtonText: {
-    marginVertical: 8,
-    borderBottomColor: '#737373',
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  buttonView: {
-    flex: 1,
-    justifyContent: 'flex-end'
   },
   centeredView: {
     flex: 1,
@@ -959,37 +675,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     justifyContent: 'space-evenly',
     alignItems: 'center'
-
-  },
-  modelText: {
-    fontSize: 30,
-    marginBottom: 20
-  },
-  qtyText: {
-    fontSize: 24,
-    marginRight: 10,
-  },
-  buttonText: {
-    color: 'white',
-  },
-  button1: {
-    width: 60,
-    height: 60,
-    backgroundColor: 'blue',
-    borderRadius: 20,
-  },
-  container12: {
-    height: 40,
-    width: 240,
-    borderRadius: 10,
-    borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  styTIextIP: {
-    height: 40,
-    width: 200,
   },
   styTouch: {
     height: 45,
@@ -1000,28 +685,6 @@ const styles = StyleSheet.create({
   },
   centeredView2: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  modalView2: {
-    height: 250,
-    width: 180,
-    backgroundColor: 'white',
-    padding: 30,
-    borderRadius: 20,
-    shadowColor: 'blue',
-    elevation: 5,
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  modalView3: {
-    height: 420,
-    width: 320,
-    backgroundColor: 'white',
-    padding: 30,
-    borderRadius: 20,
-    shadowColor: 'blue',
-    elevation: 5,
     justifyContent: 'center',
     alignItems: 'center'
   },
