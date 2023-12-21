@@ -1,7 +1,6 @@
 import { View, Text, StyleSheet, Image, SafeAreaView, TouchableOpacity, Animated } from 'react-native'
 import React, { useRef, useState, useEffect } from 'react'
 import shareVarible from './../../AppContext'
-//image
 import pchome from '../../../assets/home.png'
 import pcfood from '../../../assets/user.png'
 import pcuser from '../../../assets/foods.png'
@@ -9,19 +8,14 @@ import pcsalenumber from '../../../assets/salenumber.png'
 import pctablebar from '../../../assets/table_bar.png'
 import pclogout from '../../../assets/logout.png'
 import pcsetting from '../../../assets/setting.png'
-//menu
 import pcmenu from '../../../assets/menu.png'
 import pcclose from '../../../assets/colse.png'
-
 const Home = () => {
   const [curentTab, setcurentab] = useState("Home");
   const [showmenu, setshowmenu] = useState(false)
   const offsetValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(1)).current;
   const closeButtonOffset = useRef(new Animated.Value(0)).current;
-
-
-  ///getData
   const [data, setData] = useState([]);
   useEffect(() => {
     fetch(shareVarible.URLink + '/category/', {
@@ -35,7 +29,6 @@ const Home = () => {
       .then(data => setData(data))
       .catch(error => console.log(error));
   }, []);
-
   return (
     <SafeAreaView style={styles.boss}>
       <View style={{
@@ -53,10 +46,7 @@ const Home = () => {
           {tabButton(curentTab, setcurentab, "Setting", pcsetting)}
           {tabButton(curentTab, setcurentab, "Logout", pclogout)}
         </View>
-
       </View>
-
-
       <Animated.View
         style={{
           flexGrow: 1,
@@ -70,15 +60,8 @@ const Home = () => {
           paddingVertical: 20,
           borderRadius: showmenu ? 15 : 0,
           transform: [{
-            scale: scaleValue
-          },
-          {
-            translateX: offsetValue
-          }]
-        }}>
-        {
-
-        }
+            scale: scaleValue},
+          {translateX: offsetValue}]}}>
         <Animated.View style={{
           transform: [{
             translateY: closeButtonOffset
@@ -91,23 +74,17 @@ const Home = () => {
                 duration: 300,
                 useNativeDriver: true
               }).start()
-
               Animated.timing(offsetValue, {
                 toValue: showmenu ? 0 : 170,
                 duration: 300,
                 useNativeDriver: true
               }).start()
-
               Animated.timing(closeButtonOffset, {
                 toValue: !showmenu ? -30 : 0,
                 duration: 300,
                 useNativeDriver: true
               }).start()
-              setshowmenu(!showmenu)
-            }}
-
-
-          >
+              setshowmenu(!showmenu)}}>
             <Image
               style={{
                 height: 40,
@@ -121,17 +98,10 @@ const Home = () => {
                 fontSize: 25,
                 fontWeight: 'bold',
                 color: 'black',
-
               }}
             >{curentTab}</Text>
             <View>
-              {
-                 data.map(item => (
-                  // <Text key={item._id}>{item.name}</Text>
-                  // <Image key={item._id} source= {item.image}/>
-                  console.log(data)
-                ))
-              }
+              {data.map(item => (console.log(data)))}
             </View>
           </TouchableOpacity>
         </Animated.View>
@@ -139,16 +109,12 @@ const Home = () => {
     </SafeAreaView>
   )
 }
-
 export default Home
-
 const tabButton = (curentTab, setcurentab, title, image) => {
   return (
     <TouchableOpacity
       onPress={() => {
-        setcurentab(title)
-      }}
-    >
+        setcurentab(title)}}>
       <View style={{
         flexDirection: 'row',
         alignItems: 'center',
@@ -177,9 +143,7 @@ const tabButton = (curentTab, setcurentab, title, image) => {
         >{title}</Text>
       </View>
     </TouchableOpacity>);
-
 }
-
 const styles = StyleSheet.create({
   boss: {
     flex: 1,

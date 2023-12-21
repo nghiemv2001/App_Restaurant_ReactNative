@@ -71,19 +71,19 @@ export default function App() {
       <NavigationContainer>
         <SateProvider >
           <Stack.Navigator>
-          <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
+          <Stack.Screen name="HomeChef" component={HomeChef} options={{
               headerShown: false
             }} />
             <Stack.Screen name="HomeAdmin" component={HomeAdmin} options={{
               headerShown: false
             }} /> 
+            <Stack.Screen name="HomeWaitress" component={HomeWaitress} options={{
+              headerShown: false
+            }} />
             <Stack.Screen name="Wellcome" component={Welcome} options={{
               headerShown: false
             }} /> 
             <Stack.Screen name="Signin" component={Signin} options={{
-              headerShown: false
-            }} />
-            <Stack.Screen name="HomeChef" component={HomeChef} options={{
               headerShown: false
             }} />
             <Stack.Screen name="Profile" component={Profile} options={{

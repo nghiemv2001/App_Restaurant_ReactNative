@@ -2,7 +2,6 @@ import { StyleSheet, Text, View, Image } from 'react-native'
 import React from 'react'
 import mainpicture from '../../assets/xinchao.png'
 import Icon from 'react-native-vector-icons/FontAwesome';
-
 const Welcome = ({ navigation }) => {
   return (
     <View style={styles.boss}>
@@ -14,17 +13,14 @@ const Welcome = ({ navigation }) => {
           style={styles.iconarrow_right}
           name="arrow-right"
           backgroundColor="#C29E11"
-          onPress={() => navigation.navigate('Signin')}
-        >
+          onPress={() => navigation.navigate('Signin')} >
         </Icon.Button>
         </View>
       </View>
     </View>
   )
 }
-
 export default Welcome
-
 const styles = StyleSheet.create({
   boss: {
     flex: 1,

@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, TextInput, FlatList } from 'react-native'
+import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, FlatList } from 'react-native'
 import React, { useEffect, useState, useContext } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { SwipeListView } from 'react-native-swipe-list-view';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { SateContext } from './../../component/sateContext'
-import { DialogMoveAdjust, ErrorDialog, SuccessDialog , ConfirmDialog} from '../../component/CustomerAlert'
+import { DialogMoveAdjust, ErrorDialog, SuccessDialog, ConfirmDialog } from '../../component/CustomerAlert'
 import { useSelector, useDispatch } from 'react-redux'
 import { getAPI, editAPI, createAPI } from '../../component/callAPI'
 const Bill = ({ navigation, route }) => {
@@ -258,10 +258,10 @@ const Bill = ({ navigation, route }) => {
     setShowModal(true)
   }
 
-  const OpenMove = () =>{
+  const OpenMove = () => {
     setShowModalMove(true)
   }
-  const OpenMerger = () =>{
+  const OpenMerger = () => {
     setShowModal2(true)
   }
   const renderlist = ((item) => {
@@ -305,16 +305,15 @@ const Bill = ({ navigation, route }) => {
         isVisible={isVisibleSucc}
         message={message}
         onClose={handleAlret} />
-        <DialogMoveAdjust
+      <DialogMoveAdjust
         isVisible={isVisibleMoveAdjust}
         onClose={handleAlret}
         funtionHandle1={OpenMove}
-        funtionHandle2={OpenMerger}/>
+        funtionHandle2={OpenMerger} />
       <Modal
         transparent={true}
         visible={showModel2}
-        animationType='slide'
-      >
+        animationType='slide'>
         <View style={styles.centeredView2}>
           <View style={styles.modalView3}>
             <Text style={styles.styText1}>--{nameTable}--</Text>
@@ -330,26 +329,11 @@ const Bill = ({ navigation, route }) => {
                       setDataItem(item)
                       setShowModal2(false)
                     }}
-                    style={
-                      {
-                        width: 90,
-                        height: 90,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        margin: 10,
-                        borderWidth: 1,
-                        borderColor: "gray",
-                        borderRadius: 40
-                      }}>
+                    style={styles.styFlagList}>
                     <Ionicons name="restaurant-outline" size={35} />
                     <Text>{item.name}</Text>
-                  </TouchableOpacity>
-                  : null
-              )}
-              contentContainerStyle={{
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
+                  </TouchableOpacity> : null)}
+              contentContainerStyle={styles.contentContainerStyle}
               numColumns={3} />
             <TouchableOpacity
               onPress={() => { setShowModal2(false) }}
@@ -359,12 +343,10 @@ const Bill = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
-      {/* FlaList merge move */}
       <Modal
         transparent={true}
         visible={showModelMove}
-        animationType='slide'
-      >
+        animationType='slide'>
         <View style={styles.centeredView2}>
           <View style={styles.modalView3}>
             <Text style={styles.styText1}>--{nameTable}--</Text>
@@ -381,25 +363,11 @@ const Bill = ({ navigation, route }) => {
                       setDataItem(item)
                     }}
                     style={
-                      {
-                        width: 90,
-                        height: 90,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        margin: 10,
-                        borderWidth: 1,
-                        borderColor: "gray",
-                        borderRadius: 40
-                      }}>
+                      styles.styFlagList}>
                     <Ionicons name="restaurant-outline" size={35} />
                     <Text>{item.name}</Text>
-                  </TouchableOpacity>
-                  : null
-              )}
-              contentContainerStyle={{
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
+                  </TouchableOpacity> : null)}
+              contentContainerStyle={styles.contentContainerStyle}
               numColumns={3} />
             <TouchableOpacity
               onPress={() => { setShowModalMove(false) }}
@@ -410,30 +378,27 @@ const Bill = ({ navigation, route }) => {
         </View>
       </Modal>
       <ConfirmDialog
-      isVisible={isVisibleConfirmMerger}
-      message={"Nhập bàn"}
-      onClose={handleAlret}
-      funtionHandle={MergeTable}/>
+        isVisible={isVisibleConfirmMerger}
+        message={"Nhập bàn"}
+        onClose={handleAlret}
+        funtionHandle={MergeTable} />
       <ConfirmDialog
-      isVisible={isVisibleConfirm}
-      message={"Chuyển bàn"}
-      onClose={handleAlret}
-      funtionHandle={moveTable}/>
+        isVisible={isVisibleConfirm}
+        message={"Chuyển bàn"}
+        onClose={handleAlret}
+        funtionHandle={moveTable} />
       <Modal
         transparent={true}
         visible={showModel}
-        animationType='slide'
-      >
+        animationType='slide'>
         <View style={styles.centeredView}>
           <View style={styles.modalView1}>
-
             <View style={{ height: 90, width: 90, backgroundColor: '#F6D3B3', borderRadius: 70, justifyContent: 'center', alignItems: 'center' }}>
               <Ionicons name='alert' size={60} color={"#FFFCFF"} />
             </View>
             <Text style={{ textAlign: 'center', fontSize: 19, fontWeight: '700' }}>Điều Chỉnh Số Lượng</Text>
             <View style={{ flexDirection: 'row' }}>
-              <TouchableOpacity style={{
-              }} onPress={SlowQYT}>
+              <TouchableOpacity onPress={SlowQYT}>
                 <Text style={{ fontSize: 32, }}>-</Text>
               </TouchableOpacity>
               <Text style={{ fontSize: 32, paddingHorizontal: 40 }}>{qty}</Text>
@@ -449,14 +414,11 @@ const Bill = ({ navigation, route }) => {
                 <Text style={{ fontSize: 18, fontWeight: '700' }}>Hủy</Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
       </Modal>
-
       <View style={styles.container7}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeWaitress')}
-        >
+        <TouchableOpacity onPress={() => navigation.navigate('HomeWaitress')}>
           <Ionicons name='arrow-back-sharp' size={35} />
         </TouchableOpacity>
         <View style={{ height: 50, justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
@@ -464,66 +426,79 @@ const Bill = ({ navigation, route }) => {
           <TouchableOpacity onPress={() => { setIsVisibleMovAndAjust(true) }}>
             <Ionicons name="caret-down-sharp" size={30} />
           </TouchableOpacity>
-
         </View>
         <TouchableOpacity
           style={{ marginLeft: 10, }}
-          onPress={() => navigation.navigate('ListCategory', { route })}
-        >
+          onPress={() => navigation.navigate('ListCategory', { route })}>
           <Ionicons name='add' size={40} />
         </TouchableOpacity>
       </View>
-      {
-        (dataipa !== null && typeof dataipa === 'object') ?
-          <SwipeListView
-            style={styles.swipeListView}
-            data={dataipa.danh_sach_mon_an}
-            renderItem={({ item, index }) => {
-              return renderlist(item)
-            }}
-            renderHiddenItem={(dataipa, rowMap) => (
-              <View style={styles.container8}>
-                <View style={styles.container9}>
-                  <TouchableOpacity
-                    style={{
-                      marginBottom: 50
-                    }}
-                    onPress={() => DeleteItem(dataipa.item)}
-                  >
-                    <Ionicons
-                      style={styles.styIcon}
-                      name='trash-bin' size={45} />
-                  </TouchableOpacity>
-                </View>
+      {(dataipa !== null && typeof dataipa === 'object') ?
+        <SwipeListView
+          style={styles.swipeListView}
+          data={dataipa.danh_sach_mon_an}
+          renderItem={({ item }) => {
+            return renderlist(item)
+          }}
+          renderHiddenItem={(dataipa) => (
+            <View style={styles.container8}>
+              <View style={styles.container9}>
+                <TouchableOpacity
+                  style={{ marginBottom: 50 }}
+                  onPress={() => DeleteItem(dataipa.item)}>
+                  <Ionicons
+                    style={styles.styIcon}
+                    name='trash-bin' size={45} />
+                </TouchableOpacity>
               </View>
-            )}
-            leftOpenValue={0}
-            rightOpenValue={-150}
-            keyExtractor={(item, index) => index.toString()}
-          />
-          :
-          <View style={styles.View1}>
-            <Text style={{
-            }}>Chưa có bất kì món ăn nào</Text>
-          </View>
-      }
+            </View>)}
+          leftOpenValue={0}
+          rightOpenValue={-150}
+          keyExtractor={(index) => index.toString()} /> :
+        <View style={styles.View1}>
+          <Text style={{
+          }}>Chưa có bất kì món ăn nào</Text>
+        </View>}
       <View style={styles.container10}>
         <Text
-          style={{
-            fontSize: 32,
-            fontWeight: 'bold'
-          }}
-        >{formattedTotal} đ</Text>
+          style={{ fontSize: 32, fontWeight: 'bold' }}>{formattedTotal} đ</Text>
         <View style={styles.container11}>
         </View>
       </View>
     </SafeAreaView>
-
   )
 }
-
 export default Bill
 const styles = StyleSheet.create({
+  contentContainerStyle: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalView3: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  styFlagList: {
+    width: 90,
+    height: 90,
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 40
+  },
   container: {
     flex: 1,
     backgroundColor: "#fff",

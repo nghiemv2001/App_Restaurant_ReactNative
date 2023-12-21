@@ -3,7 +3,14 @@ import React, { useState, useEffect } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { getAPI,DeteleAPI } from '../../component/callAPI'
+import { SuccessDialog } from '../../component/CustomerAlert'
+import { Dialog } from 'react-native-elements'
 const ListProductStep1 = () => {
+  const [isVisible, setIsVisible] = useState(false)
+  const handleAlret = () =>{
+    setIsVisible(false)
+  }
   const [dataproduct, SetDataProduct] = useState(null)
   const [modelChooseDelete, setModalChooseDelete] = useState(false)
   const [itemProduct, setItemProduct] = useState(null)
@@ -18,61 +25,28 @@ const ListProductStep1 = () => {
     hour: '',
 
   })
-  const [showModalAlert, setShowModalAlert] = useState(false);
-  const fetchData = () => {
-    fetch(shareVarible.URLink + '/productchef/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => SetDataProduct(data),
-      )
-      .catch(error => console.log(error));
-  };
   useFocusEffect(
     React.useCallback(() => {
-      fetchData();
+      getAPI({ linkURL: shareVarible.URLink + '/productchef/'}).then(data => {
+        SetDataProduct(data)
+    }).catch(error => {
+        console.log("Lỗi get API chế biến dưới bếp: ", error)
+    });
     }, [])
   );
-  //delete Product 
   const DeleteProduct = () =>{
-    fetch(shareVarible.URLink + '/productchef/delete/' + `${itemProduct._id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    DeteleAPI({ URLink:shareVarible.URLink + '/productchef/delete/' + `${itemProduct._id}`}).then(data => {
+      fetchData()
+     setIsVisible(true)
     })
-      .then(response => response.json())
-      .then(data => {
-        fetchData()
-        setShowModalAlert(true)
-      })
-      .catch(error => {
-        console.error(error);
-      });
   }
-  //DeletAll
   const DeletAll = () =>{
-    fetch(shareVarible.URLink + '/productchef/status2', {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    DeteleAPI({ URLink:shareVarible.URLink + '/productchef/status2'}).then(data => {
+      fetchData()
+      setIsVisible(true)
     })
-      .then(response => response.json())
-      .then(data => {
-        fetchData()
-        setShowModalAlert(true)
-      })
-      .catch(error => {
-        console.error(error);
-      });
   }
-  //Edit Product 
-  const EditProduct = async (item) => {
+  const EditProduct =  (item) => {
     if (item.status == 0) {
       dataproduct2.status = 1
     }
@@ -87,24 +61,14 @@ const ListProductStep1 = () => {
       dataproduct2.second = now.getSeconds(),
       dataproduct2.minute = now.getMinutes(),
       dataproduct2.hour = now.getHours()
-    fetch(shareVarible.URLink + '/productchef/update/' + `${item._id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dataproduct2),
-    }).then(res => res.json()).then(
-      data => {
-        if (data.error) {
-          setErrormgs(data.error);
-          console.log(data.error)
-        }
-        else {
-          fetchData()
-          setShowModalAlert(true)
-        }
-      }
-    )
+      editAPI({ URLink: shareVarible.URLink + '/productchef/update/' + `${item._id}`, updates: dataproduct2 })
+      .then(data => {
+        fetchData()
+          setIsVisible(true)
+      })    
+      .catch(error => {
+            console.error('Lỗi khi cập nhật món ăn :', error);
+          });
   }
   const sortDataByStatus = (data) => {
     if (data && Array.isArray(data)) {
@@ -116,7 +80,6 @@ const ListProductStep1 = () => {
       return [];
     }
   };
-  //render Faglist
   const renderlist = ((item) => {
     const backgroundColor = item.status === 0 ? '#EEEEEE' : item.status === 1 ? '#FFFF99' : '#99FF66';
     return (
@@ -150,6 +113,7 @@ const ListProductStep1 = () => {
 
   return (
     <View style={{ backgroundColor: '#EDF6D8', height: '100%' }}>
+      
       <Modal
         transparent={true}
         visible={modelChooseDelete}
@@ -234,35 +198,10 @@ const ListProductStep1 = () => {
           </View>
         </View>
       </Modal>
-      <Modal
-        transparent={true}
-        visible={showModalAlert}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 300,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{ height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"} />
-            </View>
-            <Text style={{ fontSize: 22, fontWeight: "700", color: '#3564C1' }}>
-              Thành công
-            </Text>
-            <TouchableOpacity
-              onPress={() => { setShowModalAlert(false) }}
-              style={{ height: 40, width: 140, backgroundColor: '#3564C1', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <SuccessDialog
+      isVisible={isVisible}
+      message={"Thành công"}
+      onClose={handleAlret}/>
       <Text style={{ fontSize: 20, fontWeight: 'bold', color: 'gray', widt: "100%", textAlign: 'center', marginTop: 20 }}></Text>
       <FlatList
         data={sortDataByStatus(dataproduct)}
@@ -270,7 +209,6 @@ const ListProductStep1 = () => {
           return renderlist(item)
         }}
         keyExtractor={item => item._id}
-
       />
     </View>
   )

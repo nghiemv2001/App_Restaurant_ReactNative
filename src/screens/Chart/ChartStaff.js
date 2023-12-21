@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import { LineChart, PieChart } from 'react-native-chart-kit';
-import React, { useState, useEffect } from 'react'
+import { PieChart } from 'react-native-chart-kit';
+import React from 'react'
 import { Dimensions } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 const ChartStaff = ({ navigation, route }) => {
@@ -42,8 +42,7 @@ const ChartStaff = ({ navigation, route }) => {
         <View style={{backgroundColor: '#EDF6D8',flex: 1, justifyContent:'space-evenly'}}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 10,paddingTop: 40, paddingHorizontal: 10 }}>
                 <TouchableOpacity
-                    onPress={() => navigation.navigate('HomeAdmin')}
-                >
+                    onPress={() => navigation.navigate('HomeAdmin')}>
                     <Ionicons name='arrow-back-sharp' size={35} />
                 </TouchableOpacity>
                 <View style={{ alignItems: 'center' }}>
@@ -51,7 +50,6 @@ const ChartStaff = ({ navigation, route }) => {
                 </View>
                 <Text></Text>
             </View>
-
             <PieChart
                 style={{ top: 10 }}
                 data={newArray}
@@ -69,11 +67,8 @@ const ChartStaff = ({ navigation, route }) => {
                 backgroundColor={"#EDF6D8"}
                 paddingLeft={"-30"}
                 center={[30,0]}
-                absolute
-            />
+                absolute/>
            <Text style={{ fontSize: 26, fontWeight: "700" , textAlign:'center', paddingBottom: 70}}>Biểu đồ theo ngày</Text>
-        
-        
            <PieChart
                 style={{ top: 10 }}
                 data={newArrayMonth}
@@ -91,11 +86,9 @@ const ChartStaff = ({ navigation, route }) => {
                 backgroundColor={"#EDF6D8"}
                 paddingLeft={"-30"}
                 center={[30,0]}
-                absolute
-            />
+                absolute/>
            <Text style={{ fontSize: 26, fontWeight: "700" , textAlign:'center', paddingBottom: 30}}>Biểu đồ theo tháng</Text>
         </View>
     )
 }
-
 export default ChartStaff
