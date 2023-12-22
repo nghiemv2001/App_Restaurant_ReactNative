@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, Modal } from 'react-native'
+import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity} from 'react-native'
 import React, { useState} from 'react'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import mainpicture from '../../../assets/xinchao.png'

@@ -1,196 +1,117 @@
 import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, FlatList, Alert, Modal } from 'react-native'
 import React, { useState, useEffect } from 'react'
-import * as ImagePicker from 'expo-image-picker';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { createAPI, getAPI } from '../../component/callAPI';
+import { pickImage, takeImage } from '../../component/Cloudinary';
+import { ConfirmDialog, ErrorDialog, SuccessDialog } from '../../component/CustomerAlert'
 const CreateCategoryIngredient = ({ navigation }) => {
+    useEffect(() => {
+        fetchData();
+    }, []);
     const [fCategoryIngredient, setFApiCategoryIngredient] = useState({
         name: "",
         image: ""
     })
+    const [isVisibleConfirm, setIsVisibleConfirm] = useState(false)
+    const [isVisibleErr, setIsVisibleErr] = useState(false)
+    const [message, setMesage] = useState("")
+    const [isVisible, setIsVisible] = useState(false)
+    const [isVisibleConfirmAdjust, setIsVisibleConfirmAdjust] = useState(false)
+    const handleAlret = () => {
+        setIsVisibleConfirm(false)
+        setIsVisibleConfirmAdjust(false)
+        setIsVisible(false)
+        setIsVisibleErr(false)
+    }
     const [statusButton, setStatusButton] = useState(false)
     const [apiCategoryIngredient, setApiCategoryIngredient] = useState({});
     const [image, setImage] = useState(null);
     const [errormgs, setErrormgs] = useState(null)
     const [item, setItem] = useState(null)
-    const [showModalConfirmDeleteCategoryIngredient, setShowModalConfirmDeleteCategoryIngredient] = useState(false)
-    const [showModalConfirmAdjustCategory, setShowModalConfirmAdjustCategory] = useState(false)
-    const [showModalAlert, setShowModalAlert] = useState(false);
-
     const createCategoryIngredient = () => {
         if (statusButton) {
             if (fCategoryIngredient.name === '') {
-                setErrormgs('All fields are required!!');
+                setMesage('Thiếu thông tin')
+                setIsVisibleErr(true)
                 return;
             }
-            else {setErrormgs(null);}
+            else { setErrormgs(null); }
             const updates = {
                 name: fCategoryIngredient.name,
                 image: image
             };
-            fetch(shareVarible.URLink + '/categoryIngredient/update/' + `${item._id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updates),
-            }).then(res => res.json()).then(
-                data => {
-                    if (data.error) {
-                        setErrormgs(data.error);
-                    }
-                    else {
-                        setFApiCategoryIngredient({ ...fCategoryIngredient, name: ""})
-                        setImage(null);
-                        fetchData()
-                        setShowModalAlert(true)
-                    }})
+            editAPI({ URLink: shareVarible.URLink + '/categoryIngredient/update/' + `${item._id}`, updates: updates })
+                .then(data => {
+                    setFApiCategoryIngredient({ ...fCategoryIngredient, name: "" })
+                    setImage(null);
+                    fetchData()
+                    setIsVisible(true)
+                })
+                .catch(error => { console.error('Lỗi khi cập nhật nguyên liệu trong bếp :', error); });
             setStatusButton(false)
         }
         else {
             if (fCategoryIngredient.name === '') {
-                setErrormgs('All fields are required!!!');
+                setMesage('Thiếu thông tin')
+                setIsVisibleErr(true)
                 return;
             }
             if (fCategoryIngredient.image === '') {
-                setErrormgs('Image not found!!!');
+                setMesage('Ảnh đang được tải lên')
+                setIsVisibleErr(true)
                 return;
             }
-            fetch(shareVarible.URLink + '/categoryIngredient/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(fCategoryIngredient),
-            })
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.error) {
-                        setErrormgs(data.error);
-                        alert(data.error);
-                    } else {
-                        setFApiCategoryIngredient({ ...fCategoryIngredient, name: "", describe: "" })
-                        setImage(null);
-                        fetchData();
-                        setShowModalAlert(true)
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error sending data:', error);
-                });
+            createAPI({ URLink: shareVarible.URLink + '/categoryIngredient/create', fdata: fCategoryIngredient })
+                .then(data => {
+                    setFApiCategoryIngredient({ ...fCategoryIngredient, name: "", describe: "" })
+                    setImage(null);
+                    fetchData();
+                    setIsVisible(true)
+                }).catch(error => { console.error('Lỗi tạo nguyên liệu:', error); })
         }
-
     };
-
     const fetchData = () => {
-        fetch(shareVarible.URLink + '/categoryIngredient/', {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(response => response.json())
-            .then(data => setApiCategoryIngredient(data),
-            )
-            .catch(error => console.log(error));
-
-    };
-    useEffect(() => {
-        fetchData();
-    }, []);
-    //upload image from drive to cloudinary 
-    const handleUpload = (image) => {
-        const data = new FormData()
-        data.append('file', image)
-        data.append('upload_preset', 'restaurant')
-        data.append("cloud_name", "dmsgfvp0y")
-        fetch("https://api.cloudinary.com/v1_1/dmsgfvp0y/upload", {
-            method: "post",
-            body: data
-        }).then(res => res.json()).
-            then(data => {
-                setImage(data.secure_url)
-                setFApiCategoryIngredient({ ...fCategoryIngredient, image: data.secure_url })
-            }).catch(err => {
-                Alert.alert("An Error Occured While Uploading")
-            })
-    }
-
-    //take image from camera
-    const takeImage = async () => {
-        let result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
+        getAPI({ linkURL: shareVarible.URLink + '/categoryIngredient/' }).then(data => {
+            setApiCategoryIngredient(data)
+        }).catch(error => {
+            console.log("Lỗi láy danh sách loại nguyên liệu: ", error)
         });
-        if (!result.canceled) {
-            let newfile = {
-                uri: result.assets[0].uri,
-                type: `test/${result.assets[0].uri.split(".")[1]}`,
-                name: `test.${result.assets[0].uri.split(".")[1]}`
-            }
-            setImage(result.assets[0].uri);
+    };
+    const handlePickImage = async () => {
+        try {
+            const imageUrl = await pickImage();
+            setFdata({ ...fdata, image: imageUrl })
+            setImage(imageUrl)
+        } catch (error) {
+            console.error('Lỗi tải ảnh: ', error);
         }
-        else {
-            setImage(null);
+    };
+    const handleTakeImage = async () => {
+        try {
+            const imageUrl = await takeImage();
+            setFdata({ ...fdata, image: imageUrl })
+            setImage(imageUrl)
+        } catch (error) {
+            console.error('Lỗi tải ảnh: ', error);
         }
     };
     const DeteleIngedient = () => {
-        fetch(shareVarible.URLink + '/categoryIngredient/delete/' + `${item._id}`, {
-          method: 'DELETE',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(response => response.json())
-          .then(data => {
-            setShowModalConfirmDeleteCategoryIngredient(false)
-            setShowModalAlert(true)
+        DeteleAPI({ URLink: shareVarible.URLink + '/categoryIngredient/delete/' + `${item._id}` }).then(data => {
+            setIsVisible(true)
             fetchData();
-
-          })
-          .catch(error => {
-            console.error('Lỗi xóa đối tượng:', error);
-          }
-          )
-      }
-    //take image from libary
-    const pickImage = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-        if (!result.canceled) {
-            let newfile = {
-                uri: result.assets[0].uri,
-                type: `test/${result.assets[0].uri.split(".")[1]}`,
-                name: `test.${result.assets[0].uri.split(".")[1]}`
-            }
-            handleUpload(newfile)
-            setImage(result.assets[0].uri);
-        }
-        else {
-            setImage(null);
-        }
-    };
-
+        })
+    }
     const EditIngedient = () => {
         setFApiCategoryIngredient({ ...fCategoryIngredient, name: item.name })
         setImage(item.image)
-        setShowModalConfirmAdjustCategory(false)
     }
     const renderlist = ((item) => {
         return (
             <View style={{ flexDirection: 'row' }}>
                 <View style={{ width: '70%', flexDirection: 'row' }}>
-                <Image style={styles.styimageFlagist} source={{ uri: item.image }} />
-                
+                    <Image style={styles.styimageFlagist} source={{ uri: item.image }} />
+
                     <View style={{ marginLeft: 10 }}>
                         <Text style={{ fontSize: 20, fontWeight: '500' }}>{item.name}</Text>
                         <Text>{item.describe}</Text>
@@ -198,14 +119,14 @@ const CreateCategoryIngredient = ({ navigation }) => {
                 </View>
                 <View style={styles.styView1}>
                     <TouchableOpacity onPress={() => {
-                        setShowModalConfirmAdjustCategory(true)
+                        setIsVisibleConfirmAdjust(true)
                         setItem(item)
                         setStatusButton(true)
                     }}>
                         <Ionicons name='pencil' size={35} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => {
-                        setShowModalConfirmDeleteCategoryIngredient(true)
+                        setIsVisibleConfirm(true)
                         setItem(item)
                     }}>
                         <Ionicons name='remove-circle-sharp' size={35} />
@@ -221,124 +142,24 @@ const CreateCategoryIngredient = ({ navigation }) => {
                 onPress={() => navigation.navigate('HomeChef')}>
                 <Ionicons name='arrow-undo-circle-sharp' size={42} />
             </TouchableOpacity>
-            <Modal
-                transparent={true}
-                visible={showModalConfirmDeleteCategoryIngredient}
-                animationType='fade'
-            >
-                <View style={styles.centeredView}>
-                    <View style={{
-                        height: 70,
-                        width: 300,
-                        backgroundColor: "#FDD736",
-                        borderTopLeftRadius: 40,
-                        borderTopRightRadius: 40,
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                    }}>
-                        <Ionicons name='help' size={70} color="white" style={{ marginTop: 3, position: 'absolute' }} />
-                        <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 140 }} />
-                        <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 140 }} />
-                    </View>
-                    <View style={{
-                        height: 150,
-                        width: 300,
-                        backgroundColor: "white",
-                        borderBottomLeftRadius: 40,
-                        borderBottomRightRadius: 40,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}>
-                        <Text style={{ fontSize: 22, fontWeight: '900', marginTop: -10 }}>Xóa loại nguyên liệu</Text>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
-                            <TouchableOpacity
-                                onPress={() => { setShowModalConfirmDeleteCategoryIngredient(false) }}
-                                style={[styles.styButton, { backgroundColor: '#D85261' }]}>
-                                <Text style={{ fontSize: 18, fontWeight: '600' }}>hủy</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => { DeteleIngedient() }}
-                                style={[styles.styButton, { backgroundColor: '#038857' }]}>
-                                <Text style={{ fontSize: 18, fontWeight: '600' }}>tiếp tục</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-
-            <Modal
-                transparent={true}
-                visible={showModalConfirmAdjustCategory}
-                animationType='fade'
-            >
-                <View style={styles.centeredView}>
-                    <View style={{
-                        height: 70,
-                        width: 300,
-                        backgroundColor: "#FDD736",
-                        borderTopLeftRadius: 40,
-                        borderTopRightRadius: 40,
-                        justifyContent: 'space-between',
-                        alignItems: 'center'
-                    }}>
-                        <Ionicons name='help' size={70} color="white" style={{ marginTop: 3, position: 'absolute' }} />
-                        <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginRight: 140 }} />
-                        <Ionicons name='cloudy-outline' size={30} color="white" style={{ marginLeft: 140 }} />
-                    </View>
-                    <View style={{
-                        height: 150,
-                        width: 300,
-                        backgroundColor: "white",
-                        borderBottomLeftRadius: 40,
-                        borderBottomRightRadius: 40,
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                    }}>
-                        <Text style={{ fontSize: 18, fontWeight: '900', marginTop: -10 }}>Điều chỉnh loại nguyên liệu</Text>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', width: '100%', height: '40%', alignItems: 'flex-end' }}>
-                            <TouchableOpacity
-                                onPress={() => { setShowModalConfirmAdjustCategory(false) }}
-                                style={[styles.styButton, { backgroundColor: '#D85261' }]}>
-                                <Text style={{ fontSize: 18, fontWeight: '600' }}>hủy</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                onPress={() => { EditIngedient() }}
-                                style={[styles.styButton, { backgroundColor: '#038857' }]}>
-                                <Text style={{ fontSize: 18, fontWeight: '600' }}>Tiếp tục</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-            <Modal
-                transparent={true}
-                visible={showModalAlert}
-                animationType='fade'
-            >
-                <View style={styles.centeredView}>
-                    <View style={{
-                        height: 300,
-                        width: 300,
-                        backgroundColor: "white",
-                        borderRadius: 40,
-                        justifyContent: 'space-evenly',
-                        alignItems: 'center',
-                    }}>
-
-                        <View style={{ height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems: 'center' }}>
-                            <Ionicons name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"} />
-                        </View>
-                        <Text style={{ fontSize: 22, fontWeight: "700", color: '#3564C1' }}>
-                            Thành công
-                        </Text>
-                        <TouchableOpacity
-                            onPress={() => { setShowModalAlert(false) }}
-                            style={{ height: 40, width: 140, backgroundColor: '#3564C1', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-                            <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+            <ConfirmDialog
+                isVisible={isVisibleConfirm}
+                message={"Xác nhận xóa"}
+                onClose={handleAlret}
+                funtionHandle={DeteleIngedient} />
+            <ConfirmDialog
+                isVisible={isVisibleConfirmAdjust}
+                message={"Điều chỉnh"}
+                onClose={handleAlret}
+                funtionHandle={EditIngedient} />
+            <SuccessDialog
+                isVisible={isVisible}
+                message={"Thành công"}
+                onClose={handleAlret} />
+            <ErrorDialog
+                isVisible={isVisibleErr}
+                message={message}
+                onClose={handleAlret} />
             <View style={styles.V11}>
                 <TextInput
                     onPressIn={() => setErrormgs(null)}
@@ -350,13 +171,11 @@ const CreateCategoryIngredient = ({ navigation }) => {
                 {
                     image == null ? <View style={[styles.uploadimge, { justifyContent: 'center', alignItems: 'center' }]}><Ionicons name="camera-outline" size={50} /></View> : image && <Image source={{ uri: image }} style={styles.uploadimge} />
                 }
-                {/* <Image source={{ uploadimge }} style={styles.uploadimge} />
-            {} */}
                 <View style={styles.styView2}>
                     <Text style={styles.styTextImage}
-                        onPress={takeImage}>Chụp ảnh</Text>
+                        onPress={handlePickImage}>Chụp ảnh</Text>
                     <Text style={styles.styTextImageLibary}
-                        onPress={pickImage}>Thư viện</Text>
+                        onPress={handleTakeImage}>Thư viện</Text>
                 </View>
                 <View style={{ marginTop: 40 }}>
                     <TouchableOpacity
@@ -369,7 +188,6 @@ const CreateCategoryIngredient = ({ navigation }) => {
                     errormgs ? <Text style={styles.styTextError}>
                         {errormgs}</Text> : null}
             </View>
-            {/* View List catefory food */}
             <View style={styles.V12}>
                 <FlatList
                     data={apiCategoryIngredient}

@@ -1,13 +1,12 @@
-import { View, Text, FlatList, Image, TouchableWithoutFeedback, TouchableOpacity, Alert, StyleSheet, Modal } from 'react-native'
+import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { ErrorDialog } from '../../component/CustomerAlert'
 const ListTableAdmin = ({ navigation }) => {
   const tables = useSelector(state => state.tableReducer.tableList);
   const billredux = useSelector(state => state.billReducer.bills)
-  const dispatch = useDispatch();
   const [isVisible, setIsVisible] = useState(false)
   const handleAlret = () => {
     setIsVisible(false)

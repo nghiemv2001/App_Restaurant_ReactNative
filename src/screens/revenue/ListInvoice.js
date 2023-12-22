@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Modal, TouchableOpacity, FlatList, Alert } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { View, Text, StyleSheet, TouchableOpacity, FlatList} from 'react-native'
+import React, { useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native'
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'

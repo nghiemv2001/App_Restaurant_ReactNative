@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native'
 import React, { useState, useEffect,useContext } from 'react'
 import shareVarible from './../../AppContext'
 import { FlatGrid } from 'react-native-super-grid';
@@ -7,16 +7,25 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import 'react-native-get-random-values'
 import { v4 as uuidv4 } from 'uuid';
 import {SateContext} from './../../component/sateContext'
+import { createAPI } from '../../component/callAPI';
+import { ErrorDialog } from '../../component/CustomerAlert';
 const ListProductByCategogy = ({ route, navigation }) => {
   const {currentName} = useContext(SateContext);
+  const [isVisibleErr, setIsVisibleErr] = useState(false)
+  const handleAlret = () =>{
+    setIsVisibleErr(fasle)
+  }
   const [dataipa, setDataIPA] = useState([{}]);
   const idCategory = route.params.item._id;
   const dataroute = route.params.route.params.route.params.data
   const idtable = route.params.route.params.route.params.data._id
   const datakey = uuidv4();
-  const [showModalAlert, setShowModalAlert] = useState(false);
   useEffect(() => {
-    fetchData();
+    getAPI({ linkURL: shareVarible.URLink + '/products/' + `${idCategory}`}).then(data => {
+      setDataIPA(data)
+    }).catch(error => {
+      console.log("Lỗi lấy danh sách món: ", error)
+    });
   }, []);
   const [fdata, setFdata] = useState({
     id_product: "",
@@ -38,21 +47,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
     minute: '',
     hour: ''
   })
-  const fetchData = () => {
-    fetch(shareVarible.URLink + '/products/' + `${idCategory}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => setDataIPA(data),
-      )
-      .catch(error => console.log(error));
-  };
   const sentoBackEnd = (item) => {
-    //Post Product cheft  
     const now = new Date();
     dataChef.id_product = datakey
     dataChef.id_table = idtable
@@ -64,7 +59,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
     dataChef.second = now.getSeconds();
     dataChef.minute = now.getMinutes();
     dataChef.hour = now.getHours();
-    // Add product in BIll
+
     fdata.id_product = datakey
     fdata.nhan_vien_goi = currentName
     fdata.ten_mon = item.name;
@@ -72,90 +67,40 @@ const ListProductByCategogy = ({ route, navigation }) => {
     fdata.so_luong = 1;
     fdata.gia = item.price
     if (fdata.ten_mon == '' || fdata.so_luong == "") {
-      alert("Data not null")
+      alert("Không được thiếu")
       return;
     }
     if (item.status == 1) {
-      setShowModalAlert(true)
+      setIsVisibleErr(true)
       return;
     }
     else {
-      fetch(shareVarible.URLink + '/productcheft/create',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(dataChef)
-        }).then(res => res.json()).then(
-          data => {
-            if (data.error) {
-              setErrormgs(data.error);
-              alert(data.error);
-            }
-          }
-        )
-      
-      fetch(shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(fdata)
-        }).then(res => res.json()).then(
-          data => {
-            if (data.error) {
-              setErrormgs(data.error);
-              alert(data.error);
-            }
-            else {
-              const data = dataroute;
+      createAPI({ URLink: shareVarible.URLink + '/productcheft/create', fdata: dataChef })
+      .catch(error => {
+        console.error('Lỗi thêm món trong bếp:', error);
+      });
+      createAPI({ URLink: shareVarible.URLink + '/hoa-don/' + `${idtable}` + '/mon-an', fdata: fdata})
+      .then(data => {
+        const data = dataroute;
               navigation.navigate('Bill', { data })
-              
-            }
-          }
-        )
+      })
+      .catch(error => {
+        console.error('Lỗi tạo món trong hóa đơn:', error);
+      });
     }
   }
   return (
     <View style={styles.containerbos}>
-      <Modal
-        transparent={true}
-        visible={showModalAlert}
-        animationType='fade'
-      >
-        <View style={styles.centeredViewAlert}>
-          <View style={{
-            height: 300,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{ height: 100, width: 100, backgroundColor: '#84202A', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='close' size={60} color={"#FFFCFF"} />
-            </View>
-            <Text style={{ fontSize: 22, fontWeight: "700", color: '#84202A' }}>
-              Hết
-            </Text>
-            <TouchableOpacity
-              onPress={() => { setShowModalAlert(false) }}
-              style={{ height: 40, width: 140, backgroundColor: '#84202A', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>Tiếp tục</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <ErrorDialog
+      isVisible={isVisibleErr}
+      message={"Hết món"}
+      onClose={handleAlret}/>
       <View style={styles.container}>
         <TouchableOpacity onPress={() => navigation.navigate('HomeWaitress')}>
           <Ionicons name='arrow-back-sharp' size={35} />
         </TouchableOpacity>
       </View>
-      {
-        dataipa.length != undefined ? <FlatGrid
+      {dataipa.length != undefined ? <FlatGrid
           itemDimension={130}
           data={dataipa}
           style={styles.gridView}
@@ -179,8 +124,7 @@ const ListProductByCategogy = ({ route, navigation }) => {
                 }
               </View>
             </TouchableOpacity>
-          )}
-        /> :
+          )}/> :
           <View style={styles.container2}>
             <MaterialCommunityIcons name="food-off" size={50} color="black" />
           </View>}
@@ -216,11 +160,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     textAlignVertical: 'center',
     opacity: 0.6
-  },
-  itemCode: {
-    fontWeight: '600',
-    fontSize: 12,
-    color: '#fff',
   },
   styimage: {
     borderRadius: 40,
@@ -263,29 +202,10 @@ const styles = StyleSheet.create({
     zIndex: 1,
     borderRadius: 10
   },
-  styText2: {
-    height: '100%',
-    width: '100%',
-    textAlign: 'center',
-    textAlignVertical: 'center'
-  },
   container2: {
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
     backgroundColor: '#EDF6D8',
-  },
-  centeredViewAlert: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 22,
-  },
-  styButtonalert: {
-    height: 45, width: 100,
-    borderWidth: 1,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center'
   }
 })

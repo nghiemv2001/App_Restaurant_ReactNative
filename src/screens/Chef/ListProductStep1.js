@@ -5,7 +5,6 @@ import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { getAPI,DeteleAPI } from '../../component/callAPI'
 import { SuccessDialog } from '../../component/CustomerAlert'
-import { Dialog } from 'react-native-elements'
 const ListProductStep1 = () => {
   const [isVisible, setIsVisible] = useState(false)
   const handleAlret = () =>{

@@ -1,21 +1,25 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Modal, TextInput, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { FlatGrid } from 'react-native-super-grid';
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import CheckBox from 'react-native-check-box';
 import ModalDropdown from 'react-native-modal-dropdown';
-import * as ImagePicker from 'expo-image-picker';
+import { getAPI, editAPI, createAPI, DeteleAPI } from '../../component/callAPI'
+import { ErrorDialog, SuccessDialog } from '../../component/CustomerAlert';
+import { pickImage, takeImage } from '../../component/Cloudinary';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const Inventory = ({ route, navigation }) => {
-  const [isSelected, setSelection] = useState(false);
+  const [isVisibleErr, setIsVisibleErr] = useState(false)
+  const [isVisibleSuc, setIsVisibleSuc] = useState(false)
+  const handleAlret = () => {
+    setIsVisibleErr(false)
+    setIsVisibleSuc(false)
+  }
+  const [message, setMesage] = useState("")
   const [modalAjust, setModalAdjust] = useState(false)
   const [modalCreate, setModalCreate] = useState(false)
   const [apiInvetory, setAPIInventory] = useState([{}]);
-  const [showModalAlert, setShowModalAlert] = useState(false)
   const [fitem, setFitem] = useState(1)
   const [image, setImage] = useState(null);
-
   const [finventory, setFInventory] = useState({
     id_ingedient: route.params.item._id,
     name: "",
@@ -38,172 +42,100 @@ const Inventory = ({ route, navigation }) => {
       setFitem({ ...fitem, quantities: qty - 1 })
     }
   }
+
   const IncreasQYT = () => {
     setQyt(qty + 1);
     setFitem({ ...fitem, quantities: qty + 1 })
   }
+
   useEffect(() => {
     fetchData();
   }, []);
+
   const fetchData = () => {
-    fetch(shareVarible.URLink + '/inventory/' + `${route.params.item._id}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        setAPIInventory(data)
-      },
-      )
-      .catch(error => console.log(error));
-  };
-  //upload image from drive to cloudinary 
-  const handleUpload = (image) => {
-    const data = new FormData()
-    data.append('file', image)
-    data.append('upload_preset', 'restaurant')
-    data.append("cloud_name", "dmsgfvp0y")
-    fetch("https://api.cloudinary.com/v1_1/dmsgfvp0y/upload", {
-      method: "post",
-      body: data
-    }).then(res => res.json()).
-      then(data => {
-        setImage(data.secure_url)
-        setFInventory({ ...finventory, image: data.secure_url })
-      }).catch(err => {
-        console.log(err)
-        Alert.alert("An Error Occured While Uploading")
-      })
-  }
-
-  //take image from camera
-  const takeImage = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+    getAPI({ linkURL: shareVarible.URLink + '/inventory/' + `${route.params.item._id}` }).then(data => {
+      setAPIInventory(data)
+    }).catch(error => {
+      console.log("Lỗi get nguyên liệu: ", error)
     });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-    }
-    else {
-      setImage(null);
+  };
+
+  const handlePickImage = async () => {
+    try {
+      const imageUrl = await pickImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
 
-  //take image from libary
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-    }
-    else {
-      setImage(null);
+  const handleTakeImage = async () => {
+    try {
+      const imageUrl = await takeImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
+
   const handleDropdownSelect = (index, value) => {
     setFInventory({ ...finventory, entiry: value })
   }
   const createInventory = () => {
     if (finventory.name == "") {
-      alert("Vui lòng nhập tên");
+      setMesage("Thiếu thông tin")
+      setIsVisibleErr(true)
       return;
     }
     if (finventory.quantities == "" || isNaN(finventory.quantities)) {
-      alert("Siis lượng khổn hợp lệ");
+      setMesage("Thiếu thông tin")
+      setIsVisibleErr(true)
       return;
     }
     if (finventory.entiry == "") {
-      alert("Vui lòng nhập đơn vị");
+      setMesage("Thiếu thông tin")
+      setIsVisibleErr(true)
       return;
     }
     if (finventory.image == "") {
-      alert("Vui lòng chọn ảnh");
+      setMesage("Thiếu thông tin")
+      setIsVisibleErr(true)
       return;
     }
     else {
-      fetch(shareVarible.URLink + '/inventory/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(finventory),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.error) {
-            setErrormgs(data.error);
-            alert(data.error);
-          } else {
-            setFInventory({ ...finventory, name: "", quantities: "", entiry: "trai" })
-            setImage(null);
-            fetchData();
-            setShowModalAlert(true)
-          }
+      createAPI({ URLink: shareVarible.URLink + '/inventory/create', fdata: finventory })
+        .then(data => {
+          setFInventory({ ...finventory, name: "", quantities: "", entiry: "trai" })
+          setImage(null);
+          fetchData();
+          setIsVisibleSuc(true)
         })
-        .catch((error) => {
-          console.error('Error sending data:', error);
+        .catch(error => {
+          console.error('Lỗi tạo nguyên liệu:', error);
         });
     }
   }
+
   const editInventory = () => {
-     fetch(shareVarible.URLink + '/inventory/update/' + `${fitem._id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(fitem),
-    }).then(res => res.json()).then(
-      data => {
-        if (data.error) {
-          setErrormgs(data.error);
-          console.log(data.error)
-        }
-        else {
-          setModalAdjust(false)
-          setShowModalAlert(true)
-          fetchData()
-        }
-      }
-    )
-  }
-  const deleteInventory = () => {
-    fetch(shareVarible.URLink + '/inventory/delete/' + `${fitem._id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(response => response.json())
+    editAPI({ URLink: shareVarible.URLink + '/inventory/update/' + `${fitem._id}`, updates: fitem })
       .then(data => {
         setModalAdjust(false)
-        setShowModalAlert(true)
-         fetchData()
+       setIsVisibleSuc(true)
+        fetchData()
       })
       .catch(error => {
-        console.error(error);
+        console.error('Lỗi khi cập nhật nguyên liệu trong bếp :', error);
       });
+  }
+
+  const deleteInventory = () => {
+    DeteleAPI({ URLink: shareVarible.URLink + '/inventory/delete/' + `${fitem._id}` }).then(data => {
+      setModalAdjust(false)
+      setIsVisibleSuc(true)
+      fetchData()
+    })
   }
 
   const renderItem = ((item) => {
@@ -229,35 +161,14 @@ const Inventory = ({ route, navigation }) => {
   })
   return (
     <View>
-      <Modal
-        transparent={true}
-        visible={showModalAlert}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 300,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent: 'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{ height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems: 'center' }}>
-              <Ionicons name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"} />
-            </View>
-            <Text style={{ fontSize: 22, fontWeight: "700", color: '#3564C1' }}>
-              Thành công
-            </Text>
-            <TouchableOpacity
-              onPress={() => { setShowModalAlert(false) }}
-              style={{ height: 40, width: 140, backgroundColor: '#3564C1', justifyContent: 'center', alignItems: 'center', borderRadius: 20 }}>
-              <Text style={{ fontSize: 22, fontWeight: "700", color: '#FFFCFF' }}>tiếp tục</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <ErrorDialog
+        isVisible={isVisibleErr}
+        message={message}
+        onClose={handleAlret} />
+      <SuccessDialog
+        isVisible={isVisibleSuc}
+        message={"Thành công"}
+        onClose={handleAlret} />
       <Modal
         transparent={true}
         visible={modalCreate}
@@ -309,12 +220,12 @@ const Inventory = ({ route, navigation }) => {
             }
             <View style={styles.styView2}>
               <TouchableOpacity
-                onPress={takeImage}
+                onPress={handleTakeImage}
               >
                 <Ionicons name='logo-instagram' size={35} />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={pickImage}
+                onPress={handlePickImage}
               >
                 <Ionicons name='image-outline' size={35} />
               </TouchableOpacity>
@@ -333,8 +244,7 @@ const Inventory = ({ route, navigation }) => {
       <Modal
         transparent={true}
         visible={modalAjust}
-        animationType='slide'
-      >
+        animationType='slide'>
         <View style={styles.centeredView}>
           <View style={{
             height: 250,
@@ -380,32 +290,26 @@ const Inventory = ({ route, navigation }) => {
                     options={['Trái', 'Củ', 'Bó', 'Thùng', 'Chai', 'gam', 'kilogam']} />
                 </View>
               </View>
-
             </View>
             <View style={{ flexDirection: 'row' }}>
               <TouchableOpacity style={{ top: 30, right: 10, height: 40, width: 100, backgroundColor: '#FF6666', borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}
-                onPress={() => { editInventory() }}
-              >
+                onPress={() => { editInventory() }}>
                 <Text>Sửa</Text>
               </TouchableOpacity>
               <TouchableOpacity style={{ top: 30, height: 40, width: 100, backgroundColor: 'green', borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginTop: 10 }}
-                onPress={() => { deleteInventory() }}
-              >
+                onPress={() => { deleteInventory() }}>
                 <Text>Xóa</Text>
               </TouchableOpacity>
             </View>
-
           </View>
         </View>
       </Modal>
-      <View style={{ zIndex: 1,flexDirection: 'row', justifyContent: 'space-between',backgroundColor: '#EDF6D8', top: 30, paddingHorizontal: 10 }}>
+      <View style={{ zIndex: 1, flexDirection: 'row', justifyContent: 'space-between', backgroundColor: '#EDF6D8', top: 30, paddingHorizontal: 10 }}>
         <TouchableOpacity
-          
           onPress={() => navigation.navigate('HomeChef')}>
           <Ionicons name='arrow-undo-circle-sharp' size={42} />
         </TouchableOpacity>
         <TouchableOpacity
-
           onPress={() => { setModalCreate(true) }}>
           <Ionicons name='add' size={42} />
         </TouchableOpacity>
@@ -428,20 +332,6 @@ const Inventory = ({ route, navigation }) => {
 
 export default Inventory
 const styles = StyleSheet.create({
-  v1: {
-    height: '100%',
-    width: '100%',
-  },
-  V11: {
-    height: '60%',
-    width: '100%',
-    backgroundColor: '#EDF6D8'
-  },
-  V12: {
-    height: '42%',
-    width: '100%',
-    backgroundColor: 'white',
-  },
   inputname: {
     height: 40,
     width: 190,
@@ -465,8 +355,8 @@ const styles = StyleSheet.create({
   container2: {
     justifyContent: 'center',
     alignItems: 'center',
-   height: '100%',
-   width: '100%',
+    height: '100%',
+    width: '100%',
     backgroundColor: '#EDF6D8'
   },
   uploadimge: {

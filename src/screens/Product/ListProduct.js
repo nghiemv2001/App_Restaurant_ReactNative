@@ -2,50 +2,19 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { FlatGrid } from 'react-native-super-grid';
 import shareVarible from './../../AppContext'
-import img_plus_image from '../../../assets/plus_image.jpg'
-import Ionicons from 'react-native-vector-icons/Ionicons'
 const ListProduct = ({ navigation }) => {
   const [dataipa, setDataIPA] = useState([{}]);
-  const [data, setData] = useState({});
-  const [errormgs, setErrormgs] = useState(null)
-  const fetchData = () => {
-    fetch(shareVarible.URLink + '/product/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => (setDataIPA(data), setData(data)),
-      )
-      .catch(error => console.log(error));
-  };
   useEffect(() => {
-    fetchData();
+    getAPI({ linkURL: shareVarible.URLink + '/product/'}).then(data => {
+      setDataIPA(data)
+    }).catch(error => {
+      console.log("Lỗi get nguyên liệu: ", error)
+    });
   }, []);
 
-  //UPdateProduct
-
-  const UpdateProduct = (item) => {
-    console.log(item)
-  }
   return (
-    <View
-      style={{
-        flex: 1,
-        backgroundColor: '#EDF6D1',
-      }}
-    >
-      {/* <TouchableOpacity
-        style={{ marginLeft: 10, marginTop:40}}
-        onPress={() => navigation.navigate('HomeAdmin')}
-      >
-        <Ionicons name='arrow-undo-circle-outline' size={35} />
-      </TouchableOpacity> */}
-      <View style={{
-        height: "100%"
-      }}>
+    <View style={{flex: 1, backgroundColor: '#EDF6D1',}}>
+      <View style={{height: "100%"}}>
         <FlatGrid
           itemDimension={130}
           data={dataipa}
@@ -56,50 +25,21 @@ const ListProduct = ({ navigation }) => {
               onPress={() => navigation.navigate('EditProduct',{item})}
               style={{
                 justifyContent: 'center',
-                alignItems: 'center'
-              }}>
+                alignItems: 'center'}}>
               <View style={[styles.itemContainer]}>
                 <Image style={styles.styimage} source={{ uri: item.image }} />
                 <Text style={styles.itemName}>{item.name}</Text>
               </View>
               <View
-                style={{
-
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginTop: 15
-                }}>
-                <Text style={{
-                  fontSize: 17,
-                  fontWeight: '600',
-                  marginRight: 10
-                }}>{item.price} $</Text>
-                {
-                  item.status == "0" ? <Text
-                    style={{
-                      height: 10,
-                      width: 10,
-                      backgroundColor: 'green',
-                      zIndex: 1,
-                      borderRadius: 10
-                    }}>
+                style={styles.bosView}>
+                <Text style={styles.styTextPrice}>{item.price} $</Text>
+                {item.status == "0" ? <Text
+                    style={styles.styStatus}>
                   </Text> : <Text
-                    style={{
-                      height: 10,
-                      width: 10,
-                      backgroundColor: 'red',
-                      zIndex: 1,
-                      borderRadius: 10
-                    }}>
-                  </Text>
-                }
+                    style={styles.styStatus}>
+                  </Text>}
               </View>
-
-            </TouchableOpacity>
-
-          )}
-        />
+            </TouchableOpacity>)}/>
       </View>
     </View>
   )
@@ -107,6 +47,24 @@ const ListProduct = ({ navigation }) => {
 
 export default ListProduct
 const styles = StyleSheet.create({
+  styStatus:{
+    height: 10,
+    width: 10,
+    backgroundColor: 'green',
+    zIndex: 1,
+    borderRadius: 10
+  },
+  styTextPrice:{
+    fontSize: 17,
+    fontWeight: '600',
+    marginRight: 10
+  },
+  bosView:{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 15
+  },
   gridView: {
     flex: 1,
     backgroundColor: '#EDF6D1',

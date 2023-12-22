@@ -1,17 +1,22 @@
-import { View, Text, Image, StyleSheet, TextInput, TouchableOpacity,Alert } from 'react-native'
-import Reac, { useState, useEffect } from 'react'
+import { View,Image, StyleSheet, TouchableOpacity } from 'react-native'
+import { useState } from 'react'
 import { AutoComplete } from 'react-native-element-textinput';
 import iconImage from '../../../assets/iconimage2.png'
 import iconCamera from '../../../assets/iccamera.png'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import shareVarible from './../../AppContext'
-import * as ImagePicker from 'expo-image-picker';
+import { pickImage, takeImage } from '../../component/Cloudinary';
+import {createAPI } from '../../component/callAPI'
+import { ErrorDialog } from '../../component/CustomerAlert';
 const CreateProduct = ({navigation, route}) => {
+  const [isVisibleErr, setIsVisibleErr] = useState(false)
+  const [message, setMesage] = useState("")
+  const handleAlret = () => {
+    setIsVisibleErr(false)
+  }
   const [valuename, setValueName] = useState([]);
   const [valueprice, setValuePrice] = useState([]);
-  const [dataapi, SetDataApi] = useState([]);
   const [image, setImage] = useState(null);
-  const [errormgs, setErrormgs] = useState(null)
   const [fdata, setFdata] = useState({
     name: '',
     image: '',
@@ -19,126 +24,50 @@ const CreateProduct = ({navigation, route}) => {
     price: '',
     category : route.params.idCategory
   })
-  //set dropdown
-  const dropdown = [
-    { label: 'Còn trống', value: '0' },
-    { label: 'Đã đặt', value: '1' },
-  ];
-  const fetchData = () => {
-    fetch(shareVarible.URLink + '/category/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => SetDataApi(data),
-      )
-      .catch(error => console.log(error));
-      
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  //take image from libary and image
-  //upload image from drive to cloudinary 
-  const handleUpload = (image) => {
-    const data = new FormData()
-    data.append('file', image)
-    data.append('upload_preset', 'restaurant')
-    data.append("cloud_name", "dmsgfvp0y")
-    fetch("https://api.cloudinary.com/v1_1/dmsgfvp0y/upload", {
-      method: "post",
-      body: data
-    }).then(res => res.json()).
-      then(data => {
-        setImage(data.secure_url)
-        setFdata({ ...fdata, image: data.secure_url })
-      }).catch(err => {
-        Alert.alert("An Error Occured While Uploading")
-        console.log(err)
-      })
-  }
-
-  //take image from camera
-  const takeImage = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-    }
-    else {
-      setImage(null);
+  const handlePickImage = async () => {
+    try {
+      const imageUrl = await pickImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
 
-  //take image from libary
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-    }
-    else {
-      setImage(null);
+  const handleTakeImage = async () => {
+    try {
+      const imageUrl = await takeImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
-  //////////////////////////////////
-  //call ipa 
+  
   const SendtoBackend=()=>{
     if (fdata.name == '' || fdata.price == '' ||fdata.image == '') {
-      setErrormgs('Thiếu thông tin!!!');
+      setMesage('Thiếu thông tin!!!');
+      setIsVisibleErr(true)
       return;
     }
-    fetch(shareVarible.URLink + '/product/create',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(fdata)
-      }).then(res => res.json()).then(
-        data => {
-         
-          if (data.error) {
-            setErrormgs(data.error);
-          }
-          else {
-            navigation.navigate('HomeAdmin');
-          }
-        }
-      )
+    createAPI({ URLink: shareVarible.URLink + '/product/create', fdata: fdata })
+        .then(data => {
+          navigation.navigate('HomeAdmin');
+        })
+        .catch(error => {
+          console.error('Lỗi tạo nguyên liệu:', error);
+        });
   }
-  ///
   return (
     <View style={styles.viewmain}>
+      <ErrorDialog
+      isVisible={isVisibleErr}
+      message={message}
+      onClose={handleAlret}/>
       <View style={styles.containertop}>
         <TouchableOpacity onPress={() => navigation.navigate('HomeAdmin')}>
           <Ionicons name='arrow-undo-circle-sharp' size={35} />
         </TouchableOpacity>
-        
       </View>
       <View style={styles.container}>
         <AutoComplete
@@ -175,33 +104,21 @@ const CreateProduct = ({navigation, route}) => {
           }}
         />
       </View>
-
-      {
-          image == null ? <View style={[styles.uploadimge, { justifyContent: 'center', alignItems: 'center' }]}><Ionicons name="camera-outline" size={50} />
-          </View> : image && <Image source={{ uri: image }} style={styles.uploadimge} />
-        }
+      {image == null ? <View style={[styles.uploadimge, { justifyContent: 'center', alignItems: 'center' }]}><Ionicons name="camera-outline" size={50} />
+          </View> : image && <Image source={{ uri: image }} style={styles.uploadimge}/>}
       <View style={styles.styview}>
-        <TouchableOpacity onPress={takeImage}>
+        <TouchableOpacity onPress={handleTakeImage}>
           <Image source={iconCamera} style={styles.iconimage}/>
         </TouchableOpacity>
-        <TouchableOpacity onPress={pickImage}>
+        <TouchableOpacity onPress={handlePickImage}>
           <Image source={iconImage} style={styles.iconimage} />
         </TouchableOpacity>
       </View>
-      {
-          errormgs ? <Text style={styles.styError}>
-            {errormgs}</Text> : null
-        }
-
       <TouchableOpacity >
-        <View
-          style={styles.styButton}
-          
-        >
+        <View style={styles.styButton}  >
           <Ionicons name='md-checkmark-sharp' size={31}
            onPress={SendtoBackend}/>
         </View>
-
       </TouchableOpacity>
     </View>
   )
@@ -259,15 +176,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
     borderRadius: 10
   },
-  containerdropdown: {
-    marginTop: 80,
-    height: 40,
-    width: "70%",
-    backgroundColor: 'white',
-    borderRadius: 50,
-    marginLeft: 20,
-    paddingLeft: 10
-  },
   containertop: {
     height: 50,
     marginTop: 30,
@@ -285,12 +193,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     flexDirection: 'row'
-  },
-  styError:{
-    position: 'absolute',
-    marginTop: 590,
-    marginLeft: 130,
-    color: 'red'
   },
   styButton:{
     flexDirection: 'row',

@@ -4,7 +4,7 @@ import mainpicture from '../../assets/xinchao.png'
 import Icon from 'react-native-vector-icons/FontAwesome';
 const Welcome = ({ navigation }) => {
   return (
-    <View style={styles.boss}>
+    <View style={styles.bossview}>
       <Image style={styles.picturemain} source={mainpicture} />
       <View style={styles.top}>
         <Text style={styles.welcomeText}>Xin chào</Text>
@@ -22,7 +22,7 @@ const Welcome = ({ navigation }) => {
 }
 export default Welcome
 const styles = StyleSheet.create({
-  boss: {
+  bossview: {
     flex: 1,
     height: '100%',
     width: '100%',

@@ -9,7 +9,6 @@ const CategoryIngredient = ({ navigation }) => {
     const [apicategoryIngredient, setApicategoryIngredient] = useState([{}])
     const fetchData = () => {
         getAPI({ linkURL: shareVarible.URLink + '/categoryIngredient/' }).then(data => {
-            SetDataApi(data);
             setApicategoryIngredient(data)
         }).catch(error => {
             console.log("Lỗi get API nguyên liệu: ", error)

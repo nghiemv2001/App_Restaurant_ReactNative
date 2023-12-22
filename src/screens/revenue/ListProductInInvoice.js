@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, FlatList, Alert } from 'react-native'
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList} from 'react-native'
 import React from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 const ListProductInInvoice = ({ navigation, route }) => {

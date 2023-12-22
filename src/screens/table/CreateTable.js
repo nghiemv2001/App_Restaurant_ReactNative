@@ -5,6 +5,7 @@ import mainpicture from '../../../assets/xinchao.png'
 import shareVarible from './../../AppContext'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { takeImage,pickImage} from '../../component/Cloudinary';
+import { createAPI } from '../../component/callAPI'
 import { ErrorDialog } from '../../component/CustomerAlert'
 const CreateTable = ({ navigation}) => {
   const [isVisible, setIsVisible] = useState(false)
@@ -45,23 +46,13 @@ const CreateTable = ({ navigation}) => {
       setIsVisible(true)
       return;
     }
-    fetch(shareVarible.URLink + '/table/create',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(fdata)
-      }).then(res => res.json()).then(
-        data => {
-          if (data.error) {
-            console.log(data.error);
-          }
-          else {
-            navigation.navigate("HomeAdmin")
-          }
-        }
-      )
+    createAPI({ URLink:shareVarible.URLink + '/table/create', fdata: fdata })
+        .then(data => {
+          navigation.navigate("HomeAdmin")
+        })
+        .catch(error => {
+          console.error('Lỗi tạo bàn ăn:', error);
+        });
   }
   const handlePickImage = async () => {
     try {
@@ -86,8 +77,7 @@ const CreateTable = ({ navigation}) => {
       style={styles.View1}>
          <TouchableOpacity
         style={{ marginLeft: 10, marginTop: 20}}
-        onPress={() => navigation.navigate('HomeAdmin')}
-      >
+        onPress={() => navigation.navigate('HomeAdmin')}>
         <Ionicons name='arrow-undo-circle-outline' size={35} />
       </TouchableOpacity>
       <View style={{ flexDirection: 'row', marginTop: 30, justifyContent:'center', alignItems:'center' }}>
@@ -101,27 +91,14 @@ const CreateTable = ({ navigation}) => {
         message={message}
         onClose={handleAlret}/>
         <View
-          style={{
-            flexDirection: 'row',
-            justifyContent:'center',
-          }}>
+          style={styles.styView}>
           <View
-            style={{
-              flexDirection: 'column',
-              marginRight: 10
-            }}>
-            <Text
-              style={styles.Tname}
-            >Tên bàn ăn</Text>
-            <Text
-              style={styles.Tpeoples}
-            >Số chỗ ngồi</Text>
+            style={styles.styViewSecond}>
+            <Text style={styles.Tname}>Tên bàn ăn</Text>
+            <Text style={styles.Tpeoples}>Số chỗ ngồi</Text>
           </View>
           <View
-            style={{
-              flexDirection: 'column',
-              marginTop: 10,
-            }}>
+            style={styles.styViewBottom}>
             <TextInput
               style={styles.TIPname}
               onChangeText={(text) => setFdata({ ...fdata, name: text })}
@@ -148,13 +125,7 @@ const CreateTable = ({ navigation}) => {
             source={{ uri: imagesrc }}></Image>
         }
         <View
-          style={{
-            flexDirection: 'row',
-            height: 50,
-            width: '100%',
-            justifyContent: 'space-evenly',
-            marginTop: 10
-          }}>
+          style={styles.styViewthird}>
           <Text
             style={styles.Tcamera}
             onPress={handleTakeImage}>
@@ -177,6 +148,25 @@ const CreateTable = ({ navigation}) => {
 export default CreateTable
 
 const styles = StyleSheet.create({
+  styViewthird:{
+    flexDirection: 'row',
+    height: 50,
+    width: '100%',
+    justifyContent: 'space-evenly',
+    marginTop: 10
+  },
+  styViewBottom:{
+    flexDirection: 'column',
+    marginTop: 10,
+  },
+  styViewSecond:{
+    flexDirection: 'column',
+    marginRight: 10
+  },
+  styView:{
+    flexDirection: 'row',
+    justifyContent:'center',
+  },
   stylepicturemain: {
     height: 200,
     width: 200,

@@ -16,6 +16,18 @@ const Bill = ({ navigation, route }) => {
   const [isVisibleConfirmMerger, setIsVisibleConfirmMerger] = useState(false)
   const [isVisibleMoveAdjust, setIsVisibleMovAndAjust] = useState(false)
   const [message, setMesage] = useState("")
+  const [dataipa, SetDataApi] = useState([]);
+  const [dataproductchef, SetDataProductChef] = useState(null)
+  const [idtable, setIDTable] = useState(route.params.data._id)
+  const [nameTable, setNameTable] = useState(route.params.data.name)
+  const [isVisible, setIsVisible] = useState(false);
+  const [qty, setQyt] = useState(1);
+  const [price, setPrice] = useState(0);
+  const [dataItem, setDataItem] = useState(null);
+  const [showModel, setShowModal] = useState(false);
+  const [showModel2, setShowModal2] = useState(false);
+  const [showModelMove, setShowModalMove] = useState(false);
+  const [showModelCofirmMove, setShowModalConfimMove] = useState(false);
   const tables = useSelector(state => state.tableReducer.tableList);
   const dispatch = useDispatch();
   const handleAlret = () => {
@@ -60,20 +72,6 @@ const Bill = ({ navigation, route }) => {
     status: getDetails("status"),
     image: getDetails("image")
   })
-  const [dataipa, SetDataApi] = useState([]);
-  const [dataproductchef, SetDataProductChef] = useState(null)
-  const [idtable, setIDTable] = useState(route.params.data._id)
-  const [nameTable, setNameTable] = useState(route.params.data.name)
-  const [isVisible, setIsVisible] = useState(false);
-  const [qty, setQyt] = useState(1);
-  const [price, setPrice] = useState(0);
-  const [dataItem, setDataItem] = useState(null);
-  const [showModel, setShowModal] = useState(false);
-  const [showModel1, setShowModal1] = useState(false);
-  const [showModel2, setShowModal2] = useState(false);
-  const [showModel3, setShowModal3] = useState(false);
-  const [showModelMove, setShowModalMove] = useState(false);
-  const [showModelCofirmMove, setShowModalConfimMove] = useState(false);
   var total = 0;
   if (dataipa && dataipa.danh_sach_mon_an && dataipa.danh_sach_mon_an.length !== 0) {
     total = dataipa.danh_sach_mon_an.reduce((acc, danh_sach_mon_an) => {

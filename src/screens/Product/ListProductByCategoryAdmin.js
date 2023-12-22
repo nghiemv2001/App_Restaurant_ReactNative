@@ -4,95 +4,36 @@ import shareVarible from './../../AppContext'
 import { FlatGrid } from 'react-native-super-grid';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { SuccessDialog } from '../../component/CustomerAlert';
 const ListProductByCategogy = ({ route, navigation }) => {
   const [dataipa, setDataIPA] = useState([{}]);
+  const [isVisibleSuc, setIsVisibleSuc] = useState(false)
+  const handleAlret = () =>{
+    setIsVisibleSuc(fasle)
+  }
   const [showAlertAdjustProduct, setShowAlertAdjustProduct] = useState(false)
-  const [showModalAlert, setShowModalAlert] = useState(false)
   const [itemProduct, setItemProduct] = useState(null);
   const idCategory = route.params.item._id;
   useEffect(() => {
-    fetchData();
+    getAPI({ linkURL: shareVarible.URLink + '/products/' + `${idCategory}`}).then(data => {
+      setDataIPA(data)
+    }).catch(error => {
+      console.log("Lỗi lấy danh sách sẩn phẩm: ", error)
+    });
   }, []);
-  const [fdata, setFdata] = useState({
-    id_product: "",
-    ten_mon: "",
-    hinh_mon: "",
-    so_luong: "",
-    gia: ""
-  })
-  const [dataChef, setdataChef] = useState({
-    id_product: '',
-    name: "",
-    image: "",
-    quantity: "",
-    status: '',
-    second: '',
-    minute: '',
-    hour: ''
-  })
-  const fetchData = () => {
-    fetch(shareVarible.URLink + '/products/' + `${idCategory}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => setDataIPA(data),
-      )
-      .catch(error => console.log(error));
-  };
   const deleteProduct = () => {
-    fetch(shareVarible.URLink + '/product/delete/' + `${itemProduct._id}`, {
-      method: 'DELETE',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
+    DeteleAPI({ URLink: shareVarible.URLink + '/product/delete/' + `${itemProduct._id}`}).then(data => {
+      setShowAlertAdjustProduct(false)
+        setIsVisibleSuc(true)
     })
-      .then(response => response.json())
-      .then(data => {
-        setShowAlertAdjustProduct(false)
-        fetchData();
-        setShowModalAlert(true)
-      })
-      .catch(error => {
-        console.error('Lỗi xóa đối tượng:', error);
-      }
-      )
   }
   return (
     <View style={styles.containerbos}>
-      <Modal
-        transparent={true}
-        visible={showModalAlert}
-        animationType='fade'
-      >
-        <View style={styles.centeredView}>
-          <View style={{
-            height: 300,
-            width: 300,
-            backgroundColor: "white",
-            borderRadius: 40,
-            justifyContent:'space-evenly',
-            alignItems: 'center',
-          }}>
-
-            <View style={{height: 100, width: 100, backgroundColor: '#2D60D6', borderRadius: 70, marginTop: 20, justifyContent: 'center', alignItems:'center'}}>
-              <Ionicons  name='checkmark-done-circle-outline' size={60} color={"#FFFCFF"}/>
-            </View>
-            <Text style={{fontSize:22, fontWeight: "700", color:'#3564C1'}}>
-             Thành công
-            </Text>
-            <TouchableOpacity 
-            onPress={()=>{setShowModalAlert(false)}}
-            style={{height: 40, width: 140, backgroundColor:'#3564C1', justifyContent:'center', alignItems:'center', borderRadius: 20}}>
-              <Text style={{fontSize:22, fontWeight: "700", color:'#FFFCFF'}}>tiếp tục</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <SuccessDialog
+      isVisible={isVisibleSuc}
+      message={"Thành công"}
+      onClose={handleAlret}/>
+    
       <Modal
         transparent={true}
         visible={showAlertAdjustProduct}

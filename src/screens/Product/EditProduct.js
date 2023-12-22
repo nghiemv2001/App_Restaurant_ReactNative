@@ -1,11 +1,11 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, Alert, ScrollView, KeyboardAvoidingView } from 'react-native'
-import { useState, useEffect } from 'react'
+import { View,Image, StyleSheet, TouchableOpacity} from 'react-native'
+import { useState } from 'react'
 import { AutoComplete } from 'react-native-element-textinput';
 import iconImage from '../../../assets/iconimage2.png'
 import iconCamera from '../../../assets/iccamera.png'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import shareVarible from './../../AppContext'
-import * as ImagePicker from 'expo-image-picker';
+import { pickImage, takeImage } from '../../component/Cloudinary';
 import CheckBox from 'react-native-check-box'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 const EditProduct = ({ navigation, route }) => {
@@ -13,7 +13,6 @@ const EditProduct = ({ navigation, route }) => {
   const [valueprice, setValuePrice] = useState([]);
   const [image, setImage] = useState(null);
   const [errormgs, setErrormgs] = useState(null)
-  const [dataapi, SetDataApi] = useState(null)
   const [checkBox, setCheckBox] = useState(true)
   //get data from route
   const getDetails = (type) => {
@@ -35,7 +34,7 @@ const EditProduct = ({ navigation, route }) => {
     }
     return ""
   }
-  //set fdata
+
   const [fdata, setFdata] = useState({
     id: getDetails("id"),
     name: getDetails("name"),
@@ -44,87 +43,24 @@ const EditProduct = ({ navigation, route }) => {
     price: getDetails("price"),
     image: getDetails("image"),
   })
-  // take list category 
-  const fetchData = () => {
-    fetch(shareVarible.URLink + '/category/', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => SetDataApi(data),
-      )
-      .catch(error => console.log(error));
-  };
-  useEffect(() => {
-    fetchData();
-    if (fdata.status) {
-      setCheckBox(true)
-    }
-    else {
-      setCheckBox(false)
-    }
-  }, []);
-  //upload image from drive to cloudinary 
-  const handleUpload = (image) => {
-    const data = new FormData()
-    data.append('file', image)
-    data.append('upload_preset', 'restaurant')
-    data.append("cloud_name", "dmsgfvp0y")
-    fetch("https://api.cloudinary.com/v1_1/dmsgfvp0y/upload", {
-      method: "post",
-      body: data
-    }).then(res => res.json()).
-      then(data => {
-        setImage(data.secure_url)
-        setFdata({ ...fdata, image: data.secure_url })
-      }).catch(err => {
-        console.log(err)
-      })
-  }
-  //take image from camera
-  const takeImage = async () => {
-    let result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-    }
-    else {
-      setImage(null);
+
+  const handlePickImage = async () => {
+    try {
+      const imageUrl = await pickImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
 
-  //take image from libary
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      let newfile = {
-        uri: result.assets[0].uri,
-        type: `test/${result.assets[0].uri.split(".")[1]}`,
-        name: `test.${result.assets[0].uri.split(".")[1]}`
-      }
-      handleUpload(newfile)
-      setImage(result.assets[0].uri);
-    }
-    else {
-      setImage(null);
+  const handleTakeImage = async () => {
+    try {
+      const imageUrl = await takeImage();
+      setFdata({ ...fdata, image: imageUrl })
+      setImage(imageUrl)
+    } catch (error) {
+      console.error('Lỗi tải ảnh: ', error);
     }
   };
   //sentobackend
@@ -144,27 +80,16 @@ const EditProduct = ({ navigation, route }) => {
       image: fdata.image,
       category: fdata.category
     };
-
-    fetch(shareVarible.URLink + '/product/update/' + `${fdata.id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(updates),
-    }).then(res => res.json()).then(
-      data => {
-        if (data.error) {
-          setErrormgs(data.error);
-          console.log(data.error)
-        }
-        else {
-          navigation.navigate('HomeAdmin');
-        }
-      }
-    )
+    editAPI({ URLink: shareVarible.URLink + '/product/update/' + `${fdata.id}`, updates: updates })
+      .then(data => {
+        navigation.navigate('HomeAdmin');
+      })
+      .catch(error => {
+        console.error('Lỗi khi cập nhật nguyên liệu trong bếp :', error);
+      });
   }
   return (
-   
+
     <KeyboardAwareScrollView
       contentContainerStyle={styles.viewmain}
     >
@@ -227,17 +152,13 @@ const EditProduct = ({ navigation, route }) => {
         </View> : <Image source={{ uri: fdata.image }} style={styles.uploadimge} />
       }
       <View style={styles.styview}>
-        <TouchableOpacity onPress={takeImage}>
+        <TouchableOpacity onPress={handleTakeImage}>
           <Image source={iconCamera} style={styles.iconimage} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={pickImage}>
+        <TouchableOpacity onPress={handlePickImage}>
           <Image source={iconImage} style={styles.iconimage} />
         </TouchableOpacity>
       </View>
-      {
-        errormgs ? <Text style={styles.styError}>
-          {errormgs}</Text> : null
-      }
       <TouchableOpacity style={styles.styButton}>
         <Ionicons name='md-checkmark-sharp' size={31}
           onPress={SendtoBackend} />
@@ -298,15 +219,6 @@ const styles = StyleSheet.create({
     zIndex: 1,
     borderRadius: 10
   },
-  containerdropdown: {
-    marginTop: 80,
-    height: 40,
-    width: "70%",
-    backgroundColor: 'white',
-    borderRadius: 50,
-    marginLeft: 20,
-    paddingLeft: 10
-  },
   containertop: {
     height: 50,
     marginTop: 30,
@@ -317,23 +229,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20
   },
   styview: {
-    top : 550,
+    top: 550,
     height: "8%",
     width: '100%',
     justifyContent: 'space-evenly',
     alignContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    position:'absolute'
-  },
-  styError: {
-    position: 'absolute',
-    marginTop: 590,
-    marginLeft: 130,
-    color: 'red'
+    position: 'absolute'
   },
   styButton: {
-    top : 650,
+    top: 650,
     borderWidth: 3,
     borderRadius: 30,
     width: '55%',
@@ -343,6 +249,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#6AF597',
     justifyContent: 'center',
     alignItems: 'center',
-    position:'absolute'
+    position: 'absolute'
   }
 })
